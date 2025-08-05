@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:velocyverse/utils/util.constants.dart';
 
 class ApiService {
   final Dio _dio;
@@ -9,7 +10,7 @@ class ApiService {
           dio ??
           Dio(
             BaseOptions(
-              baseUrl: "apiurl", // Change to your base URL
+              baseUrl: Constants.baseURL, // Change to your base URL
               connectTimeout: const Duration(milliseconds: 5000),
               receiveTimeout: const Duration(milliseconds: 3000),
               headers: {

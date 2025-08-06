@@ -37,8 +37,8 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   void initState() {
-    _showLocation();
     super.initState();
+    _showLocation();
   }
 
   @override
@@ -106,11 +106,14 @@ class _UserHomeState extends State<UserHome> {
                       const SizedBox(height: 24),
 
                       // Book Now Button
-                      PrimaryButton(
-                        text: 'Book now',
-                        onPressed: () {
-                          print('Book now pressed');
-                        },
+                      SizedBox(
+                        width: double.maxFinite,
+                        child: PrimaryButton(
+                          text: 'Book now',
+                          onPressed: () {
+                            print('Book now pressed');
+                          },
+                        ),
                       ),
                       const SizedBox(height: 16),
 

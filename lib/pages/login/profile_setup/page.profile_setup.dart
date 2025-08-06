@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -60,6 +61,10 @@ class _PageCompleteProfileState extends State<PageCompleteProfile> {
       context,
       listen: false,
     );
+
+    FlutterSecureStorage _storage = FlutterSecureStorage();
+
+    await _storage.read('access')
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(

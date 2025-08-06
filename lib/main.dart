@@ -30,8 +30,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),
-          // textTheme: GoogleFonts.interTextTheme(),
-          // colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         ),
         // theme: ThemeData.dark(),
         routerConfig: MyRouter().routerConfig,

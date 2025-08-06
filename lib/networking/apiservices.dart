@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:velocyverse/services/secure_storage_service.dart';
 import 'package:velocyverse/utils/util.constants.dart';
 
 class ApiService {
@@ -10,7 +11,7 @@ class ApiService {
           dio ??
           Dio(
             BaseOptions(
-              baseUrl: Constants.baseURL, // Change to your base URL
+              baseUrl: Constants.baseURL,
               connectTimeout: const Duration(milliseconds: 5000),
               receiveTimeout: const Duration(milliseconds: 3000),
               headers: {
@@ -29,7 +30,58 @@ class ApiService {
         ),
       );
     }
-    // You can add more interceptors here (e.g., authentication, caching)
+
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException error, ErrorInterceptorHandler handler) async {
+          if (error.response?.statusCode == 401) {
+            // Try to refresh token
+            final success = await _refreshAccessToken();
+            if (success) {
+              // Retry original request with new token
+              final RequestOptions requestOptions = error.requestOptions;
+
+              final newAccessToken = await SecureStorage.getAccessToken();
+              requestOptions.headers['Authorization'] =
+                  'Bearer $newAccessToken';
+
+              try {
+                final cloneReq = await _dio.fetch(requestOptions);
+                return handler.resolve(cloneReq);
+              } catch (e) {
+                return handler.reject(error);
+              }
+            }
+          }
+          return handler.next(error); // other errors
+        },
+      ),
+    );
+  }
+
+  // 🔁 Refresh Token Method
+  Future<bool> _refreshAccessToken() async {
+    try {
+      final refreshToken = await SecureStorage.getRefreshToken();
+      if (refreshToken == null) return false;
+
+      final response = await _dio.post(
+        '/auth_api/refresh/',
+        data: {'refresh': refreshToken},
+      );
+
+      if (response.statusCode == 200 && response.data['access'] != null) {
+        await SecureStorage.saveTokens(
+          accessToken: response.data['access'],
+          refreshToken: refreshToken, // Keep existing refresh
+        );
+        debugPrint("🔁 Access token refreshed");
+        return true;
+      }
+    } catch (e) {
+      debugPrint("❌ Failed to refresh token: $e");
+    }
+    return false;
   }
 
   Future<Response> getRequest(
@@ -39,9 +91,12 @@ class ApiService {
   }) async {
     try {
       // Set additional headers if provided.
-      if (headers != null) {
-        _dio.options.headers.addAll(headers);
-      }
+      // if (headers != null) {
+      //   _dio.options.headers.addAll(headers);
+      // }
+      final token = await SecureStorage.getAccessToken();
+      final authHeader = {'Authorization': 'Bearer $token'};
+      _dio.options.headers.addAll({...?headers, ...authHeader});
 
       final response = await _dio.get(path, queryParameters: queryParameters);
       return response;
@@ -58,9 +113,9 @@ class ApiService {
     Map<String, dynamic>? headers,
   }) async {
     try {
-      if (headers != null) {
-        _dio.options.headers.addAll(headers);
-      }
+      final token = await SecureStorage.getAccessToken();
+      final authHeader = {'Authorization': 'Bearer $token'};
+      _dio.options.headers.addAll({...?headers, ...authHeader});
 
       final response = await _dio.post(
         path,
@@ -87,9 +142,9 @@ class ApiService {
     Map<String, dynamic>? headers,
   }) async {
     try {
-      if (headers != null) {
-        _dio.options.headers.addAll(headers);
-      }
+      final token = await SecureStorage.getAccessToken();
+      final authHeader = {'Authorization': 'Bearer $token'};
+      _dio.options.headers.addAll({...?headers, ...authHeader});
 
       final response = await _dio.delete(
         path,
@@ -108,6 +163,10 @@ class ApiService {
     Map<String, dynamic>? headers,
   }) async {
     try {
+      final token = await SecureStorage.getAccessToken();
+      final authHeader = {'Authorization': 'Bearer $token'};
+      _dio.options.headers.addAll({...?headers, ...authHeader});
+
       final response = await _dio.put(
         path,
         data: data,
@@ -132,6 +191,10 @@ class ApiService {
     Map<String, dynamic>? headers,
   }) async {
     try {
+      final token = await SecureStorage.getAccessToken();
+      final authHeader = {'Authorization': 'Bearer $token'};
+      _dio.options.headers.addAll({...?headers, ...authHeader});
+
       final response = await _dio.patch(
         path,
         data: data,

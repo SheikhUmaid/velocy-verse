@@ -1,0 +1,92 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/components/base/component.custom_app_bar.dart';
+import 'package:velocyverse/components/base/component.custom_text_field.dart';
+import 'package:velocyverse/components/base/component.primary_button.dart';
+import 'package:velocyverse/providers/login/provider.authentication.dart';
+import 'package:velocyverse/providers/provider.loader.dart';
+
+class LoginOTP extends StatelessWidget {
+  LoginOTP({super.key, required this.phoneNumber});
+  final String phoneNumber;
+  final otpController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final authenticationProvider = Provider.of<AuthenticationProvider>(
+      context,
+      listen: false,
+    );
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CustomAppBar(title: "Velocy"),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "OTP",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 44.00,
+                      ),
+                    ),
+                    Text("(one time password)"),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  "The OTP has been sent to you +91$phoneNumber",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              CustomTextField(
+                controller: otpController,
+                label: 'Enter OTP',
+                placeholder: 'Enter OTP',
+                isPassword: true,
+              ),
+
+              const SizedBox(height: 32),
+              PrimaryButton(
+                text: 'Continue',
+                onPressed: () async {
+                  context.read<LoaderProvider>().showLoader();
+                  final response = await authenticationProvider.loginWithOTP(
+                    phoneNumber: phoneNumber,
+                    otp: otpController.text,
+                  );
+                  if (response) {
+                    debugPrint(
+                      "------------- Login complete ------------------------- ",
+                    );
+                    if (context.mounted) {
+                      context.read<LoaderProvider>().hideLoader();
+                      context.goNamed('/userHome');
+                    }
+                  } else {
+                    debugPrint(
+                      "------------- Login incomplete ------------------------- ",
+                    );
+                    if (context.mounted) {
+                      context.read<LoaderProvider>().hideLoader();
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

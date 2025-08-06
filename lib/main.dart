@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/networking/apiservices.dart';
-import 'package:velocyverse/pages/login/page.authentication.dart';
-import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
-import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
+import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:velocyverse/utils/util.global_loader.dart';
+import 'package:velocyverse/utils/util.router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +21,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => AuthenticationProvider(apiService: ApiService()),
         ),
+        ChangeNotifierProvider(
+          create: (context) => LoaderProvider(), // <-- Add this
+        ),
       ],
       child: MaterialApp.router(
         title: 'Velocy Verse',
@@ -32,39 +34,12 @@ class MyApp extends StatelessWidget {
           // colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         ),
         // theme: ThemeData.dark(),
-        routerConfig: _router,
+        routerConfig: MyRouter().routerConfig,
         debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          return Stack(children: [child!, GlobalLoader()]);
+        },
       ),
     );
   }
 }
-
-final GoRouter _router = GoRouter(
-  initialLocation: '/onboarding',
-  debugLogDiagnostics: true,
-  routes: <RouteBase>[
-    GoRoute(
-      name: '/login',
-      path: '/login',
-      builder: (BuildContext context, GoRouterState state) {
-        return AuthScreen();
-      },
-    ),
-
-    GoRoute(
-      name: '/complete_profile',
-      path: '/complete_profile',
-      builder: (BuildContext context, GoRouterState state) {
-        return PageCompleteProfile();
-      },
-    ),
-
-    GoRoute(
-      name: '/onboarding',
-      path: '/onboarding',
-      builder: (BuildContext context, GoRouterState state) {
-        return Onboarding();
-      },
-    ),
-  ],
-);

@@ -7,6 +7,7 @@ import 'package:velocyverse/components/login/component.auth_toggle.dart';
 import 'package:velocyverse/components/login/component.phone_input.dart';
 import 'package:velocyverse/components/login/component.social_auth_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
+import 'package:velocyverse/providers/provider.loader.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -57,14 +58,21 @@ class _AuthFormState extends State<AuthForm> {
               placeholder: 'Enter password',
               isPassword: true,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: const Text(
-                'Login With OTP',
-                textAlign: TextAlign.right,
-                style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+            if (isLogin) ...[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {
+                    context.pushNamed('/loginOTP', extra: phoneController.text);
+                  },
+                  child: const Text(
+                    'Login With OTP',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+                  ),
+                ),
               ),
-            ),
+            ],
             if (!isLogin) ...[
               const SizedBox(height: 24),
               CustomTextField(
@@ -87,14 +95,29 @@ class _AuthFormState extends State<AuthForm> {
                     confirmPassword: confirmPasswordController.text,
                   );
                   if (response) {
-                    debugPrint(
-                      "----------------------successfully logined----------------------",
-                    );
                     if (context.mounted) {
                       context.pushNamed("/complete_profile");
                     }
                   } else {
                     debugPrint("Something Went Wrong");
+                  }
+                }
+
+                if (isLogin) {
+                  context.read<LoaderProvider>().showLoader();
+                  final response = await authenticationProvider
+                      .loginWithPassword(
+                        phoneNumber: phoneController.text,
+                        password: passwordController.text,
+                      );
+                  if (response) {
+                    if (context.mounted) {
+                      context.pushNamed("/userHome");
+                      context.read<LoaderProvider>().hideLoader();
+                    }
+                  } else {
+                    debugPrint("Something Went Wrong");
+                    context.read<LoaderProvider>().hideLoader();
                   }
                 }
                 print('Continue pressed');

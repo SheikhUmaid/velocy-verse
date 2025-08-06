@@ -35,6 +35,62 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> loginWithOTP({
+    required String phoneNumber,
+    required String otp,
+  }) async {
+    try {
+      final response = await _apiService.postRequest(
+        '/auth_api/otp-login/',
+        data: {'phone_number': phoneNumber, 'otp': otp},
+      );
+      if (response.statusCode == 200) {
+        FlutterSecureStorage storage = FlutterSecureStorage();
+        storage.write(key: "access", value: response.data['access']);
+        debugPrint("access token set");
+        storage.write(key: "refresh", value: response.data['refresh']);
+        debugPrint("refresh token set");
+        return true;
+      } else {
+        // Handle the case where OTP verification fails
+        ("OTP verification failed: ${response.data}");
+        return false;
+      }
+      // return response.statusCode == 201;
+    } catch (e) {
+      // rethrow;
+      return false;
+    }
+  }
+
+  Future<bool> loginWithPassword({
+    required String phoneNumber,
+    required String password,
+  }) async {
+    try {
+      final response = await _apiService.postRequest(
+        '/auth_api/password-login/',
+        data: {'phone_number': phoneNumber, 'password': password},
+      );
+      if (response.statusCode == 200) {
+        FlutterSecureStorage storage = FlutterSecureStorage();
+        storage.write(key: "access", value: response.data['access']);
+        debugPrint("access token set");
+        storage.write(key: "refresh", value: response.data['refresh']);
+        debugPrint("refresh token set");
+        return true;
+      } else {
+        // Handle the case where OTP verification fails
+        ("OTP verification failed: ${response.data}");
+        return false;
+      }
+      // return response.statusCode == 201;
+    } catch (e) {
+      // rethrow;
+      return false;
+    }
+  }
+
   Future<bool> profileSetup({
     required String username,
     required String gender,

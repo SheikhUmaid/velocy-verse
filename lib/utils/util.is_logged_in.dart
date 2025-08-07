@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 Future<bool> isLoggedin() async {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
-  final token = await storage.read(key: 'access_token');
+  final token = await storage.read(key: 'access');
   if (token == null) {
     // Token not found
     print("User not logged in");

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/components/user/component.bottom_nav_bar.dart';
 import 'package:velocyverse/components/user/component.favorite_locations.dart';
@@ -61,7 +62,12 @@ class _UserHomeState extends State<UserHome> {
             ),
 
             // Search Bar
-            const ComponentSearchBar(),
+            InkWell(
+              onTap: () {
+                context.pushNamed('/bookRide');
+              },
+              child: ComponentSearchBar(),
+            ),
 
             // Map View
             Expanded(
@@ -111,6 +117,7 @@ class _UserHomeState extends State<UserHome> {
                         child: PrimaryButton(
                           text: 'Book now',
                           onPressed: () {
+                            context.pushNamed('/bookRide');
                             print('Book now pressed');
                           },
                         ),

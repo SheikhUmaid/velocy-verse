@@ -1,5 +1,6 @@
 // lib/components/booking/component.location_input.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ComponentLocationInput extends StatelessWidget {
   final TextEditingController pickupController;
@@ -37,32 +38,48 @@ class ComponentLocationInput extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: TextFormField(
-                  controller: pickupController,
-                  decoration: InputDecoration(
-                    hintText: 'Pickup location',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF9CA3AF),
-                      fontSize: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF3B82F6)),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                child: InkWell(
+                  onTap: () {
+                    context.pushNamed(
+                      "/selectLocation",
+                      extra: 0, // ->> zero means pickup location;
+                    );
+                  },
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      controller: pickupController,
+                      decoration: InputDecoration(
+                        hintText: 'Pickup location',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF9CA3AF),
+                          fontSize: 16,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF3B82F6),
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ),
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
               ),
             ],
@@ -94,32 +111,48 @@ class ComponentLocationInput extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: TextFormField(
-                  controller: dropController,
-                  decoration: InputDecoration(
-                    hintText: 'Drop location',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF9CA3AF),
-                      fontSize: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF3B82F6)),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                child: InkWell(
+                  onTap: () {
+                    context.pushNamed(
+                      "/selectLocation",
+                      extra: 1, //---->>> 1 means
+                    );
+                  },
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      controller: dropController,
+                      decoration: InputDecoration(
+                        hintText: 'Drop location',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF9CA3AF),
+                          fontSize: 16,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF3B82F6),
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ),
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
               ),
             ],

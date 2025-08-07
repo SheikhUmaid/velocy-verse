@@ -62,9 +62,6 @@ class _PageCompleteProfileState extends State<PageCompleteProfile> {
       listen: false,
     );
 
-    FlutterSecureStorage _storage = FlutterSecureStorage();
-
-    await _storage.read('access')
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(

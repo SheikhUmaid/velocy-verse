@@ -1,95 +1,44 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:velocyverse/models/model.loaction.dart';
+import 'package:velocyverse/networking/apiservices.dart';
 
-class SelectLocationScreen extends StatefulWidget {
-  @override
-  _SelectLocationScreenState createState() => _SelectLocationScreenState();
-}
+class RideProvider extends ChangeNotifier {
+  RideProvider({required ApiService apiService}) : _apiService = apiService;
 
-class _SelectLocationScreenState extends State<SelectLocationScreen> {
-  GoogleMapController? _mapController;
-  LatLng? _selectedLocation;
+  final ApiService _apiService;
+  LocationModel? _fromLocation;
+  LocationModel? _toLocation; //---> where it is a model of lat tn name address]
+  String rideType = 'now';
 
-  static const LatLng _initialPosition = LatLng(
-    20.5937,
-    78.9629,
-  ); // India center
-
-  @override
-  void initState() {
-    super.initState();
-    _determinePosition();
+  set fromLocation(LocationModel f) {
+    _fromLocation = f;
+    notifyListeners();
   }
 
-  Future<void> _determinePosition() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      permission = await Geolocator.requestPermission();
-    }
+  set toLocation(LocationModel f) {
+    _toLocation = f;
+    notifyListeners();
+  }
 
-    if (permission == LocationPermission.always ||
-        permission == LocationPermission.whileInUse) {
-      Position pos = await Geolocator.getCurrentPosition();
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLng(LatLng(pos.latitude, pos.longitude)),
+  Future<Response> confirmRide() async {
+    FlutterSecureStorage _storage = FlutterSecureStorage();
+    try {
+      final accessToken = await _storage.read(key: "access");
+      final response = await _apiService.postRequest(
+        "/rider/confirm_location/",
+        data: {},
+        headers: {'Authorization': 'Bearer $accessToken'},
       );
+
+      if (response.statusCode == 201) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      rethrow;
     }
-  }
-
-  void _onMapTapped(LatLng tappedPoint) {
-    setState(() {
-      _selectedLocation = tappedPoint;
-    });
-
-    print(
-      "Selected Latitude: ${tappedPoint.latitude}, Longitude: ${tappedPoint.longitude}",
-    );
-  }
-
-  void _onConfirm() {
-    if (_selectedLocation != null) {
-      Navigator.pop(context, _selectedLocation);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Select Location")),
-      body: Stack(
-        children: [
-          GoogleMap(
-            onMapCreated: (controller) => _mapController = controller,
-            initialCameraPosition: CameraPosition(
-              target: _initialPosition,
-              zoom: 4,
-            ),
-            onTap: _onMapTapped,
-            markers: _selectedLocation == null
-                ? {}
-                : {
-                    Marker(
-                      markerId: MarkerId('selected'),
-                      position: _selectedLocation!,
-                    ),
-                  },
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-          ),
-          if (_selectedLocation != null)
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: ElevatedButton(
-                onPressed: _onConfirm,
-                child: Text("Confirm Location"),
-              ),
-            ),
-        ],
-      ),
-    );
   }
 }

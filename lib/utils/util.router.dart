@@ -27,7 +27,8 @@ class MyRouter {
         name: '/selectLocation',
         path: '/selectLocation',
         builder: (BuildContext context, GoRouterState state) {
-          return SelectLocation();
+          int flag = state.extra as int;
+          return SelectLocation(pickDropFlag: flag);
         },
       ),
       GoRoute(

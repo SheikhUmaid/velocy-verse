@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:velocyverse/networking/apiservices.dart';
+import 'package:velocyverse/services/secure_storage_service.dart';
 
 class AuthenticationProvider extends ChangeNotifier {
   AuthenticationProvider({required ApiService apiService})
@@ -44,21 +45,20 @@ class AuthenticationProvider extends ChangeNotifier {
         '/auth_api/otp-login/',
         data: {'phone_number': phoneNumber, 'otp': otp},
       );
+
       if (response.statusCode == 200) {
-        FlutterSecureStorage storage = FlutterSecureStorage();
-        storage.write(key: "access", value: response.data['access']);
-        debugPrint("access token set");
-        storage.write(key: "refresh", value: response.data['refresh']);
-        debugPrint("refresh token set");
+        await SecureStorage.saveTokens(
+          accessToken: response.data['access'],
+          refreshToken: response.data['refresh'],
+        );
+        debugPrint("Tokens stored successfully");
         return true;
       } else {
-        // Handle the case where OTP verification fails
-        ("OTP verification failed: ${response.data}");
+        debugPrint("OTP verification failed: ${response.data}");
         return false;
       }
-      // return response.statusCode == 201;
     } catch (e) {
-      // rethrow;
+      debugPrint("Login OTP error: $e");
       return false;
     }
   }
@@ -72,22 +72,20 @@ class AuthenticationProvider extends ChangeNotifier {
         '/auth_api/password-login/',
         data: {'phone_number': phoneNumber, 'password': password},
       );
+
       if (response.statusCode == 200) {
-        FlutterSecureStorage storage = FlutterSecureStorage();
-        storage.write(key: "access", value: response.data['access']);
-        debugPrint("access token set");
-        storage.write(key: "refresh", value: response.data['refresh']);
-        debugPrint("refresh token set");
-        print(response.data['user']['role']);
+          await SecureStorage.saveTokens(
+          accessToken: response.data['access'],
+          refreshToken: response.data['refresh'],
+        );
+        debugPrint("Tokens stored successfully");
         return response.data['user']['role'] == 'user' ? 'user' : 'driver';
       } else {
-        // Handle the case where OTP verification fails
-        ("OTP verification failed: ${response.data}");
+        debugPrint("Password login failed: ${response.data}");
         return false;
       }
-      // return response.statusCode == 201;
     } catch (e) {
-      // rethrow;
+      debugPrint("Login password error: $e");
       return false;
     }
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DriverHome extends StatefulWidget {
@@ -16,16 +17,37 @@ class _DriverHomeState extends State<DriverHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   title: Column(
+      //     children: [
+      //       Text(
+      //         'Alex camera',
+      //         style: TextStyle(
+      //           fontSize: 14,
+      //           fontWeight: FontWeight.w600,
+      //           color: Colors.grey[800],
+      //         ),
+      //       ),
+      //       Text(
+      //         'ID: DRV2025001',
+      //         style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+      //       ),
+      //     ],
+      //   ),
+      //   leading: Icon(CupertinoIcons.person_alt_circle),
+      // ),
       body: SafeArea(
         child: Column(
           children: [
             // Header Section
             _buildHeader(),
 
+            SizedBox(height: 10),
             // Main Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                // padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -47,11 +69,6 @@ class _DriverHomeState extends State<DriverHome> {
 
                     // Active Ride Card
                     _buildActiveRideCard(),
-                    SizedBox(height: 4),
-                    _buildActiveRideCard(),
-
-                    SizedBox(height: 4), _buildActiveRideCard(),
-                    SizedBox(height: 4), _buildActiveRideCard(),
                   ],
                 ),
               ),
@@ -147,14 +164,18 @@ class _DriverHomeState extends State<DriverHome> {
           ),
           const Spacer(),
           Switch(
-            trackColor: MaterialStateProperty.all(Colors.blue.withOpacity(.2)),
+            activeColor: Colors.blue,
+            activeTrackColor: Colors.blue.withOpacity(.3),
+            inactiveThumbColor: Colors.white,
+            inactiveTrackColor: Colors.grey[300],
+            trackOutlineColor: MaterialStateProperty.all(Colors.white),
+            // trackColor: MaterialStateProperty.all(Colors.grey.shade300),
             value: isOnline,
             onChanged: (value) {
               setState(() {
                 isOnline = value;
               });
             },
-            activeColor: Colors.blue,
           ),
         ],
       ),
@@ -188,73 +209,76 @@ class _DriverHomeState extends State<DriverHome> {
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              // Earnings
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '₹ 125',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              children: [
+                // Earnings
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '₹ 125',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Total',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              // Trips
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '8',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                      Text(
+                        'Total',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
-                    ),
-                    Text(
-                      'Trips',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              // Rating
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[400]!, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      '4.9',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                // Trips
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '8',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Rating',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                  ],
+                      Text(
+                        'Trips',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                // Rating
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    // border: Border.all(color: Colors.grey[400]!, width: 2),
+                    // borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        '4.9',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'Rating',
+                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -299,7 +323,7 @@ class _DriverHomeState extends State<DriverHome> {
           const SizedBox(height: 12),
           // Progress Bar
           Container(
-            height: 6,
+            height: 8,
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(3),
@@ -389,13 +413,14 @@ class _DriverHomeState extends State<DriverHome> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: isSelected
               ? [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.2),
                     spreadRadius: 1,
                     blurRadius: 2,
+
                     offset: const Offset(0, 1),
                   ),
                 ]
@@ -414,52 +439,61 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildActiveRideCard() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        // border: Border.all(color: Colors.black, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
               children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Downtown Plaza',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        '2.5 km away',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
                 const Text(
-                  'Downtown Plaza',
+                  '\$12.50',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
                 ),
-                Text(
-                  '2.5 km away',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                ),
               ],
             ),
           ),
-          const Text(
-            '\$12.50',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

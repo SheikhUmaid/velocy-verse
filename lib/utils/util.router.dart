@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/pages/driver/page.dartMain.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
 import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
@@ -11,7 +12,7 @@ import 'package:velocyverse/pages/user_app/page.book_ride.dart';
 import 'package:velocyverse/pages/user_app/page.select_location.dart';
 
 class MyRouter {
-    final GoRouter routerConfig = GoRouter(
+  final GoRouter routerConfig = GoRouter(
     initialLocation: '/loading',
 
     debugLogDiagnostics: true,
@@ -67,6 +68,13 @@ class MyRouter {
         builder: (BuildContext context, GoRouterState state) {
           String phoneNumber = state.extra as String;
           return LoginOTP(phoneNumber: phoneNumber);
+        },
+      ),
+      GoRoute(
+        path: '/driverMain',
+        name: '/driverMain',
+        builder: (context, state) {
+          return const DriverMain();
         },
       ),
     ],

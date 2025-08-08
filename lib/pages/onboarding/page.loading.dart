@@ -21,7 +21,8 @@ class _LoadingState extends State<Loading> {
 
     if (context.mounted) {
       if (loggedIn) {
-        context.goNamed("/userHome");
+        print("User is logging in");
+        context.goNamed("/driverMain");
       } else {
         context.goNamed("/permissions");
       }

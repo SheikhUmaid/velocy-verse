@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:velocyverse/pages/user_app/book_ride/book_ride_screen.dart';
 import 'package:velocyverse/pages/user_app/corporate/corporate_screen.dart';
+import 'package:velocyverse/pages/user_app/home/user_home_scree.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/rental_screen.dart';
 import 'package:velocyverse/pages/user_app/ride_share/ride_share_screen.dart';
 
@@ -15,7 +15,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    BookRideScreen(),
+    UserHomeScreen(),
     RentalScreen(),
     RideShareScreen(),
     CorporateScreen(),

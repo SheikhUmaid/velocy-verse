@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
-import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
 import 'package:velocyverse/pages/onboarding/page.loading.dart';
-import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
 import 'package:velocyverse/pages/onboarding/page.permissions.dart';
+import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
+import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
+import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
-import 'package:velocyverse/pages/user_app/page.book_ride.dart';
-import 'package:velocyverse/pages/user_app/page.select_location.dart';
+import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 
 class MyRouter {
-  final GoRouter routerConfig = GoRouter(
+  static GoRouter routerConfig = GoRouter(
     initialLocation: '/loading',
     debugLogDiagnostics: true,
     routes: <RouteBase>[
@@ -24,6 +24,20 @@ class MyRouter {
       ),
 
       GoRoute(
+        name: '/waitingForDriver',
+        path: '/waitingForDriver',
+        builder: (BuildContext context, GoRouterState state) {
+          return WaitingDriverScreen();
+        },
+      ),
+      GoRoute(
+        name: '/selectVehicle',
+        path: '/selectVehicle',
+        builder: (BuildContext context, GoRouterState state) {
+          return SelectVehicleScreen();
+        },
+      ),
+      GoRoute(
         name: '/selectLocation',
         path: '/selectLocation',
         builder: (BuildContext context, GoRouterState state) {
@@ -35,7 +49,7 @@ class MyRouter {
         name: '/bookRide',
         path: '/bookRide',
         builder: (BuildContext context, GoRouterState state) {
-          return BookRide();
+          return ConfirmLocationScreen();
         },
       ),
 

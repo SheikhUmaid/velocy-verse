@@ -110,9 +110,14 @@ class _AuthFormState extends State<AuthForm> {
                         phoneNumber: phoneController.text,
                         password: passwordController.text,
                       );
-                  if (response) {
+                  if (response == 'user') {
                     if (context.mounted) {
                       context.pushNamed("/userHome");
+                      context.read<LoaderProvider>().hideLoader();
+                    }
+                  } else if (response == 'driver') {
+                    if (context.mounted) {
+                      context.pushNamed("/driverMain");
                       context.read<LoaderProvider>().hideLoader();
                     }
                   } else {

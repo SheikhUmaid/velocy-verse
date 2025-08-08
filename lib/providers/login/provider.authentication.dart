@@ -35,7 +35,7 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> loginWithOTP({
+  Future loginWithOTP({
     required String phoneNumber,
     required String otp,
   }) async {
@@ -63,7 +63,7 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> loginWithPassword({
+  Future<Object> loginWithPassword({
     required String phoneNumber,
     required String password,
   }) async {
@@ -78,7 +78,8 @@ class AuthenticationProvider extends ChangeNotifier {
         debugPrint("access token set");
         storage.write(key: "refresh", value: response.data['refresh']);
         debugPrint("refresh token set");
-        return true;
+        print(response.data['user']['role']);
+        return response.data['user']['role'] == 'user' ? 'user' : 'driver';
       } else {
         // Handle the case where OTP verification fails
         ("OTP verification failed: ${response.data}");

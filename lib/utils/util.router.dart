@@ -8,7 +8,7 @@ import 'package:velocyverse/pages/onboarding/page.permissions.dart';
 import 'package:velocyverse/pages/user/page.home.dart';
 
 class MyRouter {
-  final GoRouter routerConfig = GoRouter(
+  GoRouter routerConfig = GoRouter(
     initialLocation: '/permissions',
     debugLogDiagnostics: true,
     routes: <RouteBase>[

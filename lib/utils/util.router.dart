@@ -11,8 +11,9 @@ import 'package:velocyverse/pages/user_app/page.book_ride.dart';
 import 'package:velocyverse/pages/user_app/page.select_location.dart';
 
 class MyRouter {
-  final GoRouter routerConfig = GoRouter(
+    final GoRouter routerConfig = GoRouter(
     initialLocation: '/loading',
+
     debugLogDiagnostics: true,
     routes: <RouteBase>[
       GoRoute(

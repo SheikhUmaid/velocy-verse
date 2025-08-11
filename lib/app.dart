@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),
         ),
-        routerConfig: MyRouter().routerConfig,
+        routerConfig: MyRouter.routerConfig,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
           return Stack(children: [child!, GlobalLoader()]);

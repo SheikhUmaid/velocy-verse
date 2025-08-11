@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class NavigationPickUp extends StatefulWidget {
@@ -16,6 +18,12 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
     // TODO: implement initState
     super.initState();
     _getCurrentLocation();
+  }
+
+  dispsose() {
+    _mapController?.dispose();
+    super.dispose();
+    _mapController?.dispose();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -68,96 +76,97 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
     return Scaffold(
       // backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Navigate to Pick Up'),
+        title: Text('Pick Up location'),
         // backgroundColor: Colors.black,
       ),
-      body: Stack(
+      body: Column(
         children: [
           // Google Map Container - Replace this with your Google Map widget
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _currentPosition == null
-                  ? _initialCameraPosition.target
-                  : _currentPosition!,
-              zoom: 15,
+          Expanded(
+            flex: 1,
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _currentPosition == null
+                    ? _initialCameraPosition.target
+                    : _currentPosition!,
+                zoom: 15,
+              ),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              onMapCreated: (controller) => _mapController = controller,
             ),
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-            onMapCreated: (controller) => _mapController = controller,
           ),
           // Top Header
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
-            left: 20,
-            right: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                Text(
-                  'Driver Cab Tracking',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      'DISTRIC',
-                      style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Positioned(
+          //   top: MediaQuery.of(context).padding.top + 10,
+          //   left: 20,
+          //   right: 20,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       GestureDetector(
+          //         onTap: () => Navigator.pop(context),
+          //         child: Container(
+          //           width: 40,
+          //           height: 40,
+          //           decoration: BoxDecoration(
+          //             color: Colors.white,
+          //             shape: BoxShape.circle,
+          //             boxShadow: [
+          //               BoxShadow(
+          //                 color: Colors.black12,
+          //                 blurRadius: 4,
+          //                 offset: Offset(0, 2),
+          //               ),
+          //             ],
+          //           ),
+          //           child: Icon(
+          //             Icons.arrow_back,
+          //             color: Colors.black87,
+          //             size: 20,
+          //           ),
+          //         ),
+          //       ),
+          //       Text(
+          //         'Driver Cab Tracking',
+          //         style: TextStyle(
+          //           fontSize: 18,
+          //           fontWeight: FontWeight.w600,
+          //           color: Colors.black87,
+          //         ),
+          //       ),
+          //       Container(
+          //         width: 40,
+          //         height: 40,
+          //         decoration: BoxDecoration(
+          //           color: Colors.white,
+          //           shape: BoxShape.circle,
+          //           boxShadow: [
+          //             BoxShadow(
+          //               color: Colors.black12,
+          //               blurRadius: 4,
+          //               offset: Offset(0, 2),
+          //             ),
+          //           ],
+          //         ),
+          //         child: Center(
+          //           child: Text(
+          //             'DISTRIC',
+          //             style: TextStyle(
+          //               fontSize: 8,
+          //               fontWeight: FontWeight.bold,
+          //               color: Colors.blue,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // Bottom Panel
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+          Expanded(
+            flex: 2,
             child: Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -400,6 +409,7 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
                         child: ElevatedButton(
                           onPressed: () {
                             // Handle begin ride
+                            context.push('/navDropOff');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,
@@ -411,7 +421,7 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.play_arrow, size: 18),
+                              Icon(CupertinoIcons.paperplane, size: 18),
                               SizedBox(width: 8),
                               Text(
                                 'Begin',

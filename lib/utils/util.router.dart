@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocyverse/pages/driver/mainPages/ride/page.navPickUp.dart';
 import 'package:velocyverse/pages/driver/mainPages/ride/page.rideDetails.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.navDropOff.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/pagerideComplete.dart';
 import 'package:velocyverse/pages/driver/page.driverMain.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
@@ -91,6 +94,27 @@ class MyRouter {
         name: '/navPickUp',
         builder: (context, state) {
           return NavigationPickUp();
+        },
+      ),
+      GoRoute(
+        path: '/navDropOff',
+        name: '/navDropOff',
+        builder: (context, state) {
+          return NavigationDropOff();
+        },
+      ),
+      GoRoute(
+        path: '/ridePayment',
+        name: '/ridePayment',
+        builder: (context, state) {
+          return RidePayment();
+        },
+      ),
+      GoRoute(
+        path: '/rideComplete',
+        name: '/rideComplete',
+        builder: (context, state) {
+          return RideComplete();
         },
       ),
     ],

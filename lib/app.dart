@@ -11,19 +11,17 @@ import 'package:velocyverse/utils/util.router.dart';
 
 class MyApp extends StatelessWidget {
   final RentalApiService rentalApiService;
-
   const MyApp({super.key, required this.rentalApiService});
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => AuthenticationProvider(apiService: ApiService()),
+          create: (_) => AuthenticationProvider(apiService: ApiService()),
         ),
-        ChangeNotifierProvider(create: (context) => LoaderProvider()),
+        ChangeNotifierProvider(create: (_) => LoaderProvider()),
         ChangeNotifierProvider(
-          create: (context) => RideProvider(apiService: ApiService()),
+          create: (_) => RideProvider(apiService: ApiService()),
         ),
         ChangeNotifierProvider(
           create: (_) => RentalProvider(rentalApiService)..fetchVehicles(),

@@ -96,7 +96,7 @@ class _AuthFormState extends State<AuthForm> {
                   );
                   if (response) {
                     if (context.mounted) {
-                      context.pushNamed("/complete_profile");
+                      context.pushNamed("/completeProfile");
                     }
                   } else {
                     debugPrint("Something Went Wrong");

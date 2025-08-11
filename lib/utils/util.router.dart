@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
+import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
 import 'package:velocyverse/pages/onboarding/page.loading.dart';
+import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
 import 'package:velocyverse/pages/onboarding/page.permissions.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
@@ -22,7 +24,21 @@ class MyRouter {
           return AuthScreen();
         },
       ),
+      GoRoute(
+        name: '/onboarding',
+        path: '/onboarding',
+        builder: (BuildContext context, GoRouterState state) {
+          return Onboarding();
+        },
+      ),
 
+      GoRoute(
+        name: '/completeProfile',
+        path: '/completeProfile',
+        builder: (BuildContext context, GoRouterState state) {
+          return PageCompleteProfile();
+        },
+      ),
       GoRoute(
         name: '/waitingForDriver',
         path: '/waitingForDriver',

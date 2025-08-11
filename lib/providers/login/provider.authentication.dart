@@ -44,6 +44,7 @@ class AuthenticationProvider extends ChangeNotifier {
       final response = await _apiService.postRequest(
         '/auth_api/otp-login/',
         data: {'phone_number': phoneNumber, 'otp': otp},
+        doesNotRequireAuthHeader: true,
       );
 
       if (response.statusCode == 200) {
@@ -71,6 +72,7 @@ class AuthenticationProvider extends ChangeNotifier {
       final response = await _apiService.postRequest(
         '/auth_api/password-login/',
         data: {'phone_number': phoneNumber, 'password': password},
+        doesNotRequireAuthHeader: true,
       );
 
       if (response.statusCode == 200) {
@@ -122,6 +124,7 @@ class AuthenticationProvider extends ChangeNotifier {
         '/auth_api/profile-setup/',
         data: formData,
         headers: {'Content-Type': 'multipart/form-data'},
+        doesNotRequireAuthHeader: true,
       );
       if (response.statusCode == 200) {
         return true;
@@ -148,6 +151,7 @@ class AuthenticationProvider extends ChangeNotifier {
           'password': password,
           'confirm_password': confirmPassword,
         },
+        doesNotRequireAuthHeader: true,
       );
       if (response.statusCode == 201) {
         debugPrint(response.data['user_id'].toString());
@@ -170,6 +174,7 @@ class AuthenticationProvider extends ChangeNotifier {
       final response = await _apiService.postRequest(
         'send-otp/',
         data: {'phone_number': _phoneNumber},
+        doesNotRequireAuthHeader: true,
       );
       return response.statusCode == 200;
     } catch (e) {
@@ -182,6 +187,7 @@ class AuthenticationProvider extends ChangeNotifier {
       final response = await _apiService.postRequest(
         '/verify-otp/',
         data: {'phone_number': _phoneNumber, 'otp': otp},
+        doesNotRequireAuthHeader: true,
       );
       if (response.statusCode == 201) {
         FlutterSecureStorage storage = const FlutterSecureStorage();

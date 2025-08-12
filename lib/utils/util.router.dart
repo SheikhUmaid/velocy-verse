@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/pages/driver/screen.driver_main.dart';
+import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
+import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
 import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
 import 'package:velocyverse/pages/onboarding/page.loading.dart';
 import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
@@ -22,6 +25,27 @@ class MyRouter {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return AuthScreen();
+        },
+      ),
+      GoRoute(
+        name: '/driverMain',
+        path: '/driverMain',
+        builder: (BuildContext context, GoRouterState state) {
+          return DriverMain();
+        },
+      ),
+      GoRoute(
+        name: '/documentVerification',
+        path: '/documentVerification',
+        builder: (BuildContext context, GoRouterState state) {
+          return DocumentVerificationScreen();
+        },
+      ),
+      GoRoute(
+        name: '/driverRegisteration',
+        path: '/driverRegisteration',
+        builder: (BuildContext context, GoRouterState state) {
+          return DriverRegisterationScreen();
         },
       ),
       GoRoute(

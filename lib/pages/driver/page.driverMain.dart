@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velocyverse/pages/driver/mainPages/page.driverHome.dart';
-import 'package:velocyverse/pages/driver/mainPages/page.driverRecenrRides.dart';
-import 'package:velocyverse/pages/driver/mainPages/pagedriverReport.dart';
+import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.driverRecentRides.dart';
+import 'package:velocyverse/pages/driver/mainPages/page.driverReport.dart';
 
 class DriverMain extends StatefulWidget {
   const DriverMain({super.key});

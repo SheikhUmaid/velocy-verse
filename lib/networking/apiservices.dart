@@ -35,12 +35,9 @@ class ApiService {
       InterceptorsWrapper(
         onError: (DioException error, ErrorInterceptorHandler handler) async {
           if (error.response?.statusCode == 401) {
-            // Try to refresh token
             final success = await _refreshAccessToken();
             if (success) {
-              // Retry original request with new token
               final RequestOptions requestOptions = error.requestOptions;
-
               final newAccessToken = await SecureStorage.getAccessToken();
               requestOptions.headers['Authorization'] =
                   'Bearer $newAccessToken';
@@ -48,18 +45,18 @@ class ApiService {
               try {
                 final cloneReq = await _dio.fetch(requestOptions);
                 return handler.resolve(cloneReq);
-              } catch (e) {
+              } catch (_) {
                 return handler.reject(error);
               }
             }
           }
-          return handler.next(error); // other errors
+          return handler.next(error);
         },
       ),
     );
   }
 
-  // 🔁 Refresh Token Method
+  // 🔄 Refresh Token
   Future<bool> _refreshAccessToken() async {
     try {
       final refreshToken = await SecureStorage.getRefreshToken();
@@ -73,7 +70,7 @@ class ApiService {
       if (response.statusCode == 200 && response.data['access'] != null) {
         await SecureStorage.saveTokens(
           accessToken: response.data['access'],
-          refreshToken: refreshToken, // Keep existing refresh
+          refreshToken: refreshToken,
         );
         debugPrint("🔁 Access token refreshed");
         return true;
@@ -84,134 +81,115 @@ class ApiService {
     return false;
   }
 
+  // 🔹 Centralized request handler
+  Future<Response> _request(
+    String method,
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? headers,
+    bool doesNotRequireAuthHeader = false,
+  }) async {
+    try {
+      final requestHeaders = {...?headers};
+
+      if (!doesNotRequireAuthHeader) {
+        final token = await SecureStorage.getAccessToken();
+        if (token != null) {
+          requestHeaders['Authorization'] = 'Bearer $token';
+        }
+      }
+
+      final options = Options(method: method, headers: requestHeaders);
+
+      return await _dio.request(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final message = e.response?.data['message'] ?? 'Unknown error';
+        throw Exception(message);
+      }
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  // 🔹 Public methods
   Future<Response> getRequest(
     String path, {
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      // Set additional headers if provided.
-      // if (headers != null) {
-      //   _dio.options.headers.addAll(headers);
-      // }
-      final token = await SecureStorage.getAccessToken();
-      final authHeader = {'Authorization': 'Bearer $token'};
-      _dio.options.headers.addAll({...?headers, ...authHeader});
-
-      final response = await _dio.get(path, queryParameters: queryParameters);
-      return response;
-    } on DioException catch (e) {
-      // Handle errors appropriately (you might want to log or rethrow custom exceptions)
-      throw Exception(_handleDioError(e));
-    }
-  }
+    bool doesNotRequireAuthHeader = false,
+  }) => _request(
+    'GET',
+    path,
+    queryParameters: queryParameters,
+    headers: headers,
+    doesNotRequireAuthHeader: doesNotRequireAuthHeader,
+  );
 
   Future<Response> postRequest(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      final token = await SecureStorage.getAccessToken();
-      final authHeader = {'Authorization': 'Bearer $token'};
-      _dio.options.headers.addAll({...?headers, ...authHeader});
-
-      final response = await _dio.post(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-      );
-      return response;
-    } on DioException catch (e) {
-      // Handle structured error response from server
-      if (e.response != null && e.response?.data != null) {
-        // Forward a clean, readable error
-        final message = e.response?.data['message'] ?? 'Unknown error';
-        throw Exception(message); // This will be caught in the view
-      } else {
-        // If it's a network error or no response
-        throw Exception(_handleDioError(e));
-      }
-    }
-  }
-
-  Future<Response> deleteRequest(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? headers,
-  }) async {
-    try {
-      final token = await SecureStorage.getAccessToken();
-      final authHeader = {'Authorization': 'Bearer $token'};
-      _dio.options.headers.addAll({...?headers, ...authHeader});
-
-      final response = await _dio.delete(
-        path,
-        queryParameters: queryParameters,
-      );
-      return response;
-    } on DioException catch (e) {
-      throw Exception(_handleDioError(e));
-    }
-  }
+    bool doesNotRequireAuthHeader = false,
+  }) => _request(
+    'POST',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    headers: headers,
+    doesNotRequireAuthHeader: doesNotRequireAuthHeader,
+  );
 
   Future<Response> putRequest(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      final token = await SecureStorage.getAccessToken();
-      final authHeader = {'Authorization': 'Bearer $token'};
-      _dio.options.headers.addAll({...?headers, ...authHeader});
-
-      final response = await _dio.put(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: Options(headers: headers),
-      );
-      return response;
-    } on DioException catch (e) {
-      if (e.response != null && e.response?.data != null) {
-        final message = e.response?.data['message'] ?? 'Unknown error';
-        throw Exception(message);
-      } else {
-        throw Exception(_handleDioError(e));
-      }
-    }
-  }
+    bool doesNotRequireAuthHeader = false,
+  }) => _request(
+    'PUT',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    headers: headers,
+    doesNotRequireAuthHeader: doesNotRequireAuthHeader,
+  );
 
   Future<Response> patchRequest(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      final token = await SecureStorage.getAccessToken();
-      final authHeader = {'Authorization': 'Bearer $token'};
-      _dio.options.headers.addAll({...?headers, ...authHeader});
+    bool doesNotRequireAuthHeader = false,
+  }) => _request(
+    'PATCH',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    headers: headers,
+    doesNotRequireAuthHeader: doesNotRequireAuthHeader,
+  );
 
-      final response = await _dio.patch(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: Options(headers: headers),
-      );
-      return response;
-    } on DioException catch (e) {
-      if (e.response != null && e.response?.data != null) {
-        final message = e.response?.data['message'] ?? 'Unknown error';
-        throw Exception(message);
-      } else {
-        throw Exception(_handleDioError(e));
-      }
-    }
-  }
+  Future<Response> deleteRequest(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? headers,
+    bool doesNotRequireAuthHeader = false,
+  }) => _request(
+    'DELETE',
+    path,
+    queryParameters: queryParameters,
+    headers: headers,
+    doesNotRequireAuthHeader: doesNotRequireAuthHeader,
+  );
 
+  // 🔹 Error handler
   String _handleDioError(DioException error) {
     switch (error.type) {
       case DioExceptionType.cancel:

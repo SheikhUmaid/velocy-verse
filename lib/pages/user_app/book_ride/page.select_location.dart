@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/models/model.loaction.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class SelectLocation extends StatefulWidget {
   int pickDropFlag;
@@ -43,46 +48,66 @@ class _SelectLocationState extends State<SelectLocation> {
     }
   }
 
-  void _onMapTapped(LatLng tappedPoint) {
+  double roundToDecimals(double value, int places) {
+    final mod = pow(10.0, places).toDouble();
+    return ((value * mod).round().toDouble() / mod);
+  }
+
+  void _onMapTapped(LatLng tappedPoint) async {
+    // Round coordinates to avoid backend errors
+    final roundedLat = roundToDecimals(tappedPoint.latitude, 6);
+    final roundedLng = roundToDecimals(tappedPoint.longitude, 6);
+
     setState(() {
-      _selectedLocation = tappedPoint;
+      _selectedLocation = LatLng(roundedLat, roundedLng);
     });
 
-    print(
-      "Selected Latitude: ${tappedPoint.latitude}, Longitude: ${tappedPoint.longitude}",
-    );
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        roundedLat,
+        roundedLng,
+      );
+
+      Placemark place = placemarks.first;
+
+      String name = place.name ?? '';
+      String address = [
+        place.street,
+        place.subLocality,
+        place.locality,
+        place.administrativeArea,
+        place.country,
+        place.postalCode,
+      ].where((e) => e != null && e.isNotEmpty).join(', ');
+
+      LocationModel location = LocationModel(
+        name: name.isNotEmpty ? name : address, // fallback if name missing
+        address: address,
+        latitude: roundedLat,
+        longitude: roundedLng,
+      );
+
+      final rideProvider = Provider.of<RideProvider>(context, listen: false);
+      if (widget.pickDropFlag == 0) {
+        rideProvider.fromLocation = location;
+      } else {
+        rideProvider.toLocation = location;
+      }
+
+      debugPrint("📍 Selected Address: $address");
+    } catch (e) {
+      debugPrint('❌ Error getting placemark: $e');
+    }
+
+    debugPrint("✅ Selected Latitude: $roundedLat, Longitude: $roundedLng");
   }
 
   void _onConfirm() async {
     if (_selectedLocation != null) {
       try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-          _selectedLocation!.latitude,
-          _selectedLocation!.longitude,
-        );
-
-        Placemark place = placemarks.first;
-
-        String name = place.name ?? '';
-        String address = [
-          place.street,
-          place.subLocality,
-          place.locality,
-          place.administrativeArea,
-          place.country,
-          place.postalCode,
-        ].where((e) => e != null && e.isNotEmpty).join(', ');
-
-        LocationModel location = LocationModel(
-          name: name,
-          address: address,
-          latitude: _selectedLocation!.latitude,
-          longitude: _selectedLocation!.longitude, // corrected from `.latitude`
-        );
-
-        Navigator.pop(context, location);
+        context.pop();
       } catch (e) {
-        print('Error getting placemark: $e');
+        debugPrint('Error getting placemark: $e');
       }
     }
   }

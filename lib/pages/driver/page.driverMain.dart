@@ -4,8 +4,8 @@ import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.driverRec
 import 'package:velocyverse/pages/driver/mainPages/page.driverReport.dart';
 
 class DriverMain extends StatefulWidget {
-  const DriverMain({super.key});
-
+  const DriverMain({super.key, this.pgNo = 0});
+  final int pgNo;
   @override
   State<DriverMain> createState() => _DriverMainState();
 }
@@ -19,6 +19,14 @@ class _DriverMainState extends State<DriverMain> {
     DriverReports(),
     DriverRecentRides(),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _selectedIndex = 0;
+  }
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {

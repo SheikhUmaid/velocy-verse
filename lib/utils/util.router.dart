@@ -110,6 +110,7 @@ class MyRouter {
         path: '/driverMain',
         name: '/driverMain',
         builder: (context, state) {
+          print('pop2ping');
           return const DriverMain();
         },
       ),
@@ -152,7 +153,9 @@ class MyRouter {
         path: '/recentRideDetails',
         name: '/recentRideDetails',
         builder: (context, state) {
-          return RecentRideDetails();
+          final rideId = state.extra;
+          print("Ride ID: ${rideId}");
+          return RecentRideDetails(rideId: rideId as String);
         },
       ),
     ],

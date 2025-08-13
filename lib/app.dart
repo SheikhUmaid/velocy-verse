@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:velocyverse/networking/apiservices.dart';
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
 import 'package:velocyverse/pages/user_app/rental/rental_api_service/rental_api_service.dart';
+import 'package:velocyverse/providers/driver/provider.earningNreport.dart';
+import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
+import 'package:velocyverse/providers/payment/provider.payment.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/utils/util.global_loader.dart';
@@ -26,6 +29,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => RentalProvider(rentalApiService)..fetchVehicles(),
         ),
+        ChangeNotifierProvider(create: (_) => RecentRidesProvider()),
+
+        ChangeNotifierProvider(create: (_) => RaningsNreportsProvider()),
+        ChangeNotifierProvider(create: (_) => PaymentProvider()),
       ],
       child: MaterialApp.router(
         title: 'Velocy Verse',

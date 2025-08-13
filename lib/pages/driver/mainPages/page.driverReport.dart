@@ -1,13 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/models/model.earningsNreport.dart';
+import 'package:velocyverse/providers/driver/provider.earningNreport.dart';
+import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
+import 'package:velocyverse/providers/payment/provider.payment.dart';
 
-class DriverReports extends StatelessWidget {
+class DriverReports extends StatefulWidget {
   const DriverReports({Key? key}) : super(key: key);
 
   static const double _horizontalPadding = 16.0;
   static const double _verticalSpacing = 16.0;
 
   @override
+  State<DriverReports> createState() => _DriverReportsState();
+}
+
+class _DriverReportsState extends State<DriverReports> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.microtask(() async {
+      print("Fetching recent rides");
+      bool success = await Provider.of<RaningsNreportsProvider>(
+        context,
+        listen: false,
+      ).fetchEarningsNReport();
+      if (!success) {
+        debugPrint("Failed to fetch earnings");
+      }
+    });
+    //
+    Future.microtask(() async {
+      print("Fetching recent rides");
+      bool success = await Provider.of<RecentRidesProvider>(
+        context,
+        listen: false,
+      ).fetchRideHistory();
+      if (!success) {
+        debugPrint("Failed to fetch earnings");
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final earningsProvider = Provider.of<RaningsNreportsProvider>(context);
+    final paymentProvider = Provider.of<PaymentProvider>(
+      context,
+      listen: false,
+    );
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -22,27 +64,40 @@ class DriverReports extends StatelessWidget {
         // ),
       ),
       backgroundColor: Colors.white,
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
-        children: [
-          const SizedBox(height: _verticalSpacing),
-          _EarningsSummary(),
-          const SizedBox(height: _verticalSpacing),
-          const _EarningsPeriodSelector(),
-          const SizedBox(height: 20),
-          const _IncentiveTracker(),
-          const SizedBox(height: _verticalSpacing),
-          const _AvailablePayout(),
-          const SizedBox(height: _verticalSpacing),
-          const _RecentRides(),
-        ],
+      body: Builder(
+        builder: (context) {
+          if (earningsProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (earningsProvider.earnings == null) {
+            return const Center(child: Text("No earnings data available"));
+          }
+          final earnings = earningsProvider.earnings!;
+          return ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: DriverReports._horizontalPadding,
+            ),
+            children: [
+              const SizedBox(height: DriverReports._verticalSpacing),
+              _EarningsSummary(earnings),
+              const SizedBox(height: DriverReports._verticalSpacing),
+              // const _EarningsPeriodSelector(),
+              const SizedBox(height: 20),
+              _IncentiveTracker(earnings),
+              const SizedBox(height: DriverReports._verticalSpacing),
+              _AvailablePayout(earnings),
+              const SizedBox(height: DriverReports._verticalSpacing),
+              _RecentRides(),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _EarningsSummary extends StatelessWidget {
-  const _EarningsSummary();
+  final EarningsNreportModel earnings;
+  const _EarningsSummary(this.earnings);
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +110,14 @@ class _EarningsSummary extends StatelessWidget {
         child: Column(
           children: [
             Row(
-              children: const [
+              children: [
                 Text(
-                  '₹1,248',
+                  '₹${earnings.totalEarnings}',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                 ),
                 Spacer(),
                 Text(
-                  'This Week',
+                  'Total Earnings',
                   style: TextStyle(color: Colors.grey, fontSize: 16),
                 ),
               ],
@@ -71,11 +126,17 @@ class _EarningsSummary extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _InfoBox(label: "Today", value: "₹245"),
+                  child: _InfoBox(
+                    label: "Today",
+                    value: "₹${earnings.todayEarnings}",
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _InfoBox(label: "Yesterday", value: "₹198"),
+                  child: _InfoBox(
+                    label: "Yesterday",
+                    value: "₹${earnings.yesterdayEarnings}",
+                  ),
                 ),
               ],
             ),
@@ -164,7 +225,8 @@ class _PeriodButton extends StatelessWidget {
 }
 
 class _IncentiveTracker extends StatelessWidget {
-  const _IncentiveTracker();
+  final EarningsNreportModel earnings;
+  const _IncentiveTracker(this.earnings);
 
   @override
   Widget build(BuildContext context) {
@@ -180,57 +242,25 @@ class _IncentiveTracker extends StatelessWidget {
             Row(
               children: const [
                 Text(
-                  'Incentive Tracker',
+                  'Cash acceptance limit',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
-                Spacer(),
-                Text(
-                  '4 days left',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
+                // Spacer(),
+                // Text(
+                //   '4 days left',
+                //   style: TextStyle(color: Colors.grey, fontSize: 14),
+                // ),
               ],
             ),
             const SizedBox(height: 16),
-            Stack(
-              children: [
-                Container(
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                FractionallySizedBox(
-                  widthFactor: 18 / 25,
-                  child: Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ],
+            LinearProgressIndicator(
+              value: (earnings.remainingCashLimit ?? 0).toDouble() / 5,
+              backgroundColor: Colors.grey[300],
+              color: Colors.black,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(12),
             ),
             const SizedBox(height: 10),
-            Row(
-              children: const [
-                Text(
-                  'Progress',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                SizedBox(width: 6),
-                Text(
-                  '18/25 rides',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Complete 7 more rides to earn ₹150 bonus',
-              style: TextStyle(color: Colors.black87, fontSize: 14),
-            ),
           ],
         ),
       ),
@@ -239,10 +269,15 @@ class _IncentiveTracker extends StatelessWidget {
 }
 
 class _AvailablePayout extends StatelessWidget {
-  const _AvailablePayout();
+  final EarningsNreportModel earnings;
+  const _AvailablePayout(this.earnings);
 
   @override
   Widget build(BuildContext context) {
+    final paymentProvider = Provider.of<PaymentProvider>(
+      context,
+      listen: false,
+    );
     return Card(
       margin: EdgeInsets.zero,
       color: Colors.white,
@@ -251,19 +286,22 @@ class _AvailablePayout extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         child: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Available for instant payout',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '₹245',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                ),
-              ],
+            Flexible(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Available for payout',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '₹${earnings.totalEarnings}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  ),
+                ],
+              ),
             ),
             const Spacer(),
             ElevatedButton(
@@ -274,10 +312,17 @@ class _AvailablePayout extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                paymentProvider.openCheckout(
+                  amount: 500, // ₹500
+                  name: "John Doe",
+                  contact: "9999999999",
+                  email: "john@example.com",
+                );
+              },
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                child: Text('Cash'),
+                child: Text('Cash Out'),
               ),
             ),
           ],
@@ -292,6 +337,7 @@ class _RecentRides extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final recentRidesProvider = Provider.of<RecentRidesProvider>(context);
     return Card(
       margin: EdgeInsets.zero,
       color: Colors.white,
@@ -306,18 +352,30 @@ class _RecentRides extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             ),
             const SizedBox(height: 16),
-            _RideHistoryTile(
-              icon: Icons.directions_car_outlined,
-              title: "Downtown - Airport",
-              dateTime: "Today, 2:30 PM",
-              fare: '₹24',
-            ),
-            const Divider(),
-            _RideHistoryTile(
-              icon: Icons.directions_car_outlined,
-              title: "Westside Mall - Central Station",
-              dateTime: "Today, 11:45 AM",
-              fare: '₹18',
+            Builder(
+              builder: (context) {
+                if (recentRidesProvider.isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (recentRidesProvider.rideHistory?.completedRides ==
+                    null) {
+                  return Center(child: Text("No recent rides"));
+                }
+                final rides = recentRidesProvider.rideHistory?.completedRides;
+                return ListView.builder(
+                  itemCount: rides?.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    var ride = rides![index];
+                    return _RideHistoryTile(
+                      icon: Icons.directions_car_outlined,
+                      title: "${ride.fromLocation} - ${ride.toLocation}",
+                      dateTime: "${ride.date} ${ride.startTime}",
+                      fare: '₹${ride.amountReceived}',
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
@@ -343,33 +401,41 @@ class _RideHistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
+      child: Column(
         children: [
-          Icon(icon, size: 26, color: Colors.black54),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                  ),
+          Row(
+            children: [
+              Icon(icon, size: 26, color: Colors.black54),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      dateTime,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  dateTime,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+              ),
+              Text(
+                fare,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Text(
-            fare,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
+          Divider(),
         ],
       ),
     );

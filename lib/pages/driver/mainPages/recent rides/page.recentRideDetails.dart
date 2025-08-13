@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/models/model.recentRideModel.dart';
+import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
 
-class RecentRideDetails extends StatelessWidget {
-  const RecentRideDetails({Key? key}) : super(key: key);
+class RecentRideDetails extends StatefulWidget {
+  const RecentRideDetails({Key? key, required this.rideId}) : super(key: key);
+  final String rideId;
+  @override
+  State<RecentRideDetails> createState() => _RecentRideDetailsState();
+}
+
+class _RecentRideDetailsState extends State<RecentRideDetails> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.microtask(() {
+      Provider.of<RecentRidesProvider>(
+        context,
+        listen: false,
+      ).fetchRideDetails(widget.rideId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final detailsProvider = Provider.of<RecentRidesProvider>(context);
+    final ride = detailsProvider.rideDetails?.data;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -23,63 +46,37 @@ class RecentRideDetails extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // Handle call driver action
-              },
-              icon: const Icon(Icons.phone, color: Colors.white, size: 16),
-              label: const Text(
-                'Call Driver',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  _buildRideCard(),
-                  const SizedBox(height: 32),
-                  _buildDriverDetails(),
-                  const SizedBox(height: 32),
-                  _buildRideStats(),
-                  const SizedBox(height: 100), // Space for bottom button
-                ],
-              ),
+      body: detailsProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ride == null
+          ? const Center(child: Text("No details found"))
+          : Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildRideCard(ride),
+                        const SizedBox(height: 32),
+                        _buildDriverDetails(ride),
+                        const SizedBox(height: 32),
+                        _buildRideStats(ride),
+                        const SizedBox(height: 100), // bottom space
+                      ],
+                    ),
+                  ),
+                ),
+                // _buildBottomSection(),
+              ],
             ),
-          ),
-          _buildBottomSection(),
-        ],
-      ),
     );
   }
 
-  Widget _buildRideCard() {
+  Widget _buildRideCard(Data ride) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -98,7 +95,7 @@ class RecentRideDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Today, 10:30 AM',
+            ride.startTime ?? '',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],
@@ -109,7 +106,6 @@ class RecentRideDetails extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Location indicators and dotted line
               Column(
                 children: [
                   Container(
@@ -137,7 +133,6 @@ class RecentRideDetails extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 16),
-              // Locations and details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,45 +140,19 @@ class RecentRideDetails extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            '123 Main Street, Downtown',
-                            style: TextStyle(
+                            ride.fromLocation?.address ?? '',
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.black,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Payment',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const Text(
-                                '\$99',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                        _buildInfoPill(
+                          "Payment",
+                          "₹${ride.creditedAmount ?? 0}",
                         ),
                       ],
                     ),
@@ -191,45 +160,19 @@ class RecentRideDetails extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            '456 Park Avenue, Uptown',
-                            style: TextStyle(
+                            ride.toLocation?.address ?? '',
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.black,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Distance',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const Text(
-                                '80km',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                        _buildInfoPill(
+                          "Distance",
+                          "${ride.distanceKm ?? 0} km",
                         ),
                       ],
                     ),
@@ -243,12 +186,36 @@ class RecentRideDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildDriverDetails() {
+  Widget _buildInfoPill(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDriverDetails(Data ride) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Driver Details',
+          'Rider Details',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -258,48 +225,50 @@ class RecentRideDetails extends StatelessWidget {
         const SizedBox(height: 16),
         Row(
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                shape: BoxShape.circle,
-              ),
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.grey[300],
+              backgroundImage: ride.rider?.profileImage != null
+                  ? NetworkImage(ride.rider!.profileImage!)
+                  : null,
             ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Jethalal Gada',
-                    style: TextStyle(
+                    ride.rider?.username ?? '',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
-                  Text(
-                    'Driver',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
                 ],
               ),
             ),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Audi 12346',
+                Text(
+                  'Rating',
                   style: TextStyle(
                     fontSize: 14,
+                    color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
                   ),
                 ),
-                Text(
-                  'KA 25 YY 2025',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                const SizedBox(height: 4),
+                Row(
+                  children: List.generate(5, (index) {
+                    double rating = (ride.rider?.ratingReview ?? 0).toDouble();
+                    return Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: index < rating ? Colors.orange : Colors.grey[400],
+                      size: 18,
+                    );
+                  }),
                 ),
               ],
             ),
@@ -309,34 +278,9 @@ class RecentRideDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildRideStats() {
+  Widget _buildRideStats(Data ride) {
     return Row(
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Rating',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: List.generate(5, (index) {
-                  return Icon(
-                    index < 4 ? Icons.star : Icons.star_border,
-                    color: index < 4 ? Colors.orange : Colors.grey[400],
-                    size: 18,
-                  );
-                }),
-              ),
-            ],
-          ),
-        ),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,9 +294,9 @@ class RecentRideDetails extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'COD',
-                style: TextStyle(
+              Text(
+                ride.paymentMethod ?? '',
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black,
                   fontWeight: FontWeight.w600,
@@ -374,9 +318,9 @@ class RecentRideDetails extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                '30 minutes',
-                style: TextStyle(
+              Text(
+                ride.duration ?? '',
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black,
                   fontWeight: FontWeight.w600,
@@ -389,59 +333,59 @@ class RecentRideDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[400],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle cancel action
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildBottomSection() {
+  //   return Container(
+  //     padding: const EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.1),
+  //           spreadRadius: 1,
+  //           blurRadius: 8,
+  //           offset: const Offset(0, -2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           width: 40,
+  //           height: 4,
+  //           decoration: BoxDecoration(
+  //             color: Colors.grey[400],
+  //             borderRadius: BorderRadius.circular(2),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 20),
+  //         SizedBox(
+  //           width: double.infinity,
+  //           child: ElevatedButton(
+  //             onPressed: () {
+  //               // Handle cancel action
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.black,
+  //               elevation: 0,
+  //               padding: const EdgeInsets.symmetric(vertical: 16),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //             ),
+  //             child: const Text(
+  //               'Cancel',
+  //               style: TextStyle(
+  //                 color: Colors.white,
+  //                 fontSize: 16,
+  //                 fontWeight: FontWeight.w600,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 class DottedLinePainter extends CustomPainter {

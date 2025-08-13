@@ -97,11 +97,18 @@ class RideProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> rideBooking({int? offeredPrice, required womenOnly}) async {
+  Future<bool> ridePatchBooking({
+    String? offeredPrice,
+    required womenOnly,
+  }) async {
     try {
       final response = await _apiService.patchRequest(
         "/rider/ride-booking/$_id",
-        data: {"women_only": womenOnly, "offered_price": offeredPrice},
+        data: {
+          "women_only": womenOnly,
+          "offered_price": offeredPrice,
+          'status': 'pending',
+        },
         // headers: {'Authorization': 'Bearer $accessToken'},
       );
 
@@ -113,9 +120,9 @@ class RideProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      // rethrow;
-      debugPrint(e.toString());
-      return false;
+      rethrow;
+      // debugPrint(e.toString());
+      // return false;
     }
   }
 }

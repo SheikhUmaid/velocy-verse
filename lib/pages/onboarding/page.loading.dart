@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/utils/util.is_driver.dart';
 import 'package:velocyverse/utils/util.is_logged_in.dart';
 
 class Loading extends StatefulWidget {
@@ -21,8 +22,11 @@ class _LoadingState extends State<Loading> {
 
     if (context.mounted) {
       if (loggedIn) {
-        print("User is logging in");
-        context.goNamed("/driverMain");
+  if (await isDriver()) {
+          context.goNamed('/driverMain');
+        } else {
+          context.goNamed("/userHome");
+        }
       } else {
         context.goNamed("/permissions");
       }

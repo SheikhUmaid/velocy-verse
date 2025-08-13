@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.custom_text_field.dart';
@@ -8,6 +9,7 @@ import 'package:velocyverse/components/login/component.phone_input.dart';
 import 'package:velocyverse/components/login/component.social_auth_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:velocyverse/utils/util.is_driver.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -94,7 +96,7 @@ class _AuthFormState extends State<AuthForm> {
                     password: passwordController.text,
                     confirmPassword: confirmPasswordController.text,
                   );
-                  if (response) {
+                if (response) {
                     if (context.mounted) {
                       context.pushNamed("/completeProfile");
                     }
@@ -110,15 +112,17 @@ class _AuthFormState extends State<AuthForm> {
                         phoneNumber: "+91${phoneController.text}",
                         password: passwordController.text,
                       );
-                  if (response == 'user') {
-                    if (context.mounted) {
-                      context.pushNamed("/userHome");
-                      context.read<LoaderProvider>().hideLoader();
-                    }
-                  } else if (response == 'driver') {
-                    if (context.mounted) {
-                      context.pushNamed("/driverMain");
-                      context.read<LoaderProvider>().hideLoader();
+                  if (response) {
+                    if (await isDriver()) {
+                      if (context.mounted) {
+                        context.pushNamed("/driverMain");
+                        context.read<LoaderProvider>().hideLoader();
+                      }
+                    } else {
+                      if (context.mounted) {
+                        context.pushNamed("/userHome");
+                        context.read<LoaderProvider>().hideLoader();
+                      }
                     }
                   } else {
                     debugPrint("Something Went Wrong");

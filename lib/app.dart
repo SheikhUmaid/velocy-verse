@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         routerConfig: MyRouter.routerConfig,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
-          return Stack(children: [child!, GlobalLoader()]);
+          return SafeArea(child: Stack(children: [child!, GlobalLoader()]));
         },
       ),
     );

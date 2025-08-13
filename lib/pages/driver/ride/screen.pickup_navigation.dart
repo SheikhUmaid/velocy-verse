@@ -172,45 +172,47 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
   Widget _buildBottomDetails(BuildContext context) {
     final driverProvder = Provider.of<DriverProvider>(context, listen: false);
 
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildLocationTile(
-            'Pick up',
-            driverProvder.rideDetail!.data!.fromLocation.toString(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildLocationTile(
+              'Pick up',
+              driverProvder.rideDetail!.data!.fromLocation.toString(),
 
-            Colors.green,
-          ),
-          SizedBox(height: 12),
-          _buildLocationTile(
-            'Drop off',
-            driverProvder.rideDetail!.data!.toLocation.toString(),
-            Colors.red,
-          ),
-          SizedBox(height: 20),
-          _buildUserInfo(),
-          SizedBox(height: 24),
-          _buildActionButtons(context),
-          SizedBox(height: 24),
+              Colors.green,
+            ),
+            SizedBox(height: 12),
+            _buildLocationTile(
+              'Drop off',
+              driverProvder.rideDetail!.data!.toLocation.toString(),
+              Colors.red,
+            ),
+            SizedBox(height: 20),
+            _buildUserInfo(),
+            SizedBox(height: 24),
+            _buildActionButtons(context),
+            SizedBox(height: 24),
 
-          SizedBox(height: MediaQuery.of(context).padding.bottom),
-        ],
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
+        ),
       ),
     );
   }
@@ -347,7 +349,12 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
                   context,
                   listen: false,
                 );
-                await driverProvider.verifyOTP(otp: enteredOtp);
+                final response = await driverProvider.verifyOTP(
+                  otp: enteredOtp,
+                );
+                if (response) {
+                  context.goNamed("/driverLiveTracking");
+                }
               },
               child: const Text("Verify"),
             ),

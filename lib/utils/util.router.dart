@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:velocyverse/pages/driver/ride/scree.drop_navigation.dart';
+import 'package:go_router/go_router.dart';import 'package:velocyverse/pages/driver/ride/scree.drop_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
 import 'package:velocyverse/pages/driver/screen.driver_main.dart';
 import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
+import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.recentRideDetails.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.navPickUp.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.rideDetails.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.navDropOff.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
+import 'package:velocyverse/pages/driver/page.driverMain.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
 import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
@@ -21,6 +27,7 @@ import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 class MyRouter {
   static GoRouter routerConfig = GoRouter(
     initialLocation: '/loading',
+
     debugLogDiagnostics: true,
     routes: <RouteBase>[
       GoRoute(
@@ -144,6 +151,55 @@ class MyRouter {
         builder: (BuildContext context, GoRouterState state) {
           String phoneNumber = state.extra as String;
           return LoginOTP(phoneNumber: phoneNumber);
+        },
+      ),
+      GoRoute(
+        path: '/driverMain',
+        name: '/driverMain',
+        builder: (context, state) {
+          return const DriverMain();
+        },
+      ),
+      GoRoute(
+        path: '/rideDetails',
+        name: '/rideDetails',
+        builder: (context, state) {
+          return const RideDetailsScreen();
+        },
+      ),
+      GoRoute(
+        path: '/navPickUp',
+        name: '/navPickUp',
+        builder: (context, state) {
+          return NavigationPickUp();
+        },
+      ),
+      GoRoute(
+        path: '/navDropOff',
+        name: '/navDropOff',
+        builder: (context, state) {
+          return NavigationDropOff();
+        },
+      ),
+      GoRoute(
+        path: '/ridePayment',
+        name: '/ridePayment',
+        builder: (context, state) {
+          return RidePayment();
+        },
+      ),
+      GoRoute(
+        path: '/rideComplete',
+        name: '/rideComplete',
+        builder: (context, state) {
+          return RideComplete();
+        },
+      ),
+      GoRoute(
+        path: '/recentRideDetails',
+        name: '/recentRideDetails',
+        builder: (context, state) {
+          return RecentRideDetails();
         },
       ),
     ],

@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Velocy Verse',
         theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
           appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),
         ),
         routerConfig: MyRouter.routerConfig,

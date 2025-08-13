@@ -6,6 +6,7 @@ import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:velocyverse/utils/util.is_driver.dart';
 
 class LoginOTP extends StatelessWidget {
   LoginOTP({super.key, required this.phoneNumber});
@@ -66,20 +67,20 @@ class LoginOTP extends StatelessWidget {
                     otp: otpController.text,
                   );
                   if (response) {
-                    debugPrint(
-                      "------------- Login complete ------------------------- ",
-                    );
-                    if (context.mounted) {
-                      context.read<LoaderProvider>().hideLoader();
-                      context.goNamed('/userHome');
+                    if (await isDriver()) {
+                      if (context.mounted) {
+                        context.pushNamed("/driverMain");
+                        context.read<LoaderProvider>().hideLoader();
+                      }
+                    } else {
+                      if (context.mounted) {
+                        context.pushNamed("/userHome");
+                        context.read<LoaderProvider>().hideLoader();
+                      }
                     }
                   } else {
-                    debugPrint(
-                      "------------- Login incomplete ------------------------- ",
-                    );
-                    if (context.mounted) {
-                      context.read<LoaderProvider>().hideLoader();
-                    }
+                    debugPrint("Something Went Wrong");
+                    context.read<LoaderProvider>().hideLoader();
                   }
                 },
               ),

@@ -5,6 +5,8 @@ import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart'
 import 'package:velocyverse/pages/user_app/rental/rental_api_service/rental_api_service.dart';
 import 'package:velocyverse/providers/driver/provider.earningNreport.dart';
 import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
+
+import 'package:velocyverse/providers/driver/provider.driver.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/payment/provider.payment.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
@@ -23,6 +25,9 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthenticationProvider(apiService: ApiService()),
         ),
         ChangeNotifierProvider(create: (_) => LoaderProvider()),
+        ChangeNotifierProvider(
+          create: (_) => DriverProvider(apiService: ApiService()),
+        ),
         ChangeNotifierProvider(
           create: (_) => RideProvider(apiService: ApiService()),
         ),

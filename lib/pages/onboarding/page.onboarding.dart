@@ -11,7 +11,12 @@ class Onboarding extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(onPressed: () {}, child: Text("Driver")),
+            ElevatedButton(
+              onPressed: () {
+                context.pushNamed('/driverRegisteration');
+              },
+              child: Text("Driver"),
+            ),
             ElevatedButton(
               onPressed: () {
                 context.pushNamed('/login');

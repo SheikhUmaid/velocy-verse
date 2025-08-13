@@ -190,10 +190,19 @@ class _SelectVehicleScreenState extends State<SelectVehicleScreen> {
 
                       // Request ride button
                       PrimaryButton(
-                        text: 'Request Ride',
-                        onPressed: () {
-                          // Handle request ride
-                          context.pushNamed('/waitingForDriver');
+                        text: 'Request ba Ride',
+                        onPressed: () async {
+                          final rideProvider = Provider.of<RideProvider>(
+                            context,
+                            listen: false,
+                          );
+                          final response = await rideProvider.ridePatchBooking(
+                            womenOnly: womenOnly,
+                            offeredPrice: priceController.text,
+                          );
+                          if (response) {
+                            context.pushNamed('/waitingForDriver');
+                          }
                         },
                       ),
                     ],

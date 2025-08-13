@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/providers/driver/provider.driver.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class DriverHome extends StatefulWidget {
   const DriverHome({super.key});
@@ -15,27 +21,12 @@ class _DriverHomeState extends State<DriverHome> {
 
   @override
   Widget build(BuildContext context) {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    driverProvider.driverINIT();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   title: Column(
-      //     children: [
-      //       Text(
-      //         'Alex camera',
-      //         style: TextStyle(
-      //           fontSize: 14,
-      //           fontWeight: FontWeight.w600,
-      //           color: Colors.grey[800],
-      //         ),
-      //       ),
-      //       Text(
-      //         'ID: DRV2025001',
-      //         style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-      //       ),
-      //     ],
-      //   ),
-      //   leading: Icon(CupertinoIcons.person_alt_circle),
+
       // ),
       body: SafeArea(
         child: Column(
@@ -138,6 +129,7 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildGoOnlineSection() {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -163,18 +155,23 @@ class _DriverHomeState extends State<DriverHome> {
             ),
           ),
           const Spacer(),
-          Switch(
-            activeColor: Colors.blue,
-            activeTrackColor: Colors.blue.withOpacity(.3),
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: Colors.grey[300],
-            trackOutlineColor: MaterialStateProperty.all(Colors.white),
-            // trackColor: MaterialStateProperty.all(Colors.grey.shade300),
-            value: isOnline,
-            onChanged: (value) {
-              setState(() {
-                isOnline = value;
-              });
+          Consumer<DriverProvider>(
+            builder: (_, provider, __) {
+              return Switch(
+                activeColor: Colors.blue,
+                activeTrackColor: Colors.blue.withOpacity(.3),
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: Colors.grey[300],
+                trackOutlineColor: MaterialStateProperty.all(Colors.white),
+                // trackColor: MaterialStateProperty.all(Colors.grey.shade300),
+                value: isOnline,
+                onChanged: (value) async {
+                  await driverProvider.toggleOnlineStatus();
+                  setState(() {
+                    isOnline = value;
+                  });
+                },
+              );
             },
           ),
         ],
@@ -350,6 +347,7 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildRideRequestsSection() {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
     return Container(
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -439,116 +437,93 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildActiveRideCard() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    return Consumer<DriverProvider>(
+      builder: (context, driverProvider, child) {
+        if (driverProvider.nowRides.isEmpty) {
+          return const Center(
+            child: Text(
+              'No available rides',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: driverProvider.nowRides.length,
+          itemBuilder: (context, index) {
+            final ride = driverProvider.nowRides[index];
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 6,
+              ),
+              child: InkWell(
+                onTap: () {
+                  driverProvider.activeRide = ride.id;
+                  context.pushNamed('/rideDetail');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
                     children: [
-                      const Text(
-                        'Downtown Plaza',
-                        style: TextStyle(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ride.toLocation ?? 'Unknown Location',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              '${ride.toLatitude}, ${ride.toLongitude}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '₹${ride.price?.toStringAsFixed(2) ?? '0.00'}',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
                         ),
                       ),
-                      Text(
-                        '2.5 km away',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
                     ],
                   ),
                 ),
-                const Text(
-                  '\$12.50',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildBottomNavItem(Icons.home_outlined, 'Home', 0),
-          _buildBottomNavItem(Icons.assessment_outlined, 'Reports', 1),
-          _buildBottomNavItem(Icons.history, 'Recent rides', 2),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavItem(IconData icon, String label, int index) {
-    bool isSelected = selectedTab == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedTab = index;
-        });
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Colors.blue : Colors.grey[600],
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: isSelected ? Colors.blue : Colors.grey[600],
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
+
+
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU1MDY4NzExLCJpYXQiOjE3NTQ5ODIzMTEsImp0aSI6ImE0NGY5MzhhODcyMjQ0NzdhMGMyOGM5ZTk0ZTA1NDVkIiwidXNlcl9pZCI6ODZ9.Tu45-vef5Hxvy9fALl4BfNf1VR8PjLI36lomlLf_J9w

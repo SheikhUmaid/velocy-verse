@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/pages/driver/ride/scree.drop_navigation.dart';
+import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
+import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
 import 'package:velocyverse/pages/driver/screen.driver_main.dart';
 import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
@@ -25,6 +28,27 @@ class MyRouter {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return AuthScreen();
+        },
+      ),
+      GoRoute(
+        name: '/dropOffNavigation',
+        path: '/dropOffNavigation',
+        builder: (BuildContext context, GoRouterState state) {
+          return NavigationDropOff();
+        },
+      ),
+      GoRoute(
+        name: '/pickUpNavigation',
+        path: '/pickUpNavigation',
+        builder: (BuildContext context, GoRouterState state) {
+          return NavigationPickUp();
+        },
+      ),
+      GoRoute(
+        name: '/rideDetail',
+        path: '/rideDetail',
+        builder: (BuildContext context, GoRouterState state) {
+          return RideDetailsScreen();
         },
       ),
       GoRoute(

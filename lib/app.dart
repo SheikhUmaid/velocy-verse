@@ -29,9 +29,13 @@ class MyApp extends StatelessWidget {
         title: 'Velocy Verse',
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.transparent,
+            centerTitle: true,
+            surfaceTintColor: Colors.white,
+          ),
         ),
-        routerConfig: MyRouter().routerConfig,
+        routerConfig: MyRouter.routerConfig,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
           return Stack(children: [child!, GlobalLoader()]);

@@ -14,6 +14,7 @@ import 'package:velocyverse/components/base/component.profile_avatar.dart';
 import 'package:velocyverse/components/login/component.address_type_selector.dart';
 import 'package:velocyverse/components/login/component.gender_selector.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 
 class PageCompleteProfile extends StatefulWidget {
   const PageCompleteProfile({super.key});
@@ -212,17 +213,65 @@ class _PageCompleteProfileState extends State<PageCompleteProfile> {
                         child: PrimaryButton(
                           text: 'Finish',
                           onPressed: () async {
+                            if (_pickedImage == null) {
+                              showFancyErrorToast(
+                                context,
+                                "Please upload your profile picture.",
+                              );
+                              return;
+                            }
+
+                            if (usernameController.text.trim().isEmpty) {
+                              showFancyErrorToast(
+                                context,
+                                "Please enter your name.",
+                              );
+                              return;
+                            }
+
+                            if (selectedGender.isEmpty) {
+                              showFancyErrorToast(
+                                context,
+                                "Please select your gender.",
+                              );
+                              return;
+                            }
+
+                            if (addressController.text.trim().isEmpty) {
+                              showFancyErrorToast(
+                                context,
+                                "Please enter your address.",
+                              );
+                              return;
+                            }
+
+                            if (cityController.text.trim().isEmpty) {
+                              showFancyErrorToast(
+                                context,
+                                "Please enter your city.",
+                              );
+                              return;
+                            }
+
+                            if (selectedAddressType.isEmpty) {
+                              showFancyErrorToast(
+                                context,
+                                "Please select your address type.",
+                              );
+                              return;
+                            }
+
+                            // --- If all validations pass, proceed ---
                             final response = await authenticationProvider
                                 .profileSetup(
                                   profile: _pickedImage,
                                   aadhar: _pickedAadhar,
                                   addressType: selectedAddressType,
-                                  username: usernameController.text,
-                                  street: cityController.text,
-                                  area: addressController.text,
+                                  username: usernameController.text.trim(),
+                                  street: cityController.text.trim(),
+                                  area: addressController.text.trim(),
                                   gender: selectedGender,
                                 );
-
                             if (response) {
                               debugPrint(
                                 "--------profile setup---------done---------------------------",
@@ -233,7 +282,11 @@ class _PageCompleteProfileState extends State<PageCompleteProfile> {
                               }
                             } else {
                               debugPrint(
-                                "---------profle setup--------somehting went wrong---------------------------",
+                                "---------profile setup--------something went wrong---------------------------",
+                              );
+                              showFancyErrorToast(
+                                context,
+                                "Something went wrong. Please try again.",
                               );
                             }
                           },

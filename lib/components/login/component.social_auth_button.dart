@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   const SocialLoginButtons({super.key});
+  void _featureNotReady(BuildContext context) {
+    showFancyErrorToast(context, "We will notify once this feature is active");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +16,7 @@ class SocialLoginButtons extends StatelessWidget {
           icon: Icons.g_mobiledata,
           onPressed: () {
             // Handle Google login
+            _featureNotReady(context);
             print('Google login pressed');
           },
         ),
@@ -19,6 +24,7 @@ class SocialLoginButtons extends StatelessWidget {
           icon: Icons.apple,
           onPressed: () {
             // Handle Apple login
+            _featureNotReady(context);
             print('Apple login pressed');
           },
         ),
@@ -26,6 +32,7 @@ class SocialLoginButtons extends StatelessWidget {
           icon: Icons.facebook,
           onPressed: () {
             // Handle Facebook login
+            _featureNotReady(context);
             print('Facebook login pressed');
           },
         ),

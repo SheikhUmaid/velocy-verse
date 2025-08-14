@@ -4,7 +4,6 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'dart:async';
-
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
 
@@ -41,13 +40,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     32.7850,
     -96.7850,
   ); // Current position
-
   // Driver and ride details
-
   final String remainingDistance = "3.2 km remaining";
   final String pickupAddress = "123 Main Street, Downtown";
   final String dropAddress = "456 Park Avenue, Uptown";
-
   Timer? _locationTimer;
   @override
   void initState() {
@@ -58,14 +54,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   Future<void> _initializeRideData() async {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
     final rideResponse = await rideProvider.driverArrivedScreen();
-
     setState(() {
       ride = rideResponse;
       driverName = ride.data['data']['driver']['username'];
       carDetails = ride.data['data']['vehicle_name'];
       licensePlate = ride.data['data']['vehicle_number'];
     });
-
     _addMarkers();
     // _createRoute();
     _startLocationUpdates();
@@ -111,7 +105,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           infoWindow: const InfoWindow(title: 'Pickup Location'),
         ),
       );
-
       _markers.add(
         Marker(
           markerId: const MarkerId('drop'),
@@ -120,7 +113,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           infoWindow: const InfoWindow(title: 'Drop Location'),
         ),
       );
-
       _markers.add(
         Marker(
           markerId: const MarkerId('driver'),
@@ -141,7 +133,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           mode: TravelMode.driving,
         ),
       );
-
       if (result.points.isNotEmpty) {
         _polylineCoordinates
           ..clear()
@@ -150,7 +141,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
               (point) => LatLng(point.latitude, point.longitude),
             ),
           );
-
         setState(() {
           _polylines
             ..clear()
@@ -196,7 +186,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                 ],
               ),
             ),
-
             // Map Section
             Expanded(
               flex: 3,
@@ -230,7 +219,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         zoomControlsEnabled: false,
                         mapToolbarEnabled: false,
                       ),
-
                       // ETA Info Card
                       Positioned(
                         top: 16,
@@ -463,9 +451,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 16),
-
                             // Drop-off
                             Row(
                               children: [
@@ -551,6 +537,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 12),
                         ],
                       ),
                     ],

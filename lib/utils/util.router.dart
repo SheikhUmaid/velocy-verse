@@ -4,6 +4,7 @@ import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
 import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
+import 'package:velocyverse/pages/driver/ride/screen.route_with_driver.dart';
 import 'package:velocyverse/pages/driver/screen.driver_main.dart';
 import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
@@ -30,6 +31,14 @@ class MyRouter {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return AuthScreen();
+        },
+      ),
+      GoRoute(
+        name: '/routeWithDriver',
+        path: '/routeWithDriver',
+        builder: (BuildContext context, GoRouterState state) {
+          return EnRouteScreen();
+          // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
       GoRoute(

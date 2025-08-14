@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/models/model.ride_detail.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 
 class RideDetailsScreen extends StatefulWidget {
   const RideDetailsScreen({super.key});
@@ -340,6 +341,12 @@ class _RideDetailsScreenState extends State<RideDetailsScreen>
                 final response = await driverProvider.acceptRide();
                 if (response) {
                   context.pushNamed("/pickUpNavigation");
+                }
+                if (!response) {
+                  showFancyErrorToast(
+                    context,
+                    "Seems like this ride has been taken already",
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(

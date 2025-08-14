@@ -6,6 +6,7 @@ import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/components/user/component.location_input.dart';
 import 'package:velocyverse/components/user/component.location_suggestion.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.get_distance_duration.dart';
 
 class ConfirmLocationScreen extends StatefulWidget {
@@ -82,27 +83,59 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                       child: PrimaryButton(
                         text: 'Confirm Location',
                         onPressed: () async {
-                          // context.read<LoaderProvider>().showLoader();
-
                           final rideProvider = Provider.of<RideProvider>(
                             context,
                             listen: false,
                           );
 
-                          await getDistanceAndDuration(
-                            originLat: rideProvider.fromLocation!.latitude,
-                            originLng: rideProvider.fromLocation!.longitude,
-                            destLat: rideProvider.toLocation!.latitude,
-                            destLng: rideProvider.toLocation!.longitude,
-                            context: context,
-                          );
-                          final response = await rideProvider.confirmRide();
+                          // Check if locations are null and show fancy toast
+                          if (rideProvider.fromLocation == null ||
+                              rideProvider.toLocation == null) {
+                            showFancyErrorToast(
+                              context,
+                              rideProvider.fromLocation == null &&
+                                      rideProvider.toLocation == null
+                                  ? "Please select pickup and drop-off locations"
+                                  : rideProvider.fromLocation == null
+                                  ? "Please select pickup location"
+                                  : "Please select drop-off location",
+                            );
+                            return;
+                          }
 
-                          if (context.mounted) {
-                            if (response) {
+                          try {
+                            // context.read<LoaderProvider>().showLoader();
+
+                            await getDistanceAndDuration(
+                              originLat: rideProvider.fromLocation!.latitude,
+                              originLng: rideProvider.fromLocation!.longitude,
+                              destLat: rideProvider.toLocation!.latitude,
+                              destLng: rideProvider.toLocation!.longitude,
+                              context: context,
+                            );
+
+                            final response = await rideProvider.confirmRide();
+
+                            if (context.mounted) {
                               // context.read<LoaderProvider>().hideLoader();
-                              context.pushNamed('/selectVehicle');
-                            } else {}
+
+                              if (response) {
+                                context.pushNamed('/selectVehicle');
+                              } else {
+                                showFancyErrorToast(
+                                  context,
+                                  "Failed to confirm ride. Please try again.",
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              // context.read<LoaderProvider>().hideLoader();
+                              showFancyErrorToast(
+                                context,
+                                "An error occurred: ${e.toString()}",
+                              );
+                            }
                           }
                         },
                       ),

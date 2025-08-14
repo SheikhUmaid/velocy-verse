@@ -9,6 +9,7 @@ import 'package:velocyverse/components/login/component.phone_input.dart';
 import 'package:velocyverse/components/login/component.social_auth_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
 
 class AuthForm extends StatefulWidget {
@@ -88,6 +89,48 @@ class _AuthFormState extends State<AuthForm> {
             PrimaryButton(
               text: 'Continue',
               onPressed: () async {
+                // Basic Validations
+                if (phoneController.text.isEmpty ||
+                    phoneController.text.length != 10 ||
+                    !RegExp(r'^[0-9]+$').hasMatch(phoneController.text)) {
+                  showFancyErrorToast(
+                    context,
+                    "Phone number must be 10 digits.",
+                  );
+                  return;
+                }
+
+                if (passwordController.text.isEmpty ||
+                    passwordController.text.length < 6) {
+                  showFancyErrorToast(
+                    context,
+                    "Password must be at least 6 characters.",
+                  );
+                  return;
+                }
+
+                // Registration-specific validations
+                if (!isLogin) {
+                  if (otpController.text.isEmpty) {
+                    showFancyErrorToast(context, "Please enter OTP.");
+                    return;
+                  }
+
+                  if (confirmPasswordController.text.isEmpty) {
+                    showFancyErrorToast(
+                      context,
+                      "Please confirm your password.",
+                    );
+                    return;
+                  }
+
+                  if (passwordController.text !=
+                      confirmPasswordController.text) {
+                    showFancyErrorToast(context, "Passwords do not match.");
+                    return;
+                  }
+                }
+
                 //For registeration
                 if (!isLogin) {
                   final response = await authenticationProvider.registerRequest(
@@ -127,6 +170,10 @@ class _AuthFormState extends State<AuthForm> {
                   } else {
                     debugPrint("Something Went Wrong");
                     context.read<LoaderProvider>().hideLoader();
+                    showFancyErrorToast(
+                      context,
+                      "Seems like you have put invalid credentials",
+                    );
                   }
                 }
                 print('Continue pressed');

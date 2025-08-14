@@ -37,7 +37,7 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> loginWithOTP({
+  Future loginWithOTP({
     required String phoneNumber,
     required String otp,
   }) async {
@@ -71,7 +71,7 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> loginWithPassword({
+  Future<Object> loginWithPassword({
     required String phoneNumber,
     required String password,
   }) async {
@@ -83,7 +83,7 @@ class AuthenticationProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  FlutterSecureStorage secureStorage = FlutterSecureStorage();
         await secureStorage.write(
           key: 'role',
           value: response.data['user']['role'],
@@ -93,7 +93,7 @@ class AuthenticationProvider extends ChangeNotifier {
           refreshToken: response.data['refresh'],
         );
         debugPrint("Tokens stored successfully");
-        return true;
+        return response.data['user']['role'] == 'user' ? 'user' : 'driver';
       } else {
         debugPrint("Password login failed: ${response.data}");
         return false;

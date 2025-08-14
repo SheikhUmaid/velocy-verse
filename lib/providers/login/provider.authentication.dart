@@ -37,7 +37,7 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future loginWithOTP({
+  Future<bool> loginWithOTP({
     required String phoneNumber,
     required String otp,
   }) async {
@@ -71,7 +71,7 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  Future<Object> loginWithPassword({
+  Future<bool> loginWithPassword({
     required String phoneNumber,
     required String password,
   }) async {
@@ -93,7 +93,7 @@ class AuthenticationProvider extends ChangeNotifier {
           refreshToken: response.data['refresh'],
         );
         debugPrint("Tokens stored successfully");
-        return response.data['user']['role'] == 'user' ? 'user' : 'driver';
+        return true;
       } else {
         debugPrint("Password login failed: ${response.data}");
         return false;

@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:velocyverse/components/driver/component.ongoingRide.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
+import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class DriverHome extends StatefulWidget {
@@ -20,9 +22,17 @@ class _DriverHomeState extends State<DriverHome> {
   String selectedRideTab = 'Live';
 
   @override
+  void initState() {
+    // TODO: implement initState
+    Future.microtask(() {
+      Provider.of<DriverProvider>(context, listen: false).driverINIT();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
-    driverProvider.driverINIT();
+    // final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    // driverProvider.driverINIT();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -42,6 +52,8 @@ class _DriverHomeState extends State<DriverHome> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildOngoingRideSection(context),
+
                     // Go Online Section
                     _buildGoOnlineSection(),
                     const SizedBox(height: 20),
@@ -70,10 +82,17 @@ class _DriverHomeState extends State<DriverHome> {
           ],
         ),
       ),
+
+      drawer: Drawer(backgroundColor: Colors.red),
     );
   }
 
   Widget _buildHeader() {
+    final driverProfileProvider = Provider.of<DriverProfileProvider>(
+      context,
+      listen: true,
+    );
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       color: Colors.white,
@@ -86,34 +105,46 @@ class _DriverHomeState extends State<DriverHome> {
               // border: Border.all(color: Colors.blue, width: 2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.grey[300],
-                  child: const Icon(Icons.person, size: 20, color: Colors.grey),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Alex Driver',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+            child: InkWell(
+              onTap: () {
+                print("opening drawer");
+                Scaffold.of(context).openDrawer();
+
+                print("drawer open");
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.grey[300],
+                    child: const Icon(
+                      Icons.person,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${driverProfileProvider.profileDetails?.username ?? '__'}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                        ),
                       ),
-                    ),
-                    Text(
-                      'ID: DRV2025001',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ],
+                      // Text(
+                      //   'ID: DRV2025001',
+                      //   style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                      // ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           const Spacer(),
@@ -126,6 +157,27 @@ class _DriverHomeState extends State<DriverHome> {
         ],
       ),
     );
+  }
+
+  Widget _buildOngoingRideSection(BuildContext context) {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: true);
+
+    return (driverProvider.ongoingRide == null)
+        ? SizedBox.shrink()
+        : OngoingRideCard(
+            onTap: () {
+              driverProvider.ongoingRide!.otpVerified == true
+                  ? context.push('/dropOffNavigation')
+                  : context.push('/pickUpNavigation', extra: true);
+            },
+            ride: ActiveRide(
+              id: driverProvider.ongoingRide!.id ?? 0,
+              fromLocation: driverProvider.ongoingRide!.fromLocation.toString(),
+              toLocation: driverProvider.ongoingRide!.toLocation.toString(),
+              status: driverProvider.ongoingRide!.status.toString(),
+              otpVerified: driverProvider.ongoingRide!.otpVerified ?? false,
+            ),
+          );
   }
 
   Widget _buildGoOnlineSection() {

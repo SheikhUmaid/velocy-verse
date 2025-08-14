@@ -22,10 +22,10 @@ class _LoadingState extends State<Loading> {
 
     if (context.mounted) {
       if (loggedIn) {
-  if (await isDriver()) {
+        if (await isDriver()) {
           context.goNamed('/driverMain');
         } else {
-          context.goNamed("/userHome");
+          context.goNamed("/driverMain");
         }
       } else {
         context.goNamed("/permissions");

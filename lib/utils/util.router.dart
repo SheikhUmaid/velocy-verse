@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
 import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
+
+import 'package:velocyverse/models/model.driverDetails.dart';
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart'
+    hide UserProfile;
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
 import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
@@ -11,6 +16,16 @@ import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
 import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.recentRideDetails.dart';
 import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
 import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.navPickUp.dart'
+    hide NavigationPickUp;
+import 'package:velocyverse/pages/driver/mainPages/ride/page.rideDetails.dart'
+    hide RideDetailsScreen;
+import 'package:velocyverse/pages/driver/mainPages/ride/page.navDropOff.dart'
+    hide NavigationDropOff;
+import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
+import 'package:velocyverse/pages/driver/page.driverMain.dart' hide DriverMain;
+
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
 import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
@@ -72,7 +87,9 @@ class MyRouter {
         name: '/pickUpNavigation',
         path: '/pickUpNavigation',
         builder: (BuildContext context, GoRouterState state) {
-          return NavigationPickUp();
+          bool? isOngoing = state.extra as bool?;
+          print('isOngoing $isOngoing');
+          return NavigationPickUp(ongoingRide: isOngoing ?? false);
         },
       ),
       GoRoute(
@@ -171,14 +188,7 @@ class MyRouter {
           return LoginOTP(phoneNumber: phoneNumber);
         },
       ),
-      GoRoute(
-        path: '/driverMain',
-        name: '/driverMain',
-        builder: (context, state) {
-          print('pop2ping');
-          return const DriverMain();
-        },
-      ),
+
       GoRoute(
         path: '/rideDetails',
         name: '/rideDetails',
@@ -223,11 +233,23 @@ class MyRouter {
           return RecentRideDetails(rideId: rideId as String);
         },
       ),
-      GoRoute(
+       GoRoute(
         path: '/driverProfile',
         name: '/driverProfile',
         builder: (context, state) {
           return DriverProfile();
+        },
+      ),
+
+     
+
+       GoRoute(
+        path: '/driverUpdateProfile',
+        name: '/driverUpdateProfile',
+        builder: (context, state) {
+          final profile = state.extra;
+          print("extra == ${state.extra}");
+          return EditProfileScreen(userProfile: profile as DriverDetailsModel);
         },
       ),
     ],

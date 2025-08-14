@@ -38,12 +38,20 @@ class _DriverMainState extends State<DriverMain> {
     super.initState();
     Future.microtask(() async {
       print("Fetching driver profile");
-      bool success =
+       bool success =
           (await Provider.of<DriverProfileProvider>(
                 context,
                 listen: false,
               ).getDriverProfile())
               as bool;
+      
+      
+// 
+       bool success = await Provider.of<DriverProfileProvider>(
+        context,
+        listen: false,
+      ).getDriverProfile();
+//       
       if (!success) {
         debugPrint("Failed to fetch driver profile");
       }

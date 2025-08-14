@@ -41,9 +41,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RaningsNreportsProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(
-          create: (_) =>
+           create: (_) =>
               RiderProfileProvider(apiService: ApiService())..getRiderProfile(),
+// create: (_) => DriverProfileProvider(apiService: ApiService()),
         ),
+        
       ],
       child: MaterialApp.router(
         title: 'Velocy Verse',
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
         routerConfig: MyRouter.routerConfig,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
-          return SafeArea(child: Stack(children: [child!, GlobalLoader()]));
+          return Stack(children: [child!, GlobalLoader()]);
         },
       ),
     );

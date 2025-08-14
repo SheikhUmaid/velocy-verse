@@ -19,6 +19,7 @@ class ConfirmLocationScreen extends StatefulWidget {
 class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   final TextEditingController pickupController = TextEditingController();
   final TextEditingController dropController = TextEditingController();
+  DateTime? scheduledDateTime; // new field
 
   List<LocationSuggestion> suggestions = [
     LocationSuggestion(
@@ -41,6 +42,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
@@ -71,11 +74,72 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                       child: ComponentLocationSuggestions(
                         suggestions: suggestions,
                         onSuggestionTap: (suggestion) {
-                          // Handle suggestion selection
                           print('Selected: ${suggestion.name}');
                         },
                       ),
                     ),
+
+                    // Date & Time Picker (only if scheduled ride)
+                    if (rideProvider.rideType == 'scheduled')
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime.now().add(
+                                const Duration(days: 30),
+                              ),
+                            );
+                            if (date != null) {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              );
+                              if (time != null) {
+                                setState(() {
+                                  scheduledDateTime = DateTime(
+                                    date.year,
+                                    date.month,
+                                    date.day,
+                                    time.hour,
+                                    time.minute,
+                                  );
+                                });
+                              }
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  scheduledDateTime != null
+                                      ? "${scheduledDateTime!.day}/${scheduledDateTime!.month}/${scheduledDateTime!.year} "
+                                            "${scheduledDateTime!.hour}:${scheduledDateTime!.minute.toString().padLeft(2, '0')}"
+                                      : "Select Date & Time",
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const Icon(
+                                  Icons.calendar_today,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
 
                     // Confirm Location Button
                     SizedBox(
@@ -83,12 +147,16 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                       child: PrimaryButton(
                         text: 'Confirm Location',
                         onPressed: () async {
-                          final rideProvider = Provider.of<RideProvider>(
-                            context,
-                            listen: false,
-                          );
+                          // ensure date/time is picked for scheduled rides
+                          if (rideProvider.rideType == 'scheduled' &&
+                              scheduledDateTime == null) {
+                            showFancyErrorToast(
+                              context,
+                              "Please select a date and time for your scheduled ride",
+                            );
+                            return;
+                          }
 
-                          // Check if locations are null and show fancy toast
                           if (rideProvider.fromLocation == null ||
                               rideProvider.toLocation == null) {
                             showFancyErrorToast(
@@ -104,8 +172,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                           }
 
                           try {
-                            // context.read<LoaderProvider>().showLoader();
-
                             await getDistanceAndDuration(
                               originLat: rideProvider.fromLocation!.latitude,
                               originLng: rideProvider.fromLocation!.longitude,
@@ -114,11 +180,11 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                               context: context,
                             );
 
-                            final response = await rideProvider.confirmRide();
+                            final response = await rideProvider.confirmRide(
+                              scheduledTime: scheduledDateTime,
+                            );
 
                             if (context.mounted) {
-                              // context.read<LoaderProvider>().hideLoader();
-
                               if (response) {
                                 context.pushNamed('/selectVehicle');
                               } else {
@@ -129,8 +195,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                               }
                             }
                           } catch (e) {
+                            // rethrow;
                             if (context.mounted) {
-                              // context.read<LoaderProvider>().hideLoader();
                               showFancyErrorToast(
                                 context,
                                 "An error occurred: ${e.toString()}",

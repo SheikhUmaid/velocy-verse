@@ -7,6 +7,7 @@ import 'package:velocyverse/components/user/component.location_input.dart';
 import 'package:velocyverse/components/user/component.price_input_filed.dart';
 import 'package:velocyverse/components/user/component.vehcle_selector.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/utils/util.success_toast.dart';
 
 class SelectVehicleScreen extends StatefulWidget {
   const SelectVehicleScreen({super.key});
@@ -201,7 +202,15 @@ class _SelectVehicleScreenState extends State<SelectVehicleScreen> {
                             offeredPrice: priceController.text,
                           );
                           if (response) {
-                            context.pushNamed('/waitingForDriver');
+                            if (rideProvider.rideType == "scheduled") {
+                              showFancySuccessToast(
+                                context,
+                                " Yout Ride has been scheduled",
+                              );
+                              context.goNamed("/userHome");
+                            } else {
+                              context.pushNamed('/waitingForDriver');
+                            }
                           }
                         },
                       ),

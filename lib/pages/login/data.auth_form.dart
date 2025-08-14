@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.custom_text_field.dart';
@@ -155,7 +154,7 @@ class _AuthFormState extends State<AuthForm> {
                         phoneNumber: "+91${phoneController.text}",
                         password: passwordController.text,
                       );
-                  if (response) {
+                  if (response == 'driver') {
                     if (await isDriver()) {
                       if (context.mounted) {
                         context.pushNamed("/driverMain");

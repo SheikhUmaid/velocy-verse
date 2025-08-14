@@ -12,6 +12,7 @@ import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/payment/provider.payment.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/providers/user/provider.rider_profile.dart';
 import 'package:velocyverse/utils/util.global_loader.dart';
 import 'package:velocyverse/utils/util.router.dart';
 
@@ -40,8 +41,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RaningsNreportsProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(
-          create: (_) => DriverProfileProvider(apiService: ApiService()),
+           create: (_) =>
+              RiderProfileProvider(apiService: ApiService())..getRiderProfile(),
+// create: (_) => DriverProfileProvider(apiService: ApiService()),
         ),
+        
       ],
       child: MaterialApp.router(
         title: 'Velocy Verse',

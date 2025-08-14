@@ -65,7 +65,16 @@ class DriverProfileProvider extends ChangeNotifier {
     required String email,
     required String imagePath,
   }) async {
-    _isLoading = true;
+//     
+     try {
+      // Prepare multipart form data
+      final formData = FormData.fromMap({
+        'name': name,
+        'email': email,
+        if (imagePath.isNotEmpty)
+          'image': await MultipartFile.fromFile(
+//     
+            _isLoading = true;
     notifyListeners();
     try {
       // Prepare multipart form data
@@ -74,6 +83,7 @@ class DriverProfileProvider extends ChangeNotifier {
         'email': email,
         if (imagePath.isNotEmpty && !imagePath.startsWith('http'))
           'profile_image': await MultipartFile.fromFile(
+
             imagePath,
             filename: imagePath.split('/').last,
           ),
@@ -87,18 +97,19 @@ class DriverProfileProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = response.data;
         _driverDetails = DriverDetailsModel.fromJson(data['data']);
-        _isLoading = false;
+_isLoading = false;
         notifyListeners();
         return true;
       } else {
         debugPrint('Error: ${response.statusCode} - ${response.statusMessage}');
-        _isLoading = false;
+_isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e, stackTrace) {
       debugPrint('Exception in updateDriverProfile: $e');
       debugPrintStack(stackTrace: stackTrace);
+
       _isLoading = false;
       notifyListeners();
       return false;

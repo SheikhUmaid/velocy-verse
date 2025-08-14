@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
 import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
 
 import 'package:velocyverse/models/model.driverDetails.dart';
@@ -13,6 +14,8 @@ import 'package:velocyverse/pages/driver/ride/screen.route_with_driver.dart';
 import 'package:velocyverse/pages/driver/screen.driver_main.dart';
 import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
 import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.recentRideDetails.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
 import 'package:velocyverse/pages/driver/mainPages/ride/page.navPickUp.dart'
     hide NavigationPickUp;
 import 'package:velocyverse/pages/driver/mainPages/ride/page.rideDetails.dart'
@@ -22,6 +25,7 @@ import 'package:velocyverse/pages/driver/mainPages/ride/page.navDropOff.dart'
 import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
 import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
 import 'package:velocyverse/pages/driver/page.driverMain.dart' hide DriverMain;
+
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
 import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
@@ -53,7 +57,7 @@ class MyRouter {
         name: '/routeWithDriver',
         path: '/routeWithDriver',
         builder: (BuildContext context, GoRouterState state) {
-          return EnRouteScreen();
+          return EnRouteScreen(rideId: 12);
           // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
@@ -95,13 +99,7 @@ class MyRouter {
           return RideDetailsScreen();
         },
       ),
-      GoRoute(
-        name: '/driverMain',
-        path: '/driverMain',
-        builder: (BuildContext context, GoRouterState state) {
-          return DriverMain();
-        },
-      ),
+
       GoRoute(
         name: '/documentVerification',
         path: '/documentVerification',
@@ -235,8 +233,7 @@ class MyRouter {
           return RecentRideDetails(rideId: rideId as String);
         },
       ),
-
-      GoRoute(
+       GoRoute(
         path: '/driverProfile',
         name: '/driverProfile',
         builder: (context, state) {
@@ -244,7 +241,9 @@ class MyRouter {
         },
       ),
 
-      GoRoute(
+     
+
+       GoRoute(
         path: '/driverUpdateProfile',
         name: '/driverUpdateProfile',
         builder: (context, state) {

@@ -69,7 +69,7 @@ class DriverProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         // print('active ride response = ${response.data}');
-        final activeRideReq = OngoingRide_Model.fromJson(response.data[0]);
+        final activeRideReq = OngoingRide_Model.fromJson(response.data[1]);
         // print(activeRideReq.status);
         // print(activeRideReq);
         ongoingRide = activeRideReq;

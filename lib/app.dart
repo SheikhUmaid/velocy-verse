@@ -46,16 +46,17 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Velocy Verse',
         theme: ThemeData(
-           scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: Colors.white,
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.transparent,
             centerTitle: true,
             surfaceTintColor: Colors.white,
-          ),        ),
+          ),
+        ),
         routerConfig: MyRouter.routerConfig,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
-          return SafeArea(child: Stack(children: [child!, GlobalLoader()]));
+          return Stack(children: [child!, GlobalLoader()]);
         },
       ),
     );

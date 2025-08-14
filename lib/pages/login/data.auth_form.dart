@@ -9,10 +9,7 @@ import 'package:velocyverse/components/login/component.phone_input.dart';
 import 'package:velocyverse/components/login/component.social_auth_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
-<<<<<<< HEAD
-=======
 import 'package:velocyverse/utils/util.error_toast.dart';
->>>>>>> 2d751ce20f5ca16cbcffa0b39e581dc59c1c659a
 import 'package:velocyverse/utils/util.is_driver.dart';
 
 class AuthForm extends StatefulWidget {

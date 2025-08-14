@@ -314,7 +314,7 @@ class _AvailablePayout extends StatelessWidget {
               ),
               onPressed: () {
                 paymentProvider.openCheckout(
-                  amount: 500, // ₹500
+                  amount: 500,
                   name: "John Doe",
                   contact: "9999999999",
                   email: "john@example.com",

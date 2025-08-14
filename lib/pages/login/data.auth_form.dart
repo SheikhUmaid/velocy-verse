@@ -96,7 +96,7 @@ class _AuthFormState extends State<AuthForm> {
                     password: passwordController.text,
                     confirmPassword: confirmPasswordController.text,
                   );
-                if (response) {
+                  if (response) {
                     if (context.mounted) {
                       context.pushNamed("/completeProfile");
                     }

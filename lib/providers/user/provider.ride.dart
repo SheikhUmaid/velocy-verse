@@ -1,8 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:velocyverse/models/model.loaction.dart';
 import 'package:velocyverse/networking/apiservices.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RideProvider extends ChangeNotifier {
   RideProvider({required ApiService apiService}) : _apiService = apiService;
@@ -10,35 +12,181 @@ class RideProvider extends ChangeNotifier {
   final ApiService _apiService;
   LocationModel? _fromLocation;
   LocationModel? _toLocation; //---> where it is a model of lat tn name address]
+  double? _distance;
   String rideType = 'now';
+  double? _estimatedPrice;
+  int? _id;
+  LocationModel? get fromLocation => _fromLocation;
+  LocationModel? get toLocation => _toLocation;
+  double? get distance => _distance;
+  double? get estimatedPrice => _estimatedPrice;
 
-  set fromLocation(LocationModel f) {
+  WebSocketChannel? _channel;
+
+  String? _otp;
+  String? get otp => _otp;
+
+  set distance(double? d) {
+    if (d != null) {
+      // Round to 2 decimal places before storing
+      final mod = pow(10.0, 2).toDouble();
+      _distance = ((d * mod).round().toDouble() / mod);
+    } else {
+      _distance = null;
+    }
+    notifyListeners();
+  }
+
+  set fromLocation(LocationModel? f) {
     _fromLocation = f;
     notifyListeners();
   }
 
-  set toLocation(LocationModel f) {
+  set estimatedPrice(double? e) {
+    _estimatedPrice = e;
+    notifyListeners();
+  }
+
+  set toLocation(LocationModel? f) {
     _toLocation = f;
     notifyListeners();
   }
 
-  Future<Response> confirmRide() async {
-    FlutterSecureStorage _storage = FlutterSecureStorage();
+  Future<bool> confirmRide() async {
     try {
-      final accessToken = await _storage.read(key: "access");
       final response = await _apiService.postRequest(
         "/rider/confirm_location/",
-        data: {},
-        headers: {'Authorization': 'Bearer $accessToken'},
+        data: {
+          "ride_type": rideType,
+          "city_name": "Bangalore",
+          "from_location": _fromLocation!.address,
+          "from_latitude": _fromLocation!.latitude,
+          "from_longitude": _fromLocation!.longitude,
+          "to_location": _toLocation!.address,
+          "to_latitude": _toLocation!.latitude,
+          "to_longitude": _toLocation!.longitude,
+          "distance_km": _distance,
+        },
+        // headers: {'Authorization': 'Bearer $accessToken'},
       );
 
       if (response.statusCode == 201) {
-        return response;
+        _id = response.data['id'];
+        await getEstimatedPrice(vehicleId: 2);
+        return true;
       } else {
-        return response;
+        return false;
+      }
+    } catch (e) {
+      // rethrow;
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> getEstimatedPrice({required int vehicleId}) async {
+    try {
+      final response = await _apiService.postRequest(
+        "/rider/estimate-price/",
+        data: {"ride_id": _id, 'vehicle_type_id': vehicleId},
+        // headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (response.statusCode == 200) {
+        estimatedPrice = response.data['data']['estimated_price'];
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      // rethrow;
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> ridePatchBooking({
+    String? offeredPrice,
+    required womenOnly,
+  }) async {
+    try {
+      final response = await _apiService.patchRequest(
+        "/rider/ride-booking/$_id/",
+        data: {
+          "women_only": womenOnly,
+          "offered_price": offeredPrice,
+          'status': 'pending',
+        },
+        // headers: {'Authorization': 'Bearer $accessToken'},
+      );
+
+      if (response.statusCode == 200) {
+        // _id = response.data['id'];
+        // await getEstimatedPrice(vehicleId: 2);
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
       rethrow;
+      // debugPrint(e.toString());
+      // return false;
     }
+  }
+
+  Future<Response?> driverArrivedScreen() async {
+    try {
+      final response = await _apiService.getRequest(
+        "/rider/driver-arrived-screen/$_id/",
+      );
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      // rethrow;
+      debugPrint(e.toString());
+      return null;
+    }
+  }
+
+  // Call this when starting ride waiting
+  void connectToOtpWs(int rideId) {
+    // Example WebSocket URL: adjust to your backend endpoint
+    //ws://82.25.104.152:9000/ws/rider/otp/
+    final wsUrl = Uri.parse("ws://82.25.104.152:9000/ws/rider/otp/$_id/");
+    debugPrint(wsUrl.toString());
+    _channel = WebSocketChannel.connect(wsUrl);
+    debugPrint(
+      "----------------------------Connected to ws ===========================",
+    );
+    _channel!.stream.listen(
+      (message) {
+        debugPrint("Received WS message: $message");
+        try {
+          final data = jsonDecode(message);
+
+          if (data['type'] == 'otp') {
+            _otp = data['otp'];
+            notifyListeners();
+          }
+        } catch (e) {
+          debugPrint("Error decoding WS message: $e");
+        }
+      },
+      onError: (error) {
+        debugPrint("WebSocket error: $error");
+      },
+      onDone: () {
+        debugPrint("WebSocket closed");
+      },
+    );
+  }
+
+  void disconnectWs() {
+    _channel?.sink.close();
+    _channel = null;
   }
 }

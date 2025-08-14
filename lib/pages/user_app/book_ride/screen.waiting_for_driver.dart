@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.custom_app_bar.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class WaitingDriverScreen extends StatefulWidget {
   const WaitingDriverScreen({super.key});
@@ -12,13 +15,58 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _controller = AnimationController(
+  //     duration: const Duration(seconds: 2),
+  //     vsync: this,
+  //   )..repeat();
+  // }
+
   @override
   void initState() {
     super.initState();
+
+    // Simulate rideId=123, replace with actual
+    Future.microtask(() {
+      final rideProvider = Provider.of<RideProvider>(context, listen: false);
+      rideProvider.connectToOtpWs(123);
+    });
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Listen for OTP updates
+    final rideProvider = Provider.of<RideProvider>(context);
+    if (rideProvider.otp != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showOtpDialog(context, rideProvider.otp!);
+      });
+    }
+  }
+
+  void _showOtpDialog(BuildContext context, String otp) {
+    context.goNamed("/riderLiveTracking", extra: otp);
+    // showDialog(
+    //   context: context,
+    //   builder: (_) => AlertDialog(
+    //     title: const Text("Ride OTP"),
+    //     content: Text("Your OTP is: $otp"),
+    //     actions: [
+    //       TextButton(
+    //         onPressed: () => Navigator.pop(context),
+    //         child: const Text("OK"),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   @override

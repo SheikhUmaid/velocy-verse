@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/components/user/component.bottom_nav_bar.dart';
 import 'package:velocyverse/components/user/component.favorite_locations.dart';
 import 'package:velocyverse/components/user/component.home_header.dart';
 import 'package:velocyverse/components/user/component.live_offers.dart';
@@ -10,6 +10,9 @@ import 'package:velocyverse/components/user/component.location_display.dart';
 import 'package:velocyverse/components/user/component.map_view.dart';
 import 'package:velocyverse/components/user/component.ride_type_selector.dart';
 import 'package:velocyverse/components/user/component.search_bar.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/providers/user/provider.rider_profile.dart';
+import 'package:velocyverse/utils/util.get_current_location.dart';
 import 'package:velocyverse/utils/util.get_current_position.dart';
 
 class UserHome extends StatefulWidget {
@@ -22,15 +25,18 @@ class UserHome extends StatefulWidget {
 class _UserHomeState extends State<UserHome> {
   String selectedRideType = 'Scheduled';
   int selectedBottomNavIndex = 0;
+  String currentAddress = "Fetching your address...";
 
   double lat = 28.6129, ln = 77.2295;
 
   void _showLocation() async {
     try {
       Position position = await getCurrentPosition();
+      currentAddress = await getAddressFromPosition(position);
       print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
       lat = position.latitude;
       ln = position.longitude;
+      setState(() {});
     } catch (e) {
       print('Error: $e');
     }
@@ -46,24 +52,31 @@ class _UserHomeState extends State<UserHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
+      drawer: Drawer(),
+      // appBar: AppBar(),
       body: SafeArea(
         child: Column(
           children: [
             // Header Section
-            const ComponentHomeHeader(
-              userName: 'Alex',
-              greeting: 'Hello, Alex',
-              subGreeting: 'Welcome back',
+            Consumer<RiderProfileProvider>(
+              builder: (_, prov, __) {
+                // prov.getRiderProfile();
+                return ComponentHomeHeader(
+                  userName: prov.name,
+                  greeting: 'Hello, ${prov.name}',
+                  subGreeting: 'Welcome back',
+                );
+              },
             ),
 
             // Location Display
-            const ComponentLocationDisplay(
-              currentLocation: '123 Main Street, City',
-            ),
+            ComponentLocationDisplay(currentLocation: currentAddress),
 
             // Search Bar
             InkWell(
               onTap: () {
+                Provider.of<RideProvider>(context, listen: false).rideType =
+                    'now';
                 context.pushNamed('/bookRide');
               },
               child: ComponentSearchBar(),
@@ -117,22 +130,18 @@ class _UserHomeState extends State<UserHome> {
                         child: PrimaryButton(
                           text: 'Book now',
                           onPressed: () {
+                            Provider.of<RideProvider>(
+                              context,
+                              listen: false,
+                            ).rideType = 'now';
                             context.pushNamed('/bookRide');
+
                             print('Book now pressed');
                           },
                         ),
                       ),
                       const SizedBox(height: 16),
-
                       // Bottom Navigation
-                      ComponentBottomNavigation(
-                        selectedIndex: selectedBottomNavIndex,
-                        onIndexChanged: (index) {
-                          setState(() {
-                            selectedBottomNavIndex = index;
-                          });
-                        },
-                      ),
                     ],
                   ),
                 ),

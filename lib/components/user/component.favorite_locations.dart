@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 
 class ComponentFavouriteLocations extends StatelessWidget {
   const ComponentFavouriteLocations({super.key});
+  void _favLocationNotSet(BuildContext context) {
+    showFancyErrorToast(
+      context,
+      "You haven't set your fav location\nyou can do that in settings",
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +30,30 @@ class ComponentFavouriteLocations extends StatelessWidget {
             _LocationCard(
               icon: Icons.home,
               label: 'Home',
-              onTap: () => print('Home selected'),
+              onTap: () {
+                _favLocationNotSet(context);
+              },
             ),
             _LocationCard(
               icon: Icons.business,
               label: 'Office',
-              onTap: () => print('Office selected'),
+              onTap: () {
+                _favLocationNotSet(context);
+              },
             ),
             _LocationCard(
               icon: Icons.business,
               label: 'Office',
-              onTap: () => print('Office 2 selected'),
+              onTap: () {
+                _favLocationNotSet(context);
+              },
             ),
             _LocationCard(
               icon: Icons.flight,
               label: 'Airport',
-              onTap: () => print('Airport selected'),
+              onTap: () {
+                _favLocationNotSet(context);
+              },
             ),
           ],
         ),

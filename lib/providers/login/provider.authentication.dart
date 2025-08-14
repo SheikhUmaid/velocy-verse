@@ -83,7 +83,7 @@ class AuthenticationProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-  FlutterSecureStorage secureStorage = FlutterSecureStorage();
+        FlutterSecureStorage secureStorage = FlutterSecureStorage();
         await secureStorage.write(
           key: 'role',
           value: response.data['user']['role'],

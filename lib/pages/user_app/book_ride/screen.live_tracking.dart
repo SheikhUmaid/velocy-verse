@@ -6,6 +6,7 @@ import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'dart:async';
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   LiveTrackingScreen({Key? key, required this.otpText}) : super(key: key);
@@ -340,27 +341,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                               ),
                             ),
 
-                            PrimaryButton(
-                              text: "Show OTP",
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: const Text("Ride OTP"),
-                                    content: Text(
-                                      "Your OTP is: ${widget.otpText}",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-
                             // Action Buttons
                             Row(
                               children: [
@@ -396,6 +376,28 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                         ),
                       ),
 
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.maxFinite,
+                        child: PrimaryButton(
+                          text: "Show OTP",
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: const Text("Ride OTP"),
+                                content: Text("Your OTP is: ${widget.otpText}"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 16),
 
                       // Pickup and Drop Info

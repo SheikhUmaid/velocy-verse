@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
 import 'package:velocyverse/utils/util.maike_phone_call.dart';
@@ -315,21 +314,14 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
         SizedBox(height: 12),
         _fullButton(
           CupertinoIcons.text_aligncenter,
-          'Send OTP',
+          'Verify OTP',
           Colors.black,
           () async {
             if (!_otpVerified) {
-              final driverProvider = Provider.of<DriverProvider>(
-                context,
-                listen: false,
-              );
-              final response = await driverProvider.generateOTP();
-              if (response) {
-                _showOtpDialog(context);
-                _otpVerified = response;
-              } else {
-                showFancySuccessToast(context, "OTP has been already verified");
-              }
+              _showOtpDialog(context);
+              _otpVerified = true;
+            } else {
+              showFancySuccessToast(context, "OTP has been already verified");
             }
           },
         ),

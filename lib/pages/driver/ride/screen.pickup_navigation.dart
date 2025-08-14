@@ -11,6 +11,9 @@ import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
 
 class NavigationPickUp extends StatefulWidget {
+  final bool ongoingRide;
+  const NavigationPickUp({super.key, this.ongoingRide = false});
+
   @override
   _NavigationPickUpState createState() => _NavigationPickUpState();
 }
@@ -24,6 +27,7 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
   ); // Example pickup location
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
+
   bool _routeDrawn = false;
 
   @override
@@ -163,13 +167,22 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
               },
             ),
           ),
-          Expanded(flex: 2, child: _buildBottomDetails(context)),
+          Expanded(
+            flex: 2,
+            child: _buildBottomDetails(
+              context,
+              ongoingRide: widget.ongoingRide,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBottomDetails(BuildContext context) {
+  Widget _buildBottomDetails(
+    BuildContext context, {
+    required bool ongoingRide,
+  }) {
     final driverProvder = Provider.of<DriverProvider>(context, listen: false);
 
     return Container(
@@ -193,18 +206,22 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
         children: [
           _buildLocationTile(
             'Pick up',
-            driverProvder.rideDetail!.data!.fromLocation.toString(),
+            ongoingRide
+                ? driverProvder.ongoingRide!.fromLocation.toString()
+                : driverProvder.rideDetail!.data!.fromLocation.toString(),
 
             Colors.green,
           ),
           SizedBox(height: 12),
           _buildLocationTile(
             'Drop off',
-            driverProvder.rideDetail!.data!.toLocation.toString(),
+            ongoingRide
+                ? driverProvder.ongoingRide!.toLocation.toString()
+                : driverProvder.rideDetail!.data!.toLocation.toString(),
             Colors.red,
           ),
           SizedBox(height: 20),
-          _buildUserInfo(),
+          _buildUserInfo(ongoingRide: ongoingRide),
           SizedBox(height: 24),
           _buildActionButtons(context),
           SizedBox(height: 24),
@@ -250,7 +267,7 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
     );
   }
 
-  Widget _buildUserInfo() {
+  Widget _buildUserInfo({required bool ongoingRide}) {
     final driverProvder = Provider.of<DriverProvider>(context, listen: false);
     return Row(
       children: [
@@ -261,7 +278,9 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
         SizedBox(width: 12),
         Expanded(
           child: Text(
-            driverProvder.rideDetail!.data!.user!.username.toString(),
+            ongoingRide
+                ? driverProvder.ongoingRide!.id.toString()
+                : driverProvder.rideDetail!.data!.user!.username.toString(),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),

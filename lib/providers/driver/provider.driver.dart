@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:velocyverse/models/model.ongoingRide.dart';
 import 'package:velocyverse/models/model.ride_detail.dart' hide Data;
 import 'package:velocyverse/models/model.ride_request.dart';
 import 'package:velocyverse/networking/apiservices.dart';
@@ -14,10 +15,12 @@ class DriverProvider extends ChangeNotifier {
   bool? get onlineStatus => _onlineStatus;
   int? activeRide;
   RideDetail? rideDetail;
+  OngoingRide_Model? ongoingRide;
 
   void driverINIT() async {
     _onlineStatus = await _secureStorage.read(key: "is_online") == "true";
     await getNowRides();
+    await getOngoingRides();
   }
 
   Future<bool> toggleOnlineStatus() async {
@@ -50,6 +53,36 @@ class DriverProvider extends ChangeNotifier {
           }
           return true;
         }
+      }
+      return false;
+    } catch (e) {
+      print("Error in getNowRides: $e");
+      return false;
+    }
+  }
+
+  Future<bool> getOngoingRides() async {
+    try {
+      final response = await _apiService.getRequest(
+        '/driver/driver-active-rides/',
+      );
+
+      if (response.statusCode == 200) {
+        // print('active ride response = ${response.data}');
+        final activeRideReq = OngoingRide_Model.fromJson(response.data[0]);
+        // print(activeRideReq.status);
+        // print(activeRideReq);
+        ongoingRide = activeRideReq;
+        notifyListeners();
+        return true;
+        // if (activeRideReq == true && activeRideReq != null) {
+
+        //   // for (var ride in activeRideReq) {
+        //   //   nowRides.add(ride);
+
+        //   // }
+        //   return true;
+        // }
       }
       return false;
     } catch (e) {

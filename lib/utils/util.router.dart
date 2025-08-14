@@ -56,7 +56,9 @@ class MyRouter {
         name: '/pickUpNavigation',
         path: '/pickUpNavigation',
         builder: (BuildContext context, GoRouterState state) {
-          return NavigationPickUp();
+          bool? isOngoing = state.extra as bool?;
+          print('isOngoing $isOngoing');
+          return NavigationPickUp(ongoingRide: isOngoing ?? false);
         },
       ),
       GoRoute(

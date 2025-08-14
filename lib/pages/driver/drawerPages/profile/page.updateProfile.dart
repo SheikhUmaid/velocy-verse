@@ -1,10 +1,13 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 
 import 'package:velocyverse/models/model.driverDetails.dart';
+import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final DriverDetailsModel userProfile;
@@ -165,7 +168,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Text('display image path = ${_newImagePath ?? _profileImagePath}'),
           Text(
             'Tap to change profile photo',
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -219,6 +221,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildFormFields() {
+    final profileUpdateProvider = Provider.of<DriverProfileProvider>(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -256,7 +260,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             margin: EdgeInsets.only(top: 12),
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _onDeleteAccountTap,
+              onPressed: _onSaveTap,
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 backgroundColor: Colors.white,
@@ -268,14 +272,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Text(
-                'Save',
-                style: TextStyle(
-                  color: _hasChanges ? Colors.blue : Colors.grey,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: profileUpdateProvider.isLoading
+                  ? CircularProgressIndicator()
+                  : Text(
+                      'Save',
+                      style: TextStyle(
+                        color: _hasChanges ? Colors.blue : Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ),
         ],
@@ -648,36 +654,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _isLoading = true;
     });
 
-    try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+    Future.microtask(() async {
+      print("Updating driver profile");
+      var imagePath = _newImageFile != null
+          ? _newImageFile!.path
+          : _profileImagePath!;
+      bool success =
+          await Provider.of<DriverProfileProvider>(
+            context,
+            listen: false,
+          ).updateDriverProfile(
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            imagePath: imagePath, // can be null if not changing image
+          );
 
-      // final updatedProfile = UserProfile(
-      //   name: _nameController.text.trim(),
-      //   email: _emailController.text.trim(),
-      //   avatarUrl: _profileImagePath,
-      // );
-
-      // Return the updated profile to the previous screen
-      if (mounted) {
-        // Navigator.pop(context, updatedProfile);
-        _showSuccessSnackBar('Profile updated successfully');
-      }
-    } catch (e) {
-      _showErrorSnackBar('Failed to update profile. Please try again.');
-    } finally {
-      if (mounted) {
+      if (!success) {
+        debugPrint("Failed to update driver profile");
+      } else {
         setState(() {
-          _isLoading = false;
+          _hasChanges = false;
         });
+        _showSuccessSnackBar("Details updated");
       }
-    }
+    });
+    //  finally {
+    //       if (mounted) {
+    //         setState(() {
+    //           _isLoading = false;
+    //         });
+    //       }
+    //     }
   }
 
   void _onCancelTap() {
     if (_hasChanges) {
       _showDiscardChangesDialog();
     } else {
+      print('here');
       Navigator.pop(context);
     }
   }
@@ -706,7 +720,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Close edit screen
+              // Navigator.pop(context); // Close edit screen
             },
             child: const Text('Discard', style: TextStyle(color: Colors.red)),
           ),

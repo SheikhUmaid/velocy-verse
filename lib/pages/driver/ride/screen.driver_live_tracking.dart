@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:velocyverse/credentials.dart';
+import 'package:velocyverse/providers/driver/provider.driver.dart';
 
 class DriverLiveTracking extends StatefulWidget {
   const DriverLiveTracking({Key? key}) : super(key: key);
@@ -12,36 +14,56 @@ class DriverLiveTracking extends StatefulWidget {
 }
 
 class _DriverLiveTrackingState extends State<DriverLiveTracking> {
-  late GoogleMapController _mapController;
-  final PolylinePoints _polylinePoints = PolylinePoints(
-    apiKey: Credentials.googleMapsAPIKey,
-  );
+  GoogleMapController? _mapController;
+  late PolylinePoints _polylinePoints;
 
   Set<Polyline> _polylines = {};
   Set<Marker> _markers = {};
   List<LatLng> _polylineCoordinates = [];
 
-  // Ride completion data
-  final LatLng _pickupLocation = const LatLng(
-    42.3601,
-    -71.0589,
-  ); // Boston Downtown
-  final LatLng _dropLocation = const LatLng(42.3736, -71.0530); // Boston Uptown
-  final LatLng _currentLocation = const LatLng(
-    42.3736,
-    -71.0530,
-  ); // At drop location
+  // Ride completion data defaults
+  LatLng _pickupLocation = const LatLng(42.3601, -71.0589); // Boston Downtown
+  LatLng _dropLocation = const LatLng(42.3736, -71.0530); // Boston Uptown
+  final LatLng _currentLocation = const LatLng(42.3736, -71.0530);
 
   final String rideFare = "\$20.50";
   final String rideDistance = "10km";
-  final String pickupAddress = "123 Main Street, Downtown";
-  final String dropAddress = "456 Park Avenue, Uptown";
+
+  bool _dataInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _addMarkers();
-    _createRoute();
+    _polylinePoints = PolylinePoints(apiKey: Credentials.googleMapsAPIKey);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_dataInitialized) {
+      final driverProvider = Provider.of<DriverProvider>(
+        context,
+        listen: false,
+      );
+
+      final rideDetail = driverProvider.rideDetail?.data;
+      if (rideDetail != null) {
+        _pickupLocation = LatLng(
+          double.tryParse(rideDetail.fromLatitude ?? '') ?? 0,
+          double.tryParse(rideDetail.fromLongitude ?? '') ?? 0,
+        );
+        _dropLocation = LatLng(
+          double.tryParse(rideDetail.toLatitude ?? '') ?? 0,
+          double.tryParse(rideDetail.toLongitude ?? '') ?? 0,
+        );
+      }
+
+      _addMarkers();
+      _createRoute();
+
+      _dataInitialized = true;
+    }
   }
 
   void _addMarkers() {
@@ -132,34 +154,19 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
 
   @override
   Widget build(BuildContext context) {
+    final driverProvider = Provider.of<DriverProvider>(context);
+    final rideDetail = driverProvider.rideDetail?.data;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.white,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, size: 24),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                  const SizedBox(width: 16),
-                  const Text(
-                    'Drop location',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
+            _buildHeader(),
             Expanded(
               flex: 2,
               child: GoogleMap(
-                onMapCreated: (GoogleMapController controller) {
+                onMapCreated: (controller) {
                   _mapController = controller;
                 },
                 initialCameraPosition: CameraPosition(
@@ -168,7 +175,7 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
                 ),
                 polylines: _polylines,
                 markers: _markers,
-                myLocationEnabled: false,
+                myLocationEnabled: true,
                 zoomControlsEnabled: false,
                 mapToolbarEnabled: false,
                 compassEnabled: true,
@@ -182,220 +189,213 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
                 ''',
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Current Ride',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            rideFare,
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Text(
-                            rideDistance,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      Column(
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 2,
-                                    height: 30,
-                                    color: Colors.grey[300],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Pick-up',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      pickupAddress,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                width: 24,
-                                height: 24,
-                                decoration: const BoxDecoration(
-                                  color: Colors.green,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[400],
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Drop-off',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      dropAddress,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      Column(
-                        children: [
-                          SizedBox(
-                            width: 120,
-                            height: 45,
-                            child: ElevatedButton.icon(
-                              onPressed: _showSOSDialog,
-                              icon: const Icon(
-                                Icons.warning,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                              label: const Text(
-                                'SOS',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                elevation: 0,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _completeRide,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: const Text(
-                                'Ride Completed',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            _buildRideDetails(rideDetail),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.white,
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back, size: 24),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 16),
+          const Text(
+            'Drop location',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRideDetails(dynamic rideDetail) {
+    return Expanded(
+      flex: 2,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: rideDetail == null
+            ? const Center(child: Text("No ride details available"))
+            : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Current Ride',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          rideDetail.estimatedPrice.toString(),
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          "${rideDetail.distanceKm} Km",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    _buildLocationInfo(
+                      'Pick-up',
+                      rideDetail.fromLocation.toString(),
+                      true,
+                    ),
+                    _buildLocationInfo(
+                      'Drop-off',
+                      rideDetail.toLocation.toString(),
+                      false,
+                    ),
+                    const SizedBox(height: 32),
+                    _buildButtons(),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildLocationInfo(String title, String address, bool isPickup) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: isPickup ? Colors.black : Colors.grey[400],
+                shape: BoxShape.circle,
+              ),
+            ),
+            if (isPickup)
+              Container(width: 2, height: 30, color: Colors.grey[300]),
+          ],
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                address,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (isPickup)
+          Container(
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check, color: Colors.white, size: 16),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildButtons() {
+    return Column(
+      children: [
+        SizedBox(
+          width: 120,
+          height: 45,
+          child: ElevatedButton.icon(
+            onPressed: _showSOSDialog,
+            icon: const Icon(Icons.warning, color: Colors.white, size: 18),
+            label: const Text(
+              'SOS',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              elevation: 0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: _completeRide,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Ride Completed',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -517,9 +517,7 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
                     children: List.generate(5, (index) {
                       return GestureDetector(
                         onTap: () {
-                          setState(() {
-                            rating = index + 1;
-                          });
+                          setState(() => rating = index + 1);
                         },
                         child: Icon(
                           Icons.star,

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class ComponentRideTypeSelector extends StatelessWidget {
   final String selectedType;
@@ -31,7 +34,15 @@ class ComponentRideTypeSelector extends StatelessWidget {
                 icon: Icons.schedule,
                 label: 'Scheduled',
                 isSelected: selectedType == 'Scheduled',
-                onTap: () => onTypeChanged('Scheduled'),
+                onTap: () {
+                  final rideProvider = Provider.of<RideProvider>(
+                    context,
+                    listen: false,
+                  );
+                  rideProvider.rideType = 'Scheduled'.toLowerCase();
+                  onTypeChanged('scheduled');
+                  context.pushNamed("/bookRide");
+                },
               ),
             ),
             const SizedBox(width: 16),

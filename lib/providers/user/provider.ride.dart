@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:velocyverse/models/model.loaction.dart';
 import 'package:velocyverse/networking/apiservices.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -52,7 +53,10 @@ class RideProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> confirmRide() async {
+  Future<bool> confirmRide({
+    // String? scheduleDateTime,
+    DateTime? scheduledTime,
+  }) async {
     try {
       final response = await _apiService.postRequest(
         "/rider/confirm_location/",
@@ -66,6 +70,9 @@ class RideProvider extends ChangeNotifier {
           "to_latitude": _toLocation!.latitude,
           "to_longitude": _toLocation!.longitude,
           "distance_km": _distance,
+          "scheduled_time": DateFormat(
+            "yyyy-MM-dd'T'HH:mm",
+          ).format(scheduledTime ?? DateTime(1234, 1, 1, 0, 0)),
         },
         // headers: {'Authorization': 'Bearer $accessToken'},
       );
@@ -80,7 +87,8 @@ class RideProvider extends ChangeNotifier {
     } catch (e) {
       // rethrow;
       debugPrint(e.toString());
-      return false;
+      rethrow;
+      // return false;
     }
   }
 

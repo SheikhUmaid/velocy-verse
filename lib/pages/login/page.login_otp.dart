@@ -5,6 +5,7 @@ import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
 
 class LoginOTP extends StatelessWidget {
@@ -77,7 +78,7 @@ class LoginOTP extends StatelessWidget {
                       }
                     }
                   } else {
-                    debugPrint("Something Went Wrong");
+                    showFancyErrorToast(context, "Invalid OTP");
                     context.read<LoaderProvider>().hideLoader();
                   }
                 },

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/providers/user/provider.rider_profile.dart';
 
 class ComponentHomeHeader extends StatelessWidget {
   final String userName;
@@ -28,11 +30,20 @@ class ComponentHomeHeader extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/images/profile_avatar.png', // Replace with actual asset
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.person, size: 30, color: Colors.grey);
+              child: Consumer<RiderProfileProvider>(
+                builder: (_, prov, __) {
+                  // prov.getRiderProfile();
+                  return Image.network(
+                    prov.profileURL ?? "", // Replace with actual asset
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.person,
+                        size: 30,
+                        color: Colors.grey,
+                      );
+                    },
+                  );
                 },
               ),
             ),

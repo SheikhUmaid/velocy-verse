@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -80,7 +79,8 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
         _vehicleColorController.text = vehicle.vehicleColor ?? '';
         _isAc = vehicle.isAc ?? false;
         _isAvailable = vehicle.isAvailable ?? false;
-        // _existingImages = vehicle.images;
+        _existingImages = vehicle.images.map((img) => img.image ?? '').toList();
+
         _existingDocumentUrl = vehicle.vehiclePapersDocument;
       });
     }
@@ -231,7 +231,7 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                imgUrl,
+                                "$ip$imgUrl",
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
@@ -297,7 +297,16 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
                   ),
 
                   const SizedBox(height: 8),
-                  const Text("Vehicle Document"),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Vehicle Document"),
+                      InkWell(
+                        onTap: _pickVehicleDocument,
+                        child: const Text("Change Image"),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 8),
                   InkWell(
                     onTap: _pickVehicleDocument,

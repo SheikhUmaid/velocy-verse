@@ -29,7 +29,7 @@ class PhoneInputField extends StatelessWidget {
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: const Color(0xFFF9FAFB),
                 borderRadius: BorderRadius.circular(8),
@@ -42,12 +42,12 @@ class PhoneInputField extends StatelessWidget {
                     countryCode,
                     style: const TextStyle(fontSize: 16, color: Colors.black),
                   ),
-                  const SizedBox(width: 4),
-                  const Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: Color(0xFF6B7280),
-                  ),
+                  // const SizedBox(width: 4),
+                  // const Icon(
+                  //   Icons.keyboard_arrow_down,
+                  //   size: 20,
+                  //   color: Color(0xFF6B7280),
+                  // ),
                 ],
               ),
             ),
@@ -74,11 +74,11 @@ class PhoneInputField extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF3B82F6)),
+                    borderSide: const BorderSide(color: Colors.black),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 16,
+                    vertical: 10,
                   ),
                 ),
                 style: const TextStyle(fontSize: 16, color: Colors.black),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
@@ -20,13 +19,13 @@ class LoginOTP extends StatelessWidget {
       listen: false,
     );
     return Scaffold(
+      appBar: AppBar(title: Text("Velocy")),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomAppBar(title: "Velocy"),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
@@ -39,7 +38,6 @@ class LoginOTP extends StatelessWidget {
                         fontSize: 44.00,
                       ),
                     ),
-                    Text("(one time password)"),
                   ],
                 ),
               ),
@@ -63,7 +61,7 @@ class LoginOTP extends StatelessWidget {
                 onPressed: () async {
                   context.read<LoaderProvider>().showLoader();
                   final response = await authenticationProvider.loginWithOTP(
-                    phoneNumber: phoneNumber,
+                    phoneNumber: "+91$phoneNumber",
                     otp: otpController.text,
                   );
                   if (response) {

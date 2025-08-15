@@ -42,12 +42,20 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Velocy Verse',
         theme: ThemeData(
-           scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
           appBarTheme: AppBarTheme(
-            backgroundColor: Colors.transparent,
+            backgroundColor: const Color(0xFFF5F5F5),
             centerTitle: true,
-            surfaceTintColor: Colors.white,
-          ),        ),
+            surfaceTintColor: const Color(0xFFF5F5F5),
+            elevation: 0.2,
+            shadowColor: Colors.grey,
+            titleTextStyle: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+              fontSize: 22,
+            ),
+          ),
+        ),
         routerConfig: MyRouter.routerConfig,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {

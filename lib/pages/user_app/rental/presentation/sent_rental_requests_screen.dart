@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
+import 'package:velocyverse/pages/user_app/rental/presentation/rider_pickup_handover_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SentRentalRequestsScreen extends StatefulWidget {
   const SentRentalRequestsScreen({super.key});
@@ -184,7 +183,15 @@ class _SentRentalRequestsScreenState extends State<SentRentalRequestsScreen> {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Pick up logic
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RiderPickupHandoverScreen(
+                                            requestId: request.id!,
+                                          ),
+                                    ),
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,

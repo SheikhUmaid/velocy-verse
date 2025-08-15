@@ -9,6 +9,7 @@ import 'package:velocyverse/pages/user_app/rental/data/received_rental_requests_
 import 'package:velocyverse/pages/user_app/rental/data/rental_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_detail.dart';
 import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_owner_info_model.dart';
+import 'package:velocyverse/pages/user_app/rental/data/rider_handover_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/vehicles_for_rent_model.dart';
 
@@ -113,6 +114,20 @@ class RentalApiService {
       );
       final data = response.data as Map<String, dynamic>;
       return HandoverModel.fromJson(data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<RiderHandoverModel> fetchHanderOverForRiderRequest(
+    int requestId,
+  ) async {
+    try {
+      final response = await _apiService.getRequest(
+        "rent/handover-details/$requestId/",
+      );
+      final data = response.data as Map<String, dynamic>;
+      return RiderHandoverModel.fromJson(data);
     } catch (e) {
       rethrow;
     }

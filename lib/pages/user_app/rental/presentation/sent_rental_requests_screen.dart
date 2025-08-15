@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
+import 'package:velocyverse/pages/user_app/rental/presentation/rider_pickup_handover_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SentRentalRequestsScreen extends StatefulWidget {
   const SentRentalRequestsScreen({super.key});
@@ -164,27 +163,69 @@ class _SentRentalRequestsScreenState extends State<SentRentalRequestsScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () {
-                                // Cancel request logic
-                              },
+                              onPressed:
+                                  request.status?.toLowerCase() == "cancelled"
+                                  ? null // disables button
+                                  : () async {
+                                      final provider =
+                                          Provider.of<RentalProvider>(
+                                            context,
+                                            listen: false,
+                                          );
+                                      await provider.cancelRequest(request.id!);
+                                      await provider.fetchSentRentalRequests();
+                                      if (provider.sendError != null) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(provider.sendError!),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Renatl request cancelled successfully',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                                backgroundColor:
+                                    request.status?.toLowerCase() == "cancelled"
+                                    ? Colors.grey
+                                    : Colors.black,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: const Text(
-                                "Cancel Request",
-                                style: TextStyle(color: Colors.white),
+                              child: Text(
+                                request.status?.toLowerCase() == "cancelled"
+                                    ? "Cancelled"
+                                    : "Cancel Request",
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
-                          if (request.status?.toLowerCase() != "pending") ...[
+                          if (request.status?.toLowerCase() != "pending" &&
+                              request.status?.toLowerCase() != "cancelled") ...[
                             const SizedBox(width: 12),
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Pick up logic
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RiderPickupHandoverScreen(
+                                            requestId: request.id!,
+                                          ),
+                                    ),
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,

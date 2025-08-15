@@ -6,6 +6,7 @@ import 'package:velocyverse/pages/driver/mainPages/page.driverReport.dart';
 import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.driverRecentRides.dart';
 import 'package:velocyverse/pages/driver/main_pages/screen.driver_home.dart';
 import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
+import 'package:velocyverse/utils/util.logout.dart';
 
 class DriverMain extends StatefulWidget {
   const DriverMain({super.key});
@@ -52,6 +53,7 @@ class _DriverMainState extends State<DriverMain> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<DriverProfileProvider>(context);
     return Scaffold(
       body: SafeArea(child: _screens[_selectedIndex]),
       drawer: Drawer(
@@ -71,14 +73,14 @@ class _DriverMainState extends State<DriverMain> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Alex Driver',
+                      '${profileProvider.profileDetails?.username ?? ''}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      '+91 0101010101',
+                      '${profileProvider.profileDetails?.email}',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -106,6 +108,7 @@ class _DriverMainState extends State<DriverMain> {
             ListTile(
               leading: Icon(Icons.logout, color: Colors.black),
               title: Text('Logout'),
+              onTap: logout,
             ),
           ],
         ),

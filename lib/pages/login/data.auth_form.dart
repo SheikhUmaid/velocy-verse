@@ -151,7 +151,7 @@ class _AuthFormState extends State<AuthForm> {
                   context.read<LoaderProvider>().showLoader();
                   final response = await authenticationProvider
                       .loginWithPassword(
-                        phoneNumber: "+91${phoneController.text}",
+                        phoneNumber: "${phoneController.text}",
                         password: passwordController.text,
                       );
                   if (response == 'driver') {

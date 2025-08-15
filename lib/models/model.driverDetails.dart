@@ -14,7 +14,7 @@ class DriverDetailsModel {
   factory DriverDetailsModel.fromJson(Map<String, dynamic> json) {
     return DriverDetailsModel(
       username: json["username"],
-      email: json["email"],
+      email: json["email"] == null ? '' : json["email"],
       profileImage: json["profile_image"],
       vehicleInfo: json["vehicle_info"] == null
           ? null

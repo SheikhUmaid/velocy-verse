@@ -7,6 +7,8 @@ class RiderProfileProvider extends ChangeNotifier {
   final ApiService _apiService;
 
   String name = " ... ";
+  String contactNumber = "__";
+  String email = "__";
   String? profileURL;
 
   Future<bool> getRiderProfile() async {
@@ -15,6 +17,8 @@ class RiderProfileProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         name = response.data['username'];
+        email = response.data['email'];
+        contactNumber = response.data['phone_number'];
         profileURL = response.data["profile"];
         notifyListeners();
         return true;

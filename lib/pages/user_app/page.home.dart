@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:velocyverse/app.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/components/user/component.favorite_locations.dart';
 import 'package:velocyverse/components/user/component.home_header.dart';
@@ -14,6 +15,7 @@ import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/providers/user/provider.rider_profile.dart';
 import 'package:velocyverse/utils/util.get_current_location.dart';
 import 'package:velocyverse/utils/util.get_current_position.dart';
+import 'package:velocyverse/utils/util.logout.dart';
 
 class UserHome extends StatefulWidget {
   const UserHome({super.key});
@@ -52,7 +54,23 @@ class _UserHomeState extends State<UserHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: Drawer(),
+      drawer: Drawer(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: double.maxFinite,
+              child: PrimaryButton(
+                text: "Logout",
+                onPressed: () {
+                  logout();
+                  context.goNamed("/loading");
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       // appBar: AppBar(),
       body: SafeArea(
         child: Column(
@@ -61,10 +79,15 @@ class _UserHomeState extends State<UserHome> {
             Consumer<RiderProfileProvider>(
               builder: (_, prov, __) {
                 // prov.getRiderProfile();
-                return ComponentHomeHeader(
-                  userName: prov.name,
-                  greeting: 'Hello, ${prov.name}',
-                  subGreeting: 'Welcome back',
+                return InkWell(
+                  onTap: () {
+                    rootScaffoldMessengerKey.currentState!.openDrawer();
+                  },
+                  child: ComponentHomeHeader(
+                    userName: prov.name,
+                    greeting: 'Hello, ${prov.name}',
+                    subGreeting: 'Welcome back',
+                  ),
                 );
               },
             ),
@@ -152,4 +175,8 @@ class _UserHomeState extends State<UserHome> {
       ),
     );
   }
+}
+
+extension on ScaffoldMessengerState {
+  void openDrawer() {}
 }

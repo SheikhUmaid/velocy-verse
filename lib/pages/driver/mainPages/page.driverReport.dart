@@ -22,7 +22,7 @@ class _DriverReportsState extends State<DriverReports> {
     super.initState();
     Future.microtask(() async {
       print("Fetching recent rides");
-      bool success = await Provider.of<RaningsNreportsProvider>(
+      bool success = await Provider.of<EaningsNreportsProvider>(
         context,
         listen: false,
       ).fetchEarningsNReport();
@@ -45,7 +45,7 @@ class _DriverReportsState extends State<DriverReports> {
 
   @override
   Widget build(BuildContext context) {
-    final earningsProvider = Provider.of<RaningsNreportsProvider>(context);
+    final earningsProvider = Provider.of<EaningsNreportsProvider>(context);
     final paymentProvider = Provider.of<PaymentProvider>(
       context,
       listen: false,

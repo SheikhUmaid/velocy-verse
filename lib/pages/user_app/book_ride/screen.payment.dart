@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
+import 'package:velocyverse/providers/payment/provider.payment.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/providers/user/provider.rider_profile.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({Key? key}) : super(key: key);
@@ -12,18 +17,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final TextEditingController _customTipController = TextEditingController();
 
   // Trip data
-  final String driverName = "John";
-  final String carDetails = "Toyota Camry • ABC 123";
-  final String tripTime = "Today, 2:30 PM • 25 min";
-  final String startLocation = "123 Start Street";
-  final String endLocation = "456 End Avenue";
+  String driverName = "__";
+  String carDetails = "__";
+  String tripTime = "__";
+  String startLocation = "__";
+  String endLocation = "__";
+  String? licensePlate = "__";
 
   // Fare breakdown
-  final double baseFare = 12.50;
-  final double distanceFare = 8.30;
-  final double timeFare = 6.20;
-  final double distance = 5.2;
-  final int duration = 25;
+  double baseFare = 12.50;
+  double distanceFare = 8.30;
+  double timeFare = 6.20;
+  double distance = 5.2;
+  int duration = 25;
 
   // Tip options
   int selectedTipIndex = -1;
@@ -40,7 +46,46 @@ class _PaymentScreenState extends State<PaymentScreen> {
   double get finalTotal => totalFare + selectedTip - promoDiscount;
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+    _initializeRideData();
+  }
+
+  Future<void> _initializeRideData() async {
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
+    final rideResponse = await rideProvider.driverArrivedScreen();
+    final estimatedPrice = await rideProvider.estimatedPrice;
+
+    setState(() {
+      // ride = rideResponse;
+      driverName = rideResponse?.data['data']['driver']['username'];
+      carDetails = rideResponse?.data['data']['vehicle_name'];
+      licensePlate = rideResponse?.data['data']['vehicle_number'];
+      startLocation = rideProvider.fromLocation!.address.toString();
+      endLocation = rideProvider.toLocation!.address;
+      baseFare = estimatedPrice!;
+      distanceFare = 0;
+      timeFare = 0;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final paymentProvider = Provider.of<PaymentProvider>(
+      context,
+      listen: false,
+    );
+    final rideResponse = Provider.of<RideProvider>(context);
+
+    final userProvider = Provider.of<RiderProfileProvider>(context);
+    // setState(() {
+    //   final ride = rideResponse;
+    //   driverName = ride!.data['data']['driver']['username'];
+    //   carModel = ride.data['data']['vehicle_name'];
+    //   licensePlate = ride.data['data']['vehicle_number'];
+    // });
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -59,7 +104,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                   const SizedBox(width: 16),
                   const Text(
-                    'Ride Complete',
+                    'Ride Completed',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -101,7 +146,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "$driverName's Ride",
+                                "${driverName}'s Ride",
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -145,6 +190,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                     // Trip Route
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Start Location
                         Row(
@@ -158,11 +204,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            Text(
-                              startLocation,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Text(
+                                startLocation,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                           ],
@@ -176,6 +225,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             bottom: 4,
                           ),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: List.generate(
                               3,
                               (index) => Container(
@@ -203,11 +253,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            Text(
-                              endLocation,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Text(
+                                endLocation,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                           ],
@@ -233,22 +286,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       children: [
                         _buildFareRow(
                           'Base fare',
-                          '\$${baseFare.toStringAsFixed(2)}',
-                        ),
-                        _buildFareRow(
-                          'Distance ($distance mi)',
-                          '\$${distanceFare.toStringAsFixed(2)}',
-                        ),
-                        _buildFareRow(
-                          'Time ($duration min)',
-                          '\$${timeFare.toStringAsFixed(2)}',
+                          '₹${baseFare.toStringAsFixed(2)}',
                         ),
 
+                        // _buildFareRow(
+                        //   'Distance ($distance mi)',
+                        //   '₹${distanceFare.toStringAsFixed(2)}',
+                        // ),
+                        // _buildFareRow(
+                        //   'Time ($duration min)',
+                        //   '₹${timeFare.toStringAsFixed(2)}',
+                        // ),
                         const Divider(height: 24),
 
                         _buildFareRow(
                           'Total',
-                          '\$${totalFare.toStringAsFixed(2)}',
+                          '₹${totalFare.toStringAsFixed(2)}',
                           isBold: true,
                         ),
                       ],
@@ -315,89 +368,88 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     const SizedBox(height: 32),
 
                     // Tip Section
-                    const Text(
-                      'Tip your driver',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    // const Text(
+                    //   'Tip your driver',
+                    //   style: TextStyle(
+                    //     fontSize: 18,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
 
-                    const SizedBox(height: 16),
+                    // const SizedBox(height: 16),
 
-                    // Tip Options
-                    Row(
-                      children: [
-                        for (int i = 0; i < tipOptions.length; i++) ...[
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => _selectTip(i),
-                              child: Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: selectedTipIndex == i
-                                        ? Colors.black
-                                        : Colors.grey[300]!,
-                                    width: selectedTipIndex == i ? 2 : 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '\$${tipOptions[i].toStringAsFixed(0)}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: selectedTipIndex == i
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (i < tipOptions.length - 1)
-                            const SizedBox(width: 8),
-                        ],
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
+                    // // Tip Options
+                    // Row(
+                    //   children: [
+                    //     for (int i = 0; i < tipOptions.length; i++) ...[
+                    //       Expanded(
+                    //         child: GestureDetector(
+                    //           onTap: () => _selectTip(i),
+                    //           child: Container(
+                    //             height: 50,
+                    //             decoration: BoxDecoration(
+                    //               border: Border.all(
+                    //                 color: selectedTipIndex == i
+                    //                     ? Colors.black
+                    //                     : Colors.grey[300]!,
+                    //                 width: selectedTipIndex == i ? 2 : 1,
+                    //               ),
+                    //               borderRadius: BorderRadius.circular(8),
+                    //             ),
+                    //             child: Center(
+                    //               child: Text(
+                    //                 '\$${tipOptions[i].toStringAsFixed(0)}',
+                    //                 style: TextStyle(
+                    //                   fontSize: 16,
+                    //                   fontWeight: selectedTipIndex == i
+                    //                       ? FontWeight.w600
+                    //                       : FontWeight.w500,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //       if (i < tipOptions.length - 1)
+                    //         const SizedBox(width: 8),
+                    //     ],
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 12),
 
                     // Custom Tip
-                    GestureDetector(
-                      onTap: () => _showCustomTipDialog(),
-                      child: Container(
-                        width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: selectedTipIndex == -1 && customTipAmount > 0
-                                ? Colors.black
-                                : Colors.grey[300]!,
-                            width: selectedTipIndex == -1 && customTipAmount > 0
-                                ? 2
-                                : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            customTipAmount > 0
-                                ? '\$${customTipAmount.toStringAsFixed(2)}'
-                                : 'Custom amount',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight:
-                                  selectedTipIndex == -1 && customTipAmount > 0
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () => _showCustomTipDialog(),
+                    //   child: Container(
+                    //     width: double.infinity,
+                    //     height: 50,
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(
+                    //         color: selectedTipIndex == -1 && customTipAmount > 0
+                    //             ? Colors.black
+                    //             : Colors.grey[300]!,
+                    //         width: selectedTipIndex == -1 && customTipAmount > 0
+                    //             ? 2
+                    //             : 1,
+                    //       ),
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //     child: Center(
+                    //       child: Text(
+                    //         customTipAmount > 0
+                    //             ? '\$${customTipAmount.toStringAsFixed(2)}'
+                    //             : 'Custom amount',
+                    //         style: TextStyle(
+                    //           fontSize: 16,
+                    //           fontWeight:
+                    //               selectedTipIndex == -1 && customTipAmount > 0
+                    //               ? FontWeight.w600
+                    //               : FontWeight.w500,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -466,32 +518,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   // Pay Button
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _processPayment,
+                      onPressed: () {
+                        paymentProvider.openCheckout(
+                          amount: finalTotal.ceil().toInt(),
+                          name: "${userProvider.name}",
+                          contact: userProvider.contactNumber,
+                          email: userProvider.email == null
+                              ? "__"
+                              : userProvider.email,
+                        );
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            '₹${(finalTotal * 83).toStringAsFixed(0)}', // Converting to INR for display
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Total',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
                           const Text(
                             'Pay',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                          const SizedBox(width: 8),
+                          Text(
+                            '₹${(finalTotal.ceil()).toStringAsFixed(0)}', // Converting to INR for display
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -608,6 +662,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void _showPaymentOptions() {
     showModalBottomSheet(
       context: context,
+
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(20),
@@ -657,33 +712,33 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void _processPayment() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Payment Successful'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 48),
-              const SizedBox(height: 16),
-              Text(
-                'Payment of \$${finalTotal.toStringAsFixed(2)} completed successfully!',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context); // Go back to main screen
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: const Text('Payment Successful'),
+    //       content: Column(
+    //         mainAxisSize: MainAxisSize.min,
+    //         children: [
+    //           const Icon(Icons.check_circle, color: Colors.green, size: 48),
+    //           const SizedBox(height: 16),
+    //           Text(
+    //             'Payment of \$${finalTotal.toStringAsFixed(2)} completed successfully!',
+    //             textAlign: TextAlign.center,
+    //           ),
+    //         ],
+    //       ),
+    //       actions: [
+    //         ElevatedButton(
+    //           onPressed: () {
+    //             Navigator.pop(context);
+    //             Navigator.pop(context); // Go back to main screen
+    //           },
+    //           child: const Text('Done'),
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
   }
 }

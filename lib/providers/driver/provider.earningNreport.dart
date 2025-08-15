@@ -4,7 +4,7 @@ import 'package:velocyverse/models/model.recentRideModel.dart';
 import 'package:velocyverse/models/model.recentRides.dart';
 import 'package:velocyverse/networking/apiservices.dart';
 
-class RaningsNreportsProvider extends ChangeNotifier {
+class EaningsNreportsProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   EarningsNreportModel? _earnings;
@@ -39,6 +39,34 @@ class RaningsNreportsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       debugPrint("Error fetching earnings: $e");
+      return false;
+    }
+  }
+
+  Future<bool> requestCashOut(int amount) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final response = await _apiService.postRequest(
+        "driver/cash-out/",
+        // headers: {'Authorization': 'Bearer $accessToken'},
+        data: {'amount': amount},
+      );
+
+      if (response.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+
+        return true;
+      } else {
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      debugPrint("Error requesting cashout: $e");
       return false;
     }
   }

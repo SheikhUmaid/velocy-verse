@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
@@ -32,19 +33,13 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   List<LatLng> _polylineCoordinates = [];
 
   // Sample data - replace with your actual data
-  final LatLng _pickupLocation = const LatLng(
-    32.7767,
-    -96.7970,
-  ); // Dallas Downtown
-  final LatLng _dropLocation = const LatLng(32.8029, -96.7699); // Dallas Uptown
-  final LatLng _currentDriverLocation = const LatLng(
-    32.7850,
-    -96.7850,
-  ); // Current position
+  LatLng _pickupLocation = const LatLng(32.7767, -96.7970); // Dallas Downtown
+  LatLng _dropLocation = const LatLng(32.8029, -96.7699); // Dallas Uptown
+  // Current position
   // Driver and ride details
   final String remainingDistance = "3.2 km remaining";
-  final String pickupAddress = "123 Main Street, Downtown";
-  final String dropAddress = "456 Park Avenue, Uptown";
+  String pickupAddress = "123 Main Street, Downtown";
+  String dropAddress = "456 Park Avenue, Uptown";
   Timer? _locationTimer;
   @override
   void initState() {
@@ -54,6 +49,17 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   Future<void> _initializeRideData() async {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
+    _pickupLocation = LatLng(
+      rideProvider.fromLocation!.latitude!,
+      rideProvider.fromLocation!.longitude!,
+    );
+    pickupAddress = rideProvider.fromLocation!.address;
+    dropAddress = rideProvider.toLocation!.address;
+    _dropLocation = LatLng(
+      rideProvider.toLocation!.latitude!,
+      rideProvider.toLocation!.longitude!,
+    );
+    setState(() {});
     final rideResponse = await rideProvider.driverArrivedScreen();
     setState(() {
       ride = rideResponse;
@@ -75,22 +81,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
   void _startLocationUpdates() {
     _locationTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       // Simulate driver location updates
-      _updateDriverLocation();
-    });
-  }
-
-  void _updateDriverLocation() {
-    // Simulate driver movement - replace with real location updates
-    setState(() {
-      _markers.removeWhere((marker) => marker.markerId.value == 'driver');
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('driver'),
-          position: _currentDriverLocation,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(title: 'Driver Location'),
-        ),
-      );
     });
   }
 
@@ -112,14 +102,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
           position: _dropLocation,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           infoWindow: const InfoWindow(title: 'Drop Location'),
-        ),
-      );
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('driver'),
-          position: _currentDriverLocation,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(title: 'Driver Location'),
         ),
       );
     });
@@ -165,6 +147,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -211,7 +194,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                           _mapController = controller;
                         },
                         initialCameraPosition: CameraPosition(
-                          target: _currentDriverLocation,
+                          target: _pickupLocation,
                           zoom: 13,
                         ),
                         polylines: _polylines,
@@ -383,17 +366,60 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                           text: "Show OTP",
                           onPressed: () {
                             showDialog(
+                              barrierDismissible: false,
                               context: context,
-                              builder: (_) => AlertDialog(
-                                title: const Text("Ride OTP"),
-                                content: Text("Your OTP is: ${widget.otpText}"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text("OK"),
+                              builder: (_) {
+                                // Simulate rideId=123, replace with actual
+                                Future.microtask(() {
+                                  final rideProvider =
+                                      Provider.of<RideProvider>(
+                                        context,
+                                        listen: false,
+                                      );
+
+                                  // What to do when OTP comes
+                                  rideProvider.onOtpVerified = () {
+                                    context.pushNamed('/routeWithDriver');
+                                  };
+                                  rideProvider.connectToOtpWs(123);
+                                });
+
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                ],
-                              ),
+                                  insetPadding: const EdgeInsets.all(20),
+                                  child: Container(
+                                    width: double.infinity, // full width
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const CircularProgressIndicator(), // Loading indicator
+                                        const SizedBox(height: 20),
+                                        Text(
+                                          "Your OTP is:",
+                                          style: const TextStyle(fontSize: 18),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          widget.otpText,
+                                          style: const TextStyle(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text("OK"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -15,19 +17,20 @@ class Permissions extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async {
-                var status = await Permission.location.request();
-                if (status.isGranted) {
+                if (Platform.isAndroid || Platform.isIOS) {
+                  var status = await Permission.location.request();
+                  if (status.isGranted) {
+                    context.goNamed('/login');
+                  } else if (status.isDenied) {
+                    Fluttertoast.showToast(
+                      msg: "Oops We can not proceed without permission!",
+                      backgroundColor: Colors.black,
+                      textColor: Colors.white,
+                    );
+                  }
+                } else {
+                  // Skip or handle for other platforms
                   context.goNamed('/login');
-                } else if (status.isDenied) {
-                  Fluttertoast.showToast(
-                    msg: "Oops We can not procced without permission!",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
                 }
               },
               child: Text("Allow Permissions"),

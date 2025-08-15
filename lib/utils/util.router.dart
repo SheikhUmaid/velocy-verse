@@ -20,6 +20,7 @@ import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
 import 'package:velocyverse/pages/onboarding/page.permissions.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.live_tracking.dart';
+import 'package:velocyverse/pages/user_app/book_ride/screen.payment.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
@@ -42,7 +43,15 @@ class MyRouter {
         name: '/routeWithDriver',
         path: '/routeWithDriver',
         builder: (BuildContext context, GoRouterState state) {
-          return EnRouteScreen(rideId: 12);
+          return EnRouteScreen();
+          // return LiveTrackingScreen(otpText: state.extra as String);
+        },
+      ),
+      GoRoute(
+        name: '/paymentScreen',
+        path: '/paymentScreen',
+        builder: (BuildContext context, GoRouterState state) {
+          return PaymentScreen();
           // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
@@ -54,6 +63,7 @@ class MyRouter {
           // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
+
       GoRoute(
         name: '/riderLiveTracking',
         path: '/riderLiveTracking',

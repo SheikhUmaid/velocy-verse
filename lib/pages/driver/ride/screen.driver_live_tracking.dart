@@ -443,6 +443,8 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
   }
 
   void _completeRide() {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    driverProvider.rideComplete(otp: 1111);
     showDialog(
       context: context,
       builder: (BuildContext context) {

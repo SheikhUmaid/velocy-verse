@@ -158,4 +158,29 @@ class DriverProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> rideComplete({required otp}) async {
+    try {
+      final response = await _apiService.postRequest(
+        // '/driver/verify-otp/$activeRide/',
+        '/driver/complete-ride/$activeRide/',
+        // data: {"otp": otp},
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint(
+          "OSFGOFSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        );
+        // final data = response
+        // .data; // Assuming _apiService returns a Dio or HTTP response
+        // rideDetail = RideDetail.fromJson(data);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error fetching ride details: $e");
+      return false;
+    }
+  }
 }

@@ -31,8 +31,14 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
     // Simulate rideId=123, replace with actual
     Future.microtask(() {
       final rideProvider = Provider.of<RideProvider>(context, listen: false);
+
+      // What to do when OTP comes
+      rideProvider.onOtpReceived = (otp) {
+        _showOtpDialog(context, otp);
+      };
       rideProvider.connectToOtpWs(123);
     });
+
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -54,19 +60,6 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
 
   void _showOtpDialog(BuildContext context, String otp) {
     context.goNamed("/riderLiveTracking", extra: otp);
-    // showDialog(
-    //   context: context,
-    //   builder: (_) => AlertDialog(
-    //     title: const Text("Ride OTP"),
-    //     content: Text("Your OTP is: $otp"),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () => Navigator.pop(context),
-    //         child: const Text("OK"),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   @override

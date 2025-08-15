@@ -41,6 +41,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RaningsNreportsProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(
+          create: (_) => DriverProfileProvider(apiService: ApiService()),
+        ),
+        ChangeNotifierProvider(
           create: (_) =>
               RiderProfileProvider(apiService: ApiService())..getRiderProfile(),
         ),

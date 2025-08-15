@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.maike_phone_call.dart';
 import 'package:velocyverse/utils/util.success_toast.dart';
 
@@ -303,10 +304,17 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
             context,
             listen: false,
           );
-          final response = await driverProvider.beginRide();
-          if (response) {
-            // context.goNamed("/dropOffNavigation");
-            context.goNamed("/driverLiveTracking");
+          if (_otpVerified) {
+            final response = await driverProvider.beginRide();
+            if (response) {
+              context.goNamed("/driverLiveTracking");
+            } else {
+              showFancyErrorToast(context, "Something went Wrong");
+              return;
+            }
+          } else {
+            showFancyErrorToast(context, "Please verify OTP first");
+            return;
           }
         }),
         SizedBox(height: 12),

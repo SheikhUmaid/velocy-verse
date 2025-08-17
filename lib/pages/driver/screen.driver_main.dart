@@ -108,7 +108,10 @@ class _DriverMainState extends State<DriverMain> {
             ListTile(
               leading: Icon(Icons.logout, color: Colors.black),
               title: Text('Logout'),
-              onTap: logout,
+              onTap: () {
+                logout();
+                context.goNamed('/loading');
+              },
             ),
           ],
         ),

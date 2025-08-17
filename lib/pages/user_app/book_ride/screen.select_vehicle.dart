@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
@@ -24,9 +25,32 @@ class _SelectVehicleScreenState extends State<SelectVehicleScreen> {
     text: 'Navalur, Chennai',
   );
   final TextEditingController priceController = TextEditingController();
+  late GoogleMapController _mapController;
+  LatLng _pickupLocation = const LatLng(32.7767, -96.7970); // Dallas Downtown
+  Set<Polyline> _polylines = {};
+
+  Set<Marker> _markers = {};
 
   String selectedVehicle = 'bike'; // bike, car, auto
   bool womenOnly = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
+    _pickupLocation = LatLng(
+      rideProvider.fromLocation!.latitude!,
+      rideProvider.fromLocation!.longitude!,
+    );
+    _markers.add(
+      Marker(
+        markerId: const MarkerId('pickup'),
+        position: _pickupLocation,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        infoWindow: const InfoWindow(title: 'Pickup Location'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +86,20 @@ class _SelectVehicleScreenState extends State<SelectVehicleScreen> {
                           color: const Color(0xFFF0F4F8),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: GoogleMap(
+                          onMapCreated: (GoogleMapController controller) {
+                            _mapController = controller;
+                          },
+                          initialCameraPosition: CameraPosition(
+                            target: _pickupLocation,
+                            zoom: 18,
+                          ),
+                          polylines: _polylines,
+                          markers: _markers,
+                          myLocationEnabled: false,
+                          zoomControlsEnabled: false,
+                          mapToolbarEnabled: false,
                         ),
                       ),
                       const SizedBox(height: 24),

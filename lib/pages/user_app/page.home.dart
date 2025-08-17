@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
@@ -50,23 +51,90 @@ class _UserHomeState extends State<UserHome> {
     _showLocation();
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<RiderProfileProvider>(
+      context,
+      listen: false,
+    );
+
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFFF5F5F5),
       drawer: Drawer(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        shape: RoundedRectangleBorder(),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        child: ListView(
           children: [
-            SizedBox(
-              width: double.maxFinite,
-              child: PrimaryButton(
-                text: "Logout",
-                onPressed: () {
-                  logout();
-                  context.goNamed("/loading");
-                },
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.grey.shade200,
+                  child: Icon(CupertinoIcons.person, color: Colors.black),
+                ),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profileProvider.name,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      profileProvider.email,
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
+            ),
+            SizedBox(height: 10),
+            Divider(color: Colors.grey[300]),
+            ListTile(
+              leading: Icon(CupertinoIcons.person, color: Colors.black),
+              title: Text('Profile settings'),
+              onTap: () {
+                context.push('/driverProfile');
+              },
+            ),
+            ListTile(
+              leading: Icon(CupertinoIcons.location, color: Colors.black),
+              title: Text('Add favorite loaction'),
+              onTap: () => context.pushNamed("/addFavLocation"),
+            ),
+            ListTile(
+              leading: Icon(CupertinoIcons.location, color: Colors.black),
+              title: Text('My rides'),
+              onTap: () => context.pushNamed("/addFavoriteLocation"),
+            ),
+            ListTile(
+              leading: Icon(CupertinoIcons.star, color: Colors.black),
+              title: Text('Rewards'),
+              onTap: () => context.pushNamed("/addFavoriteLocation"),
+            ),
+
+            ListTile(
+              leading: Icon(CupertinoIcons.settings, color: Colors.black),
+              title: Text('Help & support'),
+            ),
+
+            ListTile(
+              leading: Icon(Icons.support_agent, color: Colors.black),
+              title: Text('Help & support'),
+            ),
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.black),
+              title: Text('Logout'),
+              onTap: () {
+                logout();
+                context.goNamed('/loading');
+              },
             ),
           ],
         ),
@@ -77,11 +145,13 @@ class _UserHomeState extends State<UserHome> {
           children: [
             // Header Section
             Consumer<RiderProfileProvider>(
-              builder: (_, prov, __) {
+              builder: (co, prov, __) {
                 // prov.getRiderProfile();
                 return InkWell(
                   onTap: () {
-                    rootScaffoldMessengerKey.currentState!.openDrawer();
+                    // rootScaffoldMessengerKey.currentState!.openDrawer();
+                    debugPrint("Hello");
+                    _scaffoldKey.currentState?.openDrawer();
                   },
                   child: ComponentHomeHeader(
                     userName: prov.name,

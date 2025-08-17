@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
+import 'package:velocyverse/pages/driver/mainPages/page.paymentSuccess.dart';
 import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
 import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
@@ -21,8 +22,10 @@ import 'package:velocyverse/pages/onboarding/page.permissions.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.live_tracking.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.payment.dart';
+import 'package:velocyverse/pages/user_app/book_ride/screen.payment_completed.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.add_fav_location.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
 import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 
@@ -37,6 +40,14 @@ class MyRouter {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return AuthScreen();
+        },
+      ),
+      GoRoute(
+        name: '/paymentSuccess',
+        path: '/paymentSuccess',
+        builder: (BuildContext context, GoRouterState state) {
+          return PaymentStatusScreen();
+          // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
       GoRoute(
@@ -120,6 +131,13 @@ class MyRouter {
         path: '/completeProfile',
         builder: (BuildContext context, GoRouterState state) {
           return PageCompleteProfile();
+        },
+      ),
+      GoRoute(
+        name: '/addFavLocation',
+        path: '/addFavLocation',
+        builder: (BuildContext context, GoRouterState state) {
+          return AddFavLocationScreen();
         },
       ),
       GoRoute(

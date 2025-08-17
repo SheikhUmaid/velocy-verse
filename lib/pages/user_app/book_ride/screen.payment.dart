@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
 import 'package:velocyverse/providers/payment/provider.payment.dart';
@@ -78,6 +79,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       listen: false,
     );
     final rideResponse = Provider.of<RideProvider>(context);
+    paymentProvider.paymentCompleted = rideResponse.finalizePayment;
 
     final userProvider = Provider.of<RiderProfileProvider>(context);
     // setState(() {
@@ -366,90 +368,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ],
 
                     const SizedBox(height: 32),
-
-                    // Tip Section
-                    // const Text(
-                    //   'Tip your driver',
-                    //   style: TextStyle(
-                    //     fontSize: 18,
-                    //     fontWeight: FontWeight.w600,
-                    //   ),
-                    // ),
-
-                    // const SizedBox(height: 16),
-
-                    // // Tip Options
-                    // Row(
-                    //   children: [
-                    //     for (int i = 0; i < tipOptions.length; i++) ...[
-                    //       Expanded(
-                    //         child: GestureDetector(
-                    //           onTap: () => _selectTip(i),
-                    //           child: Container(
-                    //             height: 50,
-                    //             decoration: BoxDecoration(
-                    //               border: Border.all(
-                    //                 color: selectedTipIndex == i
-                    //                     ? Colors.black
-                    //                     : Colors.grey[300]!,
-                    //                 width: selectedTipIndex == i ? 2 : 1,
-                    //               ),
-                    //               borderRadius: BorderRadius.circular(8),
-                    //             ),
-                    //             child: Center(
-                    //               child: Text(
-                    //                 '\$${tipOptions[i].toStringAsFixed(0)}',
-                    //                 style: TextStyle(
-                    //                   fontSize: 16,
-                    //                   fontWeight: selectedTipIndex == i
-                    //                       ? FontWeight.w600
-                    //                       : FontWeight.w500,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       if (i < tipOptions.length - 1)
-                    //         const SizedBox(width: 8),
-                    //     ],
-                    //   ],
-                    // ),
-                    // const SizedBox(height: 12),
-
-                    // Custom Tip
-                    // GestureDetector(
-                    //   onTap: () => _showCustomTipDialog(),
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     height: 50,
-                    //     decoration: BoxDecoration(
-                    //       border: Border.all(
-                    //         color: selectedTipIndex == -1 && customTipAmount > 0
-                    //             ? Colors.black
-                    //             : Colors.grey[300]!,
-                    //         width: selectedTipIndex == -1 && customTipAmount > 0
-                    //             ? 2
-                    //             : 1,
-                    //       ),
-                    //       borderRadius: BorderRadius.circular(8),
-                    //     ),
-                    //     child: Center(
-                    //       child: Text(
-                    //         customTipAmount > 0
-                    //             ? '\$${customTipAmount.toStringAsFixed(2)}'
-                    //             : 'Custom amount',
-                    //         style: TextStyle(
-                    //           fontSize: 16,
-                    //           fontWeight:
-                    //               selectedTipIndex == -1 && customTipAmount > 0
-                    //               ? FontWeight.w600
-                    //               : FontWeight.w500,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -519,15 +437,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
+                        paymentProvider.paymentCompleted = () {
+                          context.goNamed("/paymentSuccess");
+                        };
                         paymentProvider.openCheckout(
                           amount: finalTotal.ceil().toInt(),
-                          name: "${userProvider.name}",
+                          name: userProvider.name,
                           contact: userProvider.contactNumber,
-                          email: userProvider.email == null
-                              ? "__"
-                              : userProvider.email,
+                          email: userProvider.email,
                         );
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -550,13 +476,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ),
                         ],
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
                       ),
                     ),
                   ),

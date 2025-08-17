@@ -17,7 +17,7 @@ class RiderProfileProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         name = response.data['username'];
-        email = response.data['email'];
+        email = response.data['email'] ?? 'email not set';
         contactNumber = response.data['phone_number'];
         profileURL = response.data["profile"];
         notifyListeners();
@@ -26,7 +26,8 @@ class RiderProfileProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      rethrow;
+      // rethrow;
+      return false;
     }
   }
 }

@@ -249,6 +249,30 @@ class RideProvider extends ChangeNotifier {
     );
   }
 
+  Future<bool> finalizePayment() async {
+    try {
+      final response = await _apiService.postRequest(
+        "rider/finalize-payment/",
+        data: {
+          "ride_id": _id,
+          "payment_method": "upi",
+          "tip_amount": 9,
+          "upi_payment_id": "111",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      // rethrow;
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
   void disconnectWs() {
     _channel?.sink.close();
     _channel = null;

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+
 // import 'package:web_socket_channel/web_socket_channel.dart';
+enum PaymentStatus { idle, success, failure }
 
 class PaymentProvider with ChangeNotifier {
   late Razorpay _razorpay;
-
+  PaymentStatus status = PaymentStatus.idle;
   PaymentProvider() {
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
@@ -42,12 +44,16 @@ class PaymentProvider with ChangeNotifier {
 
   void handlePaymentSuccess(PaymentSuccessResponse response) {
     debugPrint("Payment Successful: ${response.paymentId}");
+    status = PaymentStatus.success;
+    notifyListeners();
     paymentCompleted!();
     // You can notify UI or call API to verify payment
   }
 
   void handlePaymentError(PaymentFailureResponse response) {
     debugPrint("Payment Failed: ${response.code} - ${response.message}");
+    status = PaymentStatus.failure;
+    notifyListeners();
     paymentError!();
   }
 

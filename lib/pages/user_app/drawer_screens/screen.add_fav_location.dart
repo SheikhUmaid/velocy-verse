@@ -10,6 +10,9 @@ class AddFavLocationScreen extends StatefulWidget {
 class _AddFavLocationScreenState extends State<AddFavLocationScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(title: Text("Favorite Locations"), elevation: 0),
+      // body,
+    );
   }
 }

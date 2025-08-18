@@ -435,48 +435,62 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                   // Pay Button
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        paymentProvider.paymentCompleted = () {
-                          context.goNamed("/paymentSuccess");
-                        };
-                        paymentProvider.openCheckout(
-                          amount: finalTotal.ceil().toInt(),
-                          name: userProvider.name,
-                          contact: userProvider.contactNumber,
-                          email: userProvider.email,
+                    child: Consumer<PaymentProvider>(
+                      builder: (_, provider, __) {
+                        if (provider.status == PaymentStatus.success) {
+                          Future.microtask(
+                            () => context.goNamed("/paymentSuccess"),
+                          );
+                        }
+                        if (provider.status == PaymentStatus.failure) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Payment Failed")),
+                          );
+                        }
+                        return ElevatedButton(
+                          onPressed: () {
+                            paymentProvider.paymentCompleted = () {
+                              context.goNamed("/paymentSuccess");
+                            };
+                            paymentProvider.openCheckout(
+                              amount: finalTotal.ceil().toInt(),
+                              name: userProvider.name,
+                              contact: userProvider.contactNumber,
+                              email: userProvider.email,
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Pay',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+
+                              const SizedBox(width: 8),
+                              Text(
+                                '₹${(finalTotal.ceil()).toStringAsFixed(0)}', // Converting to INR for display
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Pay',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-
-                          const SizedBox(width: 8),
-                          Text(
-                            '₹${(finalTotal.ceil()).toStringAsFixed(0)}', // Converting to INR for display
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ],

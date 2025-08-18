@@ -100,7 +100,7 @@ class _UserHomeState extends State<UserHome> {
               leading: Icon(CupertinoIcons.person, color: Colors.black),
               title: Text('Profile settings'),
               onTap: () {
-                context.push('/driverProfile');
+                context.push('/profileSetting');
               },
             ),
             ListTile(
@@ -111,7 +111,7 @@ class _UserHomeState extends State<UserHome> {
             ListTile(
               leading: Icon(CupertinoIcons.location, color: Colors.black),
               title: Text('My rides'),
-              onTap: () => context.pushNamed("/addFavoriteLocation"),
+              onTap: () => context.pushNamed("/myRides"),
             ),
             ListTile(
               leading: Icon(CupertinoIcons.star, color: Colors.black),

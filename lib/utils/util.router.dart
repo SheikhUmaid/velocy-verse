@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/models/model.driverDetails.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
 import 'package:velocyverse/pages/driver/mainPages/page.paymentSuccess.dart';
 import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
 import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
@@ -22,10 +24,11 @@ import 'package:velocyverse/pages/onboarding/page.permissions.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.live_tracking.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.payment.dart';
-import 'package:velocyverse/pages/user_app/book_ride/screen.payment_completed.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
 import 'package:velocyverse/pages/user_app/drawer_screens/screen.add_fav_location.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.profile.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.update_profile.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
 import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 
@@ -40,6 +43,22 @@ class MyRouter {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return AuthScreen();
+        },
+      ),
+      GoRoute(
+        path: '/driverUpdateProfile',
+        name: '/driverUpdateProfile',
+        builder: (context, state) {
+          final profile = state.extra;
+          print("extra == ${state.extra}");
+          return EditProfileScreen(userProfile: profile as DriverDetailsModel);
+        },
+      ),
+      GoRoute(
+        path: '/riderUpdateProfile',
+        name: '/riderUpdateProfile',
+        builder: (context, state) {
+          return RiderProfileUpdate();
         },
       ),
       GoRoute(
@@ -145,6 +164,13 @@ class MyRouter {
         path: '/waitingForDriver',
         builder: (BuildContext context, GoRouterState state) {
           return WaitingDriverScreen();
+        },
+      ),
+      GoRoute(
+        name: '/profileSetting',
+        path: '/profileSetting',
+        builder: (BuildContext context, GoRouterState state) {
+          return ProfileSettingsScreen();
         },
       ),
       GoRoute(

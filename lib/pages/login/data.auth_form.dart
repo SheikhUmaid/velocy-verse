@@ -40,7 +40,13 @@ class _AuthFormState extends State<AuthForm> {
           children: [
             AuthToggle(
               isLogin: isLogin,
-              onToggle: (value) => setState(() => isLogin = value),
+              onToggle: (value) {
+                phoneController.clear();
+                otpController.clear();
+                passwordController.clear();
+                confirmPasswordController.clear();
+                setState(() => isLogin = value);
+              },
             ),
             const SizedBox(height: 32),
             PhoneInputField(controller: phoneController, label: 'Phone Number'),
@@ -151,7 +157,7 @@ class _AuthFormState extends State<AuthForm> {
                   context.read<LoaderProvider>().showLoader();
                   final response = await authenticationProvider
                       .loginWithPassword(
-                        phoneNumber: "${phoneController.text}",
+                        phoneNumber: phoneController.text,
                         password: passwordController.text,
                       );
                   if (response == 'driver') {

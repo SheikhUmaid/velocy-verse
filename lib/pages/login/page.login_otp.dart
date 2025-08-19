@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';

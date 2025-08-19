@@ -273,8 +273,6 @@ class _NavigationDropOffState extends State<NavigationDropOff> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // _completeRide();
-                // Navigate to ride payment page
                 context.push('/ridePayment');
               },
               style: ElevatedButton.styleFrom(
@@ -289,7 +287,7 @@ class _NavigationDropOffState extends State<NavigationDropOff> {
                 elevation: 0,
               ),
               child: Text(
-                _isRideCompleted ? 'Ride Completed ✓' : 'Ride Completed',
+                "CimpleteRide",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:velocyverse/models/model.ongoingRide.dart';
 import 'package:velocyverse/models/model.ride_detail.dart' hide Data;
 import 'package:velocyverse/models/model.ride_request.dart';
 import 'package:velocyverse/networking/apiservices.dart';
+import 'package:velocyverse/services/secure_storage_service.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class DriverProvider extends ChangeNotifier {
   DriverProvider({required ApiService apiService}) : _apiService = apiService;
@@ -16,6 +20,8 @@ class DriverProvider extends ChangeNotifier {
   int? activeRide;
   RideDetail? rideDetail;
   OngoingRide_Model? ongoingRide;
+  VoidCallback? paymentSuccess;
+  VoidCallback? paymentFailed;
 
   void driverINIT() async {
     _onlineStatus = await _secureStorage.read(key: "is_online") == "true";
@@ -190,5 +196,64 @@ class DriverProvider extends ChangeNotifier {
       print("Error fetching ride details: $e");
       return false;
     }
+  }
+
+  Future<bool> rideComplete({required otp}) async {
+    try {
+      final response = await _apiService.postRequest(
+        // '/driver/verify-otp/$activeRide/',
+        '/driver/complete-ride/$activeRide/',
+        // data: {"otp": otp},
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint(
+          "OSFGOFSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        );
+        // final data = response
+        // .data; // Assuming _apiService returns a Dio or HTTP response
+        // rideDetail = RideDetail.fromJson(data);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error fetching ride details: $e");
+      return false;
+    }
+  }
+
+  void connectPaymentWebSocket() async {
+    final token = await SecureStorage.getAccessToken();
+    final uri = Uri.parse(
+      'ws://82.25.104.152:9000/ws/payment/status/normal/$activeRide/?token=$token',
+    );
+    final wsChannel = WebSocketChannel.connect(uri);
+
+    wsChannel.stream.listen(
+      (data) {
+        final decoded = jsonDecode(data);
+        final type = decoded['type'];
+        final paymentStatus = decoded['payment_status'];
+        final message = decoded['message'];
+
+        if (type == 'payment_status_update') {
+          if (paymentStatus == 'completed') {
+            // _showSuccess(message);
+            paymentSuccess!();
+          }
+          if (paymentStatus == 'failed') {
+            // _showSuccess(message);
+            paymentFailed!();
+          }
+        }
+      },
+      onError: (error) {
+        debugPrint('WebSocket error: $error');
+      },
+      onDone: () {
+        debugPrint('WebSocket closed');
+      },
+    );
   }
 }

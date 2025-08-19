@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
@@ -377,7 +378,9 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
-            onPressed: _completeRide,
+            onPressed: () async {
+              _completeRide(context);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(
@@ -442,57 +445,73 @@ class _DriverLiveTrackingState extends State<DriverLiveTracking> {
     );
   }
 
-  void _completeRide() {
-    showDialog(
+  Future<void> _completeRide(
+    BuildContext context, {
+    String title = 'Waiting for the payment',
+  }) {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    driverProvider.paymentSuccess = () {
+      context.goNamed('/paymentSuccess');
+    };
+    driverProvider.rideComplete(otp: 1111);
+    driverProvider.connectPaymentWebSocket();
+    return showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Complete Ride'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Your ride has been completed successfully!'),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+      barrierDismissible: false, // no tap-outside dismiss
+      useRootNavigator: true,
+      builder: (ctx) {
+        return WillPopScope(
+          // block Android back button
+          onWillPop: () async => false,
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 24,
+            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 320,
+                maxWidth: 420,
+                minHeight: 220,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    const SizedBox(height: 8),
+                    Icon(Icons.lock_clock, size: 48, color: Colors.grey),
+                    const SizedBox(height: 16),
                     Text(
-                      'Total Fare: $rideFare',
+                      title,
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      'Distance: $rideDistance',
-                      style: TextStyle(color: Colors.grey[600]),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Please wait while we confirm your payment.\nThis may take a few seconds…',
+                      textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: const CircularProgressIndicator(strokeWidth: 6),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text('Processing'),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text('Done'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _showRatingDialog();
-              },
-              child: const Text('Rate Driver'),
-            ),
-          ],
         );
       },
     );

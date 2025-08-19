@@ -18,6 +18,9 @@ import 'package:velocyverse/providers/user/provider.rider_profile.dart';
 import 'package:velocyverse/utils/util.global_loader.dart';
 import 'package:velocyverse/utils/util.router.dart';
 
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 class MyApp extends StatelessWidget {
   final RentalApiService rentalApiService;
   final RideShareApiService rideShareApiService;
@@ -47,6 +50,9 @@ class MyApp extends StatelessWidget {
 
         ChangeNotifierProvider(create: (_) => EaningsNreportsProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
+        ChangeNotifierProvider(
+          create: (_) => DriverProfileProvider(apiService: ApiService()),
+        ),
         ChangeNotifierProvider(
           create: (_) =>
               RiderProfileProvider(apiService: ApiService())..getRiderProfile(),

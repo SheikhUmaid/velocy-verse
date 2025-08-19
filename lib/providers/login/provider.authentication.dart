@@ -181,16 +181,16 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> sendOtp() async {
+  Future<bool> sendOtp({required String mode}) async {
     try {
       final response = await _apiService.postRequest(
-        'send-otp/',
+        'auth_api/send-otp/?mode=$mode',
         data: {'phone_number': _phoneNumber},
         doesNotRequireAuthHeader: true,
       );
       return response.statusCode == 200;
     } catch (e) {
-      rethrow; // Or return false if you don’t want to throw
+      return false; // Or return false if you don’t want to throw
     }
   }
 

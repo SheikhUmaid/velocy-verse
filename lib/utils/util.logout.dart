@@ -1,9 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void logout(context) {
+void logout() {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
-  storage.delete(key: "access_token");
-  storage.delete(key: "refresh_token");
+  storage.delete(key: "access");
+  storage.delete(key: "refresh");
   storage.deleteAll();
   return;
 }

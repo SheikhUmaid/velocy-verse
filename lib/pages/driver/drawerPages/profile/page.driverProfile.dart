@@ -643,7 +643,7 @@ class _DriverProfileState extends State<DriverProfile> {
       ),
       child: InkWell(
         onTap: () {
-          context.push('/driverUpdateProfile', extra: profile);
+          context.push('/driverUpdateProfile');
         },
         child: Row(
           children: [

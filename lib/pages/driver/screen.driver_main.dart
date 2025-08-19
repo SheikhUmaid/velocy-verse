@@ -8,6 +8,7 @@ import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.driverRec
 import 'package:velocyverse/pages/driver/main_pages/screen.driver_home.dart';
 import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
 import 'package:velocyverse/services/secure_storage_service.dart';
+import 'package:velocyverse/utils/util.logout.dart';
 
 class DriverMain extends StatefulWidget {
   const DriverMain({super.key});
@@ -114,7 +115,10 @@ class _DriverMainState extends State<DriverMain> {
             ListTile(
               leading: Icon(Icons.logout, color: Colors.black),
               title: Text('Logout'),
-              onTap: _logOut,
+              onTap: () {
+                logout();
+                context.goNamed('/loading');
+              },
             ),
           ],
         ),

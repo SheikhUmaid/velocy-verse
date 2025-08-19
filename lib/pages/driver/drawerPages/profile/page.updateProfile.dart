@@ -887,7 +887,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 40),
               _buildFormFields(),
               const SizedBox(height: 40),
-              _buildDeleteAccountButton(),
+              // _buildDeleteAccountButton(),
             ],
           ),
         ),
@@ -1123,65 +1123,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildDeleteAccountButton() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Danger Zone',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: _onDeleteAccountTap,
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.red),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: const Text(
-                'Delete Account',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'This action cannot be undone. All your data will be permanently deleted.',
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildDeleteAccountButton() {
+  //   return Container(
+  //     width: double.infinity,
+  //     padding: const EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.04),
+  //           blurRadius: 10,
+  //           offset: const Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const Text(
+  //           'Danger Zone',
+  //           style: TextStyle(
+  //             fontSize: 16,
+  //             fontWeight: FontWeight.w600,
+  //             color: Colors.black87,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 12),
+  //         SizedBox(
+  //           width: double.infinity,
+  //           child: OutlinedButton(
+  //             onPressed: _onDeleteAccountTap,
+  //             style: OutlinedButton.styleFrom(
+  //               side: const BorderSide(color: Colors.red),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //               padding: const EdgeInsets.symmetric(vertical: 16),
+  //             ),
+  //             child: const Text(
+  //               'Delete Account',
+  //               style: TextStyle(
+  //                 color: Colors.red,
+  //                 fontSize: 16,
+  //                 fontWeight: FontWeight.w600,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         Text(
+  //           'This action cannot be undone. All your data will be permanently deleted.',
+  //           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  // Validation Methods
+  // // Validation Methods
   String? _validateName(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Name is required';

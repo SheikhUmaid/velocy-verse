@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+// import 'package:web_socket_channel/web_socket_channel.dart';
+enum PaymentStatus { idle, success, failure }
+
 class PaymentProvider with ChangeNotifier {
   late Razorpay _razorpay;
-
+  PaymentStatus status = PaymentStatus.idle;
   PaymentProvider() {
     _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWallet);
   }
+
+  VoidCallback? paymentCompleted;
+  VoidCallback? paymentError;
 
   void openCheckout({
     required int amount,
@@ -36,16 +42,22 @@ class PaymentProvider with ChangeNotifier {
     }
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+  void handlePaymentSuccess(PaymentSuccessResponse response) {
     debugPrint("Payment Successful: ${response.paymentId}");
+    status = PaymentStatus.success;
+    notifyListeners();
+    paymentCompleted!();
     // You can notify UI or call API to verify payment
   }
 
-  void _handlePaymentError(PaymentFailureResponse response) {
+  void handlePaymentError(PaymentFailureResponse response) {
     debugPrint("Payment Failed: ${response.code} - ${response.message}");
+    status = PaymentStatus.failure;
+    notifyListeners();
+    paymentError!();
   }
 
-  void _handleExternalWallet(ExternalWalletResponse response) {
+  void handleExternalWallet(ExternalWalletResponse response) {
     debugPrint("External Wallet Selected: ${response.walletName}");
   }
 

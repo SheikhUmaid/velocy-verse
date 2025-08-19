@@ -4,12 +4,14 @@ class PhoneInputField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String countryCode;
+  final VoidCallback? onTenDigits; // ✅ added callback
 
   const PhoneInputField({
     super.key,
     required this.controller,
     required this.label,
     this.countryCode = '+91',
+    this.onTenDigits,
   });
 
   @override
@@ -33,7 +35,7 @@ class PhoneInputField extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFF9FAFB),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
+                border: Border.all(color: Color(0xFFE5E7EB)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -56,6 +58,7 @@ class PhoneInputField extends StatelessWidget {
               child: TextFormField(
                 controller: controller,
                 keyboardType: TextInputType.phone,
+                maxLength: 10, // ✅ optional: prevent > 10 digits
                 decoration: InputDecoration(
                   hintText: 'Enter phone number',
                   hintStyle: const TextStyle(
@@ -80,8 +83,14 @@ class PhoneInputField extends StatelessWidget {
                     horizontal: 12,
                     vertical: 10,
                   ),
+                  counterText: "", // ✅ hide counter text
                 ),
                 style: const TextStyle(fontSize: 16, color: Colors.black),
+                onChanged: (value) {
+                  if (value.length == 10) {
+                    onTenDigits?.call(); // 🔔 trigger callback
+                  }
+                },
               ),
             ),
           ],

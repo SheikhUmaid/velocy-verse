@@ -28,7 +28,7 @@ import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart'
 import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
 import 'package:velocyverse/pages/user_app/drawer_screens/screen.add_fav_location.dart';
 import 'package:velocyverse/pages/user_app/drawer_screens/screen.profile.dart';
-import 'package:velocyverse/pages/user_app/drawer_screens/screen.update_profile.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.rider_update_profile.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
 import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 

@@ -128,7 +128,7 @@ class ProfileSettingsScreen extends StatelessWidget {
 
                         // Arrow Icon
                         InkWell(
-                          onTap: () => context.goNamed("/riderUpdateProfile"),
+                          onTap: () => context.pushNamed("/riderUpdateProfile"),
                           child: Icon(
                             Icons.chevron_right,
                             color: Colors.grey.shade500,

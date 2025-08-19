@@ -1,13 +1,11 @@
+// screens/user/rider_profile_update.dart
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
-import 'package:velocyverse/models/model.driverDetails.dart';
-import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
 import 'package:velocyverse/providers/user/provider.rider_profile.dart';
 
 class RiderProfileUpdate extends StatefulWidget {
@@ -24,40 +22,36 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
   final _nameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
   File? _newImageFile;
-  String? _newImagePath;
-  String? _profileImagePath;
-  bool _isLoading = false;
   bool _hasChanges = false;
+  late RiderProfileProvider _profileProvider;
 
   @override
   void initState() {
     super.initState();
+    _profileProvider = Provider.of<RiderProfileProvider>(
+      context,
+      listen: false,
+    );
     _initializeFields();
   }
 
-  void _initializeFields() async {
-    final profileProvider = Provider.of<RiderProfileProvider>(
-      context,
-      listen: false,
-    );
-    _nameController.text = profileProvider.name;
-    _emailController.text = profileProvider.email;
-    // _profileImagePath = widget.userProfile.profileImage;
+  void _initializeFields() {
+    // Wait for the first frame to build to ensure context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nameController.text = _profileProvider.name;
+      _emailController.text = _profileProvider.email;
 
-    // Listen for changes
-    _nameController.addListener(_onFieldChanged);
-    _emailController.addListener(_onFieldChanged);
+      // Listen for changes
+      _nameController.addListener(_onFieldChanged);
+      _emailController.addListener(_onFieldChanged);
+    });
   }
 
   void _onFieldChanged() {
-    final profileProvider = Provider.of<RiderProfileProvider>(
-      context,
-      listen: false,
-    );
     final hasChanges =
-        _nameController.text != profileProvider.name ||
-        _emailController.text != profileProvider.email;
-    // _profileImagePath != widget.userProfile.profileImage;
+        _nameController.text != _profileProvider.name ||
+        _emailController.text != _profileProvider.email ||
+        _newImageFile != null;
 
     if (hasChanges != _hasChanges) {
       setState(() {
@@ -68,6 +62,8 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
 
   @override
   void dispose() {
+    _nameController.removeListener(_onFieldChanged);
+    _emailController.removeListener(_onFieldChanged);
     _nameController.dispose();
     _emailController.dispose();
     _nameFocusNode.dispose();
@@ -77,8 +73,14 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
+        _onCancelTap();
+      },
       child: Scaffold(
         backgroundColor: Colors.grey[50],
         appBar: _buildAppBar(),
@@ -151,7 +153,7 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
                       ),
                     ],
                   ),
-                  child: ClipOval(child: _buildProfileImage(context)),
+                  child: ClipOval(child: _buildProfileImage()),
                 ),
                 Positioned(
                   bottom: 0,
@@ -184,38 +186,23 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
     );
   }
 
-  Widget _buildProfileImage(BuildContext context) {
-    final profileUpdateProvider = Provider.of<RiderProfileProvider>(context);
-
-    if (_profileImagePath != null) {
-      // Check if it's a local file or network image
-      if (_profileImagePath!.startsWith('http')) {
-        return (_newImageFile == null)
-            ? Image.network(
-                _profileImagePath!,
-                width: 120,
-                height: 120,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildDefaultAvatar(),
-              )
-            : Image.file(
-                _newImageFile!,
-                width: 120,
-                height: 120,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildDefaultAvatar(),
-              );
-      } else {
-        return Image.file(
-          File(profileUpdateProvider.profileURL!),
-          width: 120,
-          height: 120,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(),
-        );
-      }
+  Widget _buildProfileImage() {
+    if (_newImageFile != null) {
+      return Image.file(
+        _newImageFile!,
+        width: 120,
+        height: 120,
+        fit: BoxFit.cover,
+      );
+    } else if (_profileProvider.profileURL != null &&
+        _profileProvider.profileURL!.isNotEmpty) {
+      return Image.network(
+        _profileProvider.profileURL!,
+        width: 120,
+        height: 120,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(),
+      );
     }
     return _buildDefaultAvatar();
   }
@@ -266,10 +253,12 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
             textInputAction: TextInputAction.done,
           ),
           Container(
-            margin: EdgeInsets.only(top: 12),
+            margin: const EdgeInsets.only(top: 12),
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _onSaveTap,
+              onPressed: _hasChanges && !profileUpdateProvider.isLoading
+                  ? _onSaveTap
+                  : null,
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 backgroundColor: Colors.white,
@@ -282,7 +271,7 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: profileUpdateProvider.isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : Text(
                       'Save',
                       style: TextStyle(
@@ -365,13 +354,13 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        // box-shadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.04),
+        //     blurRadius: 10,
+        //     offset: const Offset(0, 2),
+        //   ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,28 +374,7 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: _onDeleteAccountTap,
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.red),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: const Text(
-                'Delete Account',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
+
           Text(
             'This action cannot be undone. All your data will be permanently deleted.',
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -484,7 +452,8 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
                   label: 'Gallery',
                   onTap: () => _pickImageFromGallery(),
                 ),
-                if (_profileImagePath != null)
+                if (_newImageFile != null ||
+                    _profileProvider.profileURL != null)
                   _buildImageOption(
                     icon: Icons.delete,
                     label: 'Remove',
@@ -531,8 +500,6 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
 
   Future<void> _pickImageFromCamera() async {
     Navigator.pop(context);
-    // Uncomment when using image_picker
-
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
@@ -544,22 +511,13 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
 
       if (image != null) {
         setState(() {
-          print("Image path from camera = ${image.path}");
           _newImageFile = File(image.path);
+          _onFieldChanged();
         });
-        // await _cropImage(image.path);
       }
     } catch (e) {
       _showErrorSnackBar('Failed to pick image from camera');
     }
-
-    // Mock implementation for demo
-    // await Future.delayed(const Duration(milliseconds: 500));
-    // setState(() {
-    //   _profileImagePath = '/mock/camera/image/path.jpg';
-    //   _onFieldChanged();
-    // });
-    _showSuccessSnackBar('Image captured successfully');
   }
 
   Future<void> _pickImageFromGallery() async {
@@ -571,84 +529,21 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
       );
 
       if (result != null && result.files.single.path != null) {
-        // return result.files.single.path!;
         setState(() {
-          print("Image path from camera = ${result.paths}");
-          _newImageFile = File(result.paths.first!);
-        });
-      }
-      return null; // user canceled
-    } catch (e) {
-      print("Error picking image: $e");
-      return null;
-    }
-    // Uncomment when using image_picker
-    /*
-    try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-      
-      if (image != null) {
-        await _cropImage(image.path);
-      }
-    } catch (e) {
-      _showErrorSnackBar('Failed to pick image from gallery');
-    }
-    */
-
-    // Mock implementation for demo
-    // await Future.delayed(const Duration(milliseconds: 500));
-    // setState(() {
-    //   _profileImagePath = '/mock/gallery/image/path.jpg';
-    //   _onFieldChanged();
-    // });
-    _showSuccessSnackBar('Image selected successfully');
-  }
-
-  /*
-  Future<void> _cropImage(String imagePath) async {
-    try {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: imagePath,
-        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.blue[600],
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-          ),
-          IOSUiSettings(
-            title: 'Crop Image',
-            aspectRatioLockEnabled: true,
-            resetAspectRatioEnabled: false,
-          ),
-        ],
-      );
-
-      if (croppedFile != null) {
-        setState(() {
-          _profileImagePath = croppedFile.path;
+          _newImageFile = File(result.files.first!.path!);
           _onFieldChanged();
         });
-        _showSuccessSnackBar('Image updated successfully');
       }
     } catch (e) {
-      _showErrorSnackBar('Failed to crop image');
+      print("Error picking image: $e");
+      _showErrorSnackBar('Failed to pick image from gallery');
     }
   }
-  */
 
   void _removeProfileImage() {
     Navigator.pop(context);
     setState(() {
-      _profileImagePath = null;
+      _newImageFile = null;
       _onFieldChanged();
     });
     _showSuccessSnackBar('Profile image removed');
@@ -659,53 +554,37 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    String imagePath = '';
+    if (_newImageFile != null) {
+      imagePath = _newImageFile!.path;
+    } else if (_profileProvider.profileURL != null) {
+      imagePath = _profileProvider.profileURL!;
+    }
 
-    Future.microtask(() async {
-      print("Updating driver profile");
-      var imagePath = _newImageFile != null
-          ? _newImageFile!.path
-          : _profileImagePath!;
-      bool success =
-          await Provider.of<RiderProfileProvider>(
-            context,
-            listen: false,
-          ).updateRiderProfile(
-            name: _nameController.text.trim(),
-            email: _emailController.text.trim(),
-            imagePath: imagePath, // can be null if not changing image
-          );
+    // We already have a listener on the provider, so we can just call the update method
+    final success = await _profileProvider.updateRiderProfile(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      imagePath: imagePath,
+    );
 
-      if (!success) {
-        debugPrint("Failed to update driver profile");
-      } else {
-        setState(() {
-          _hasChanges = false;
-        });
-        _showSuccessSnackBar("Details updated");
-      }
-    });
-    //  finally {
-    //       if (mounted) {
-    //         setState(() {
-    //           _isLoading = false;
-    //         });
-    //       }
-    //     }
+    if (success) {
+      setState(() {
+        _hasChanges = false;
+        _newImageFile = null;
+      });
+      _showSuccessSnackBar("Details updated");
+    } else {
+      _showErrorSnackBar("Failed to update profile. Please try again.");
+    }
   }
 
   void _onCancelTap() {
-    context.pop();
-  }
-
-  Future<bool> _onWillPop() async {
     if (_hasChanges) {
       _showDiscardChangesDialog();
-      return false;
+    } else {
+      context.pop();
     }
-    return true;
   }
 
   void _showDiscardChangesDialog() {
@@ -724,7 +603,7 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Close dialog
-              // Navigator.pop(context); // Close edit screen
+              context.pop(); // Close edit screen
             },
             child: const Text('Discard', style: TextStyle(color: Colors.red)),
           ),
@@ -748,8 +627,7 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // Close dialog
-              // Handle account deletion
+              Navigator.pop(context);
               _showErrorSnackBar('Account deletion not implemented in demo');
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

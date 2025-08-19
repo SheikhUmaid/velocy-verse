@@ -118,6 +118,8 @@ class _ReceivedRentalRequestsScreenState
                     children: [
                       Text(
                         request.username ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -234,24 +236,21 @@ class _ReceivedRentalRequestsScreenState
                 ],
               ),
             ] else if (request.status == "rejected") ...[
-              PrimaryButton(
-                text: "❌ Rejected",
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                onPressed: () {},
-              ),
-            ] else if (request.status == "confirmed") ...[
               Row(
                 children: [
                   Expanded(
                     child: PrimaryButton(
-                      text: "✅Accepted",
-                      backgroundColor: Colors.black,
+                      text: "Rejected",
+                      backgroundColor: Colors.grey,
                       textColor: Colors.white,
                       onPressed: () {},
                     ),
                   ),
-                  const SizedBox(width: 8),
+                ],
+              ),
+            ] else if (request.status == "confirmed") ...[
+              Row(
+                children: [
                   Expanded(
                     child: PrimaryButton(
                       text: "Handover",

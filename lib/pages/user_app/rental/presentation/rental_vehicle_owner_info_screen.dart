@@ -30,7 +30,10 @@ class _RentalVehicleOwnerInfoScreenState
       context,
       MaterialPageRoute(
         builder: (_) => Scaffold(
-          appBar: AppBar(foregroundColor: Colors.white),
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
           backgroundColor: Colors.black,
           body: GestureDetector(
             onTap: () => Navigator.pop(context),

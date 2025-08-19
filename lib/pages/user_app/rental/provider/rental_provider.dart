@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:velocyverse/pages/user_app/rental/data/handover_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/my_vehicle_rental_model.dart';
@@ -300,6 +299,23 @@ class RentalProvider extends ChangeNotifier {
 
     try {
       await _rentalApiService.toggleAvailability(vehicleId);
+      _isSuccess = true;
+    } catch (e) {
+      _sendError = e.toString();
+    } finally {
+      _isSending = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> cancelRequest(int requestId) async {
+    _isSending = true;
+    _isSuccess = false;
+    _sendError = null;
+    notifyListeners();
+
+    try {
+      await _rentalApiService.cancelRequest(requestId);
       _isSuccess = true;
     } catch (e) {
       _sendError = e.toString();

@@ -68,12 +68,12 @@ class LoginOTP extends StatelessWidget {
                   if (response) {
                     if (await isDriver()) {
                       if (context.mounted) {
-                        context.pushNamed("/driverMain");
+                        context.pushReplacementNamed("/driverMain");
                         context.read<LoaderProvider>().hideLoader();
                       }
                     } else {
                       if (context.mounted) {
-                        context.pushNamed("/userHome");
+                        context.pushReplacementNamed("/userHome");
                         context.read<LoaderProvider>().hideLoader();
                       }
                     }

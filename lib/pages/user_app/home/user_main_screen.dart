@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:velocyverse/pages/user_app/corporate/corporate_screen.dart';
 import 'package:velocyverse/pages/user_app/page.home.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/rental_screen.dart';
-import 'package:velocyverse/pages/user_app/ride_share/ride_share_screen.dart';
+import 'package:velocyverse/pages/user_app/ride_share/presentation/ride_share_screen.dart';
 import 'package:velocyverse/utils/svg_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

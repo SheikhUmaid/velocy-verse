@@ -411,12 +411,7 @@ class _RentalVehicleDetailScreenState extends State<RentalVehicleDetailScreen> {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16,
-          bottom: 12,
-          top: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: PrimaryButton(
           text: widget.isAvailable ? "Send Request" : "Unavailable",
           backgroundColor: widget.isAvailable ? Colors.black : Colors.grey,

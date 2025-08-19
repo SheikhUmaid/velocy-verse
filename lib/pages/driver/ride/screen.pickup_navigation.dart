@@ -320,22 +320,21 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
           'Verify OTP',
           Colors.black,
           () async {
-             if (!_otpVerified) {
-              _showOtpDialog(context);
-              _otpVerified = true;
-            } else {
-              showFancySuccessToast(context, "OTP has been already verified");
-               
-//                
-                final driverProvider = Provider.of<DriverProvider>(
+            //  if (!_otpVerified) {
+            //   _showOtpDialog(context);
+            //   _otpVerified = true;
+            // } else {
+            //   showFancySuccessToast(context, "OTP has been already verified");
+
+            //
+            final driverProvider = Provider.of<DriverProvider>(
               context,
               listen: false,
             );
             final response = await driverProvider.generateOTP();
             if (response) {
               _showOtpDialog(context);
-//                
-
+              //
             }
           },
         ),

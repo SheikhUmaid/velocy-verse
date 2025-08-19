@@ -42,35 +42,55 @@ class _RentalScreenState extends State<RentalScreen>
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 10),
               // Top Buttons
               Row(
                 children: [
                   Expanded(
-                    child: PrimaryButton(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                      child: Text(
+                        "Sent Requests",
+                        style: TextStyle(color: Colors.black),
+                      ),
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => SentRentalRequestsScreen(),
                         ),
                       ),
-                      text: "Sent Requests",
-                      textColor: Colors.black,
-                      backgroundColor: Colors.grey.shade300,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: PrimaryButton(
-                      text: "Receive Requests",
-                      textColor: Colors.black,
-                      backgroundColor: Colors.grey.shade300,
+                    child: ElevatedButton(
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReceivedRentalRequestsScreen(),
                         ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                      child: Text(
+                        "Received Requests",
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
@@ -78,14 +98,25 @@ class _RentalScreenState extends State<RentalScreen>
               ),
               const SizedBox(height: 10),
               // My Garage Button
-              PrimaryButton(
+              SizedBox(
                 width: double.infinity,
-                text: "My Garage",
-                backgroundColor: Colors.grey.shade300,
-                textColor: Colors.black,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyGarageScreen()),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                    backgroundColor: Colors.grey.shade300,
+                  ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyGarageScreen()),
+                  ),
+                  child: Text(
+                    "My Garage",
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -94,16 +125,16 @@ class _RentalScreenState extends State<RentalScreen>
               TabBar(
                 isScrollable: true,
                 indicator: BoxDecoration(
+                  border: Border.all(color: Colors.black),
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
                 labelColor: Colors.white,
                 dividerColor: Colors.transparent,
-                unselectedLabelColor: Colors.black,
                 tabs: tabs.map((t) => Tab(text: t)).toList(),
               ),
-
+              const SizedBox(height: 8),
               // Tab Views
               Expanded(
                 child: Consumer<RentalProvider>(
@@ -148,7 +179,7 @@ class _RentalScreenState extends State<RentalScreen>
                                       },
                                       child: Container(
                                         margin: const EdgeInsets.only(
-                                          bottom: 12,
+                                          bottom: 15,
                                         ),
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 8,
@@ -156,15 +187,15 @@ class _RentalScreenState extends State<RentalScreen>
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(
-                                            12,
+                                            8,
                                           ),
                                           boxShadow: [
                                             BoxShadow(
                                               color: Colors.grey.withValues(
                                                 alpha: 0.5,
                                               ),
-                                              blurRadius: 5,
-                                              offset: const Offset(3, 2),
+                                              blurRadius: 1,
+                                              spreadRadius: 0.1,
                                             ),
                                           ],
                                         ),
@@ -172,7 +203,6 @@ class _RentalScreenState extends State<RentalScreen>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            // Title + Availability
                                             Padding(
                                               padding: const EdgeInsets.all(
                                                 8.0,
@@ -182,27 +212,33 @@ class _RentalScreenState extends State<RentalScreen>
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        v.vehicleName ?? "",
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 16,
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          v.vehicleName ?? "",
+                                                          maxLines: 1,
+                                                          style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Text(
-                                                        v.vehicleType ?? "",
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colors.grey[600],
+                                                        Text(
+                                                          v.vehicleType ?? "",
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey[600],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                   Container(
                                                     padding:

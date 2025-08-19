@@ -223,13 +223,29 @@ class MyRouter {
           return RecentRideDetails(rideId: rideId as String);
         },
       ),
-      // GoRoute(
-      //   path: '/driverProfile',
-      //   name: '/driverProfile',
-      //   builder: (context, state) {
-      //     return DriverProfile();
-      //   },
-      // ),
+      GoRoute(
+        path: '/driverProfile',
+        name: '/driverProfile',
+        builder: (context, state) {
+          return DriverProfile();
+        },
+      ),
+      GoRoute(
+        path: '/driverUpdateProfile',
+        name: '/driverUpdateProfile',
+        builder: (context, state) {
+          final profile = state.extra;
+          print("extra == ${state.extra}");
+          return EditProfileScreen(userProfile: profile as DriverDetailsModel);
+        },
+      ),
+      GoRoute(
+        name: '/driverMain',
+        path: '/driverMain',
+        builder: (BuildContext context, GoRouterState state) {
+          return DriverMain();
+        },
+      ),
     ],
   );
 }

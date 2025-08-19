@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/pages/driver/mainPages/page.driverReport.dart';
 import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.driverRecentRides.dart';
 import 'package:velocyverse/pages/driver/main_pages/screen.driver_home.dart';
 import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
+import 'package:velocyverse/services/secure_storage_service.dart';
 
 class DriverMain extends StatefulWidget {
   const DriverMain({super.key});
@@ -38,20 +40,17 @@ class _DriverMainState extends State<DriverMain> {
     super.initState();
     Future.microtask(() async {
       print("Fetching driver profile");
-       bool success =
-          (await Provider.of<DriverProfileProvider>(
-                context,
-                listen: false,
-              ).getDriverProfile())
-              as bool;
-      
-      
-// 
-       bool success = await Provider.of<DriverProfileProvider>(
+      bool success = (await Provider.of<DriverProfileProvider>(
         context,
         listen: false,
-      ).getDriverProfile();
-//       
+      ).getDriverProfile());
+
+      //
+      //  bool success = await Provider.of<DriverProfileProvider>(
+      //   context,
+      //   listen: false,
+      // ).getDriverProfile();
+      //
       if (!success) {
         debugPrint("Failed to fetch driver profile");
       }
@@ -60,6 +59,7 @@ class _DriverMainState extends State<DriverMain> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<DriverProfileProvider>(context);
     return Scaffold(
       body: SafeArea(child: _screens[_selectedIndex]),
       drawer: Drawer(
@@ -79,14 +79,14 @@ class _DriverMainState extends State<DriverMain> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Alex Driver',
+                      '${profileProvider.profileDetails?.username ?? ''}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      '+91 0101010101',
+                      '${profileProvider.profileDetails?.email}',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -114,6 +114,7 @@ class _DriverMainState extends State<DriverMain> {
             ListTile(
               leading: Icon(Icons.logout, color: Colors.black),
               title: Text('Logout'),
+              onTap: _logOut,
             ),
           ],
         ),
@@ -136,5 +137,10 @@ class _DriverMainState extends State<DriverMain> {
         ],
       ),
     );
+  }
+
+  _logOut() async {
+    await SecureStorage.clearTokens();
+    context.go('/loading');
   }
 }

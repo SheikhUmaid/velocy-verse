@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/pages/login/data.auth_form.dart';
 
 class AuthScreen extends StatelessWidget {

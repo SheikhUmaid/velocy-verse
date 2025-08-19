@@ -28,7 +28,7 @@ class CorporateScreen extends StatelessWidget {
                           border: Border.all(color: Colors.white24, width: 2),
                         ),
                         child: const Icon(
-                          Icons.car_crash_outlined,
+                          Icons.directions_car_rounded,
                           size: 48,
                           color: Colors.white,
                         ),

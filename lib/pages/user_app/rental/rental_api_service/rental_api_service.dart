@@ -79,6 +79,14 @@ class RentalApiService {
     }
   }
 
+  Future<void> cancelRequest(int requestId) async {
+    try {
+      await _apiService.postRequest('rent/cancel-rental-requests/$requestId/');
+    } catch (e) {
+      throw Exception("Error: $e");
+    }
+  }
+
   Future<List<ReceivedRentalRequestsModel>> fetchReceivedRentalRequest() async {
     try {
       final response = await _apiService.getRequest(

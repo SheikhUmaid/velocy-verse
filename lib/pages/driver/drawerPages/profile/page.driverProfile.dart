@@ -616,7 +616,7 @@ class _DriverProfileState extends State<DriverProfile> {
                   const SizedBox(height: 24),
 
                   // Settings Options
-                  _buildSettingsOptions(),
+                  // _buildSettingsOptions(),
                 ],
               ),
             );
@@ -721,17 +721,17 @@ class _DriverProfileState extends State<DriverProfile> {
                     color: Colors.black87,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => _onAddVehicleTap(),
-                  child: Text(
-                    'Add Vehicle',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   onTap: () => _onAddVehicleTap(),
+                //   child: Text(
+                //     'Add Vehicle',
+                //     style: TextStyle(
+                //       fontSize: 14,
+                //       color: Colors.blue[600],
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -802,11 +802,11 @@ class _DriverProfileState extends State<DriverProfile> {
                       ),
 
                       // Arrow Icon
-                      Icon(
-                        Icons.chevron_right,
-                        color: Colors.grey[400],
-                        size: 20,
-                      ),
+                      // Icon(
+                      //   Icons.chevron_right,
+                      //   color: Colors.grey[400],
+                      //   size: 20,
+                      // ),
                     ],
                   ),
                 ],

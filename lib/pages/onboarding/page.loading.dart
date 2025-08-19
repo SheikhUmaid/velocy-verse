@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
@@ -13,36 +11,11 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-  double _progressValue = 0.0;
-
   @override
   void initState() {
     super.initState();
-    _startLoadingAnimation();
+    checkLoginStatus();
   }
-
-  void _startLoadingAnimation() {
-    const duration = Duration(seconds: 2); // Changed to 2 seconds
-    const steps = 100;
-    final interval = duration.inMilliseconds ~/ steps;
-
-    Timer.periodic(Duration(milliseconds: interval), (timer) {
-      setState(() {
-        _progressValue += 1 / steps;
-        if (_progressValue >= 1.0) {
-          timer.cancel();
-          checkLoginStatus();
-          // Get.offAllNamed(Routes.permissionPage.value);
-        }
-      });
-    });
-  }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   checkLoginStatus();
-  // }
 
   void checkLoginStatus() async {
     bool loggedIn = await isLoggedin();
@@ -52,7 +25,7 @@ class _LoadingState extends State<Loading> {
         if (await isDriver()) {
           context.goNamed('/driverMain');
         } else {
-          context.goNamed("/driverMain");
+          context.goNamed("/userHome");
         }
       } else {
         context.goNamed("/permissions");
@@ -62,7 +35,7 @@ class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -75,36 +48,24 @@ class _LoadingState extends State<Loading> {
                 fontStyle: FontStyle.italic,
               ),
             ),
-            const SizedBox(height: 8),
-            Container(
-              width: 194,
-              height: 7,
-              decoration: BoxDecoration(
-                color: Color(0xFFD9D9D9),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                children: [
-                  FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: _progressValue,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF393939),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
+            SizedBox(height: 10),
+            SizedBox(
+              width: 140,
+              child: LinearProgressIndicator(
+                color: Colors.black,
+                backgroundColor: Colors.black12,
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Text(
-        textAlign: TextAlign.center,
-        "Made in India",
-        style: TextStyle(color: Colors.grey),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          textAlign: TextAlign.center,
+          "Made in India",
+          style: TextStyle(color: Colors.grey),
+        ),
       ),
     );
   }

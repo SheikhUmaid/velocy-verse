@@ -81,470 +81,481 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Add Vehicle")),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Upload Vehicle Photos"),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _newImages.length + 1,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1,
-                ),
-                itemBuilder: (context, index) {
-                  if (index < _newImages.length) {
-                    final img = _newImages[index];
-                    return Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(img.path),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            Text("Upload Vehicle Photos"),
+            const SizedBox(height: 8),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _newImages.length + 1,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1,
+              ),
+              itemBuilder: (context, index) {
+                if (index < _newImages.length) {
+                  final img = _newImages[index];
+                  return Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          File(img.path),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.close, color: Colors.red),
-                            onPressed: () =>
-                                setState(() => _newImages.removeAt(index)),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    // Add button
-                    return InkWell(
-                      onTap: _pickImages,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: const Icon(Icons.add),
                       ),
-                    );
-                  }
-                },
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red),
+                          onPressed: () =>
+                              setState(() => _newImages.removeAt(index)),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  // Add button
+                  return InkWell(
+                    onTap: _pickImages,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: const Icon(Icons.add),
+                    ),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            Text("Upload Vehicle Document"),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: _pickVehicleDocument,
+              child: Container(
+                height: 150,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: _vehicleDocument != null
+                    ? Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(_vehicleDocument!.path),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _vehicleDocument = null;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    : const Center(
+                        child: Icon(
+                          Icons.upload_file,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
               ),
-              const SizedBox(height: 8),
-              Text("Upload Vehicle Document"),
-              const SizedBox(height: 8),
-              InkWell(
-                onTap: _pickVehicleDocument,
-                child: Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
+            buildTextField("Vehicle Name", _vehicleNameController),
+            const SizedBox(height: 10),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitleText("Available From"),
+                      InkWell(
+                        onTap: () => _pickDate(context, true),
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black45),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            _availableFrom != null
+                                ? _availableFrom!.toIso8601String().substring(
+                                    0,
+                                    10,
+                                  )
+                                : "Select Date",
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: _vehicleDocument != null
-                      ? Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(_vehicleDocument!.path),
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _vehicleDocument = null;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        )
-                      : const Center(
-                          child: Icon(
-                            Icons.upload_file,
-                            size: 40,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitleText("Available To"),
+                      InkWell(
+                        onTap: () => _pickDate(context, false),
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black45),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            _availableTo != null
+                                ? _availableTo!.toIso8601String().substring(
+                                    0,
+                                    10,
+                                  )
+                                : "Select Date",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Vehicle Type
+            buildTitleText("Vehicle Type"),
+            DropdownButtonFormField<String>(
+              value: _selectedVehicleType,
+              items: [
+                "SUV",
+                "Sedan",
+                "Hatchback",
+              ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (v) => setState(() => _selectedVehicleType = v),
+              decoration: InputDecoration(
+                // labelText: "Vehicle Type",
+                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black45, width: 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.black45, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.black, width: 1.5),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitleText("Fuel Type"),
+                      DropdownButtonFormField<String>(
+                        value: _fuelType,
+                        items: ["Petrol", "Diesel", "Hybrid", "Electric"]
+                            .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            )
+                            .toList(),
+                        onChanged: (v) => setState(() => _fuelType = v),
+                        decoration: InputDecoration(
+                          // labelText: "Fuel Type",
+                          hintStyle: TextStyle(
                             color: Colors.grey,
+                            fontSize: 12,
                           ),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              buildTextField("Vehicle Name", _vehicleNameController),
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        buildTitleText("Available From"),
-                        InkWell(
-                          onTap: () => _pickDate(context, true),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 10,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
                             ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
                             ),
-                            child: Text(
-                              _availableFrom != null
-                                  ? _availableFrom!.toIso8601String().substring(
-                                      0,
-                                      10,
-                                    )
-                                  : "Select Date",
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1.5,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        buildTitleText("Available To"),
-                        InkWell(
-                          onTap: () => _pickDate(context, false),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              _availableTo != null
-                                  ? _availableTo!.toIso8601String().substring(
-                                      0,
-                                      10,
-                                    )
-                                  : "Select Date",
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              // Available To Date Picker
-              const SizedBox(height: 12),
-
-              // Vehicle Type
-              buildTitleText("Vehicle Type"),
-              DropdownButtonFormField<String>(
-                value: _selectedVehicleType,
-                items: ["SUV", "Sedan", "Hatchback"]
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (v) => setState(() => _selectedVehicleType = v),
-                decoration: InputDecoration(
-                  // labelText: "Vehicle Type",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 2),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildTitleText("Fuel Type"),
-                        DropdownButtonFormField<String>(
-                          value: _fuelType,
-                          items: ["Petrol", "Diesel", "Hybrid", "Electric"]
-                              .map(
-                                (e) =>
-                                    DropdownMenuItem(value: e, child: Text(e)),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(() => _fuelType = v),
-                          decoration: InputDecoration(
-                            // labelText: "Fuel Type",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitleText("Transmission"),
+                      DropdownButtonFormField<String>(
+                        value: _transmission,
+                        items: ["Manual", "Automatic"]
+                            .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            )
+                            .toList(),
+                        onChanged: (v) => setState(() => _transmission = v),
+                        decoration: InputDecoration(
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
                             ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 10,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 2,
-                              ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1.5,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildTitleText("Transmission"),
-                        DropdownButtonFormField<String>(
-                          value: _transmission,
-                          items: ["Manual", "Automatic"]
-                              .map(
-                                (e) =>
-                                    DropdownMenuItem(value: e, child: Text(e)),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(() => _transmission = v),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-              buildTextField("Vehicle Color", _vehicleColorController),
-
-              const SizedBox(height: 12),
-
-              // Registration Number
-              buildTextField("Registration Number", _registrationController),
-              const SizedBox(height: 12),
-              buildTextField("Security Deposit", _securityDepositController),
-              const SizedBox(height: 12),
-              buildTextField("Pickup Location", _pickupLocationController),
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildTitleText("Seating Capacity"),
-                        DropdownButtonFormField<int>(
-                          value: _seatingCapacity,
-                          items: [2, 4, 5, 7]
-                              .map(
-                                (e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.toString()),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (v) =>
-                              setState(() => _seatingCapacity = v),
-
-                          decoration: InputDecoration(
-                            // labelText: "Seating Capacity",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildTitleText("Bag Capacity"),
-                        DropdownButtonFormField<int>(
-                          value: _bagCapacity,
-                          items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-                              .map(
-                                (e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.toString()),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(() => _bagCapacity = v),
-                          decoration: InputDecoration(
-                            // labelText: "Bag Capacity",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(width: 12),
-
-              const SizedBox(width: 12),
-              buildTitleText("AC"),
-              Switch(value: _isAc, onChanged: (v) => setState(() => _isAc = v)),
-              const SizedBox(height: 12),
-
-              // Rental Price
-              buildTextField("Rental Price per Day", _rentalPriceController),
-              const SizedBox(height: 12),
-
-              // Availability
-              buildTitleText("Availability"),
-              DropdownButtonFormField<bool>(
-                value: _isAvailable,
-
-                items: const [
-                  DropdownMenuItem(value: true, child: Text("Available")),
-                  DropdownMenuItem(value: false, child: Text("Not Available")),
-                ],
-                onChanged: (v) => setState(() => _isAvailable = v ?? true),
-                decoration: InputDecoration(
-                  // labelText: "Available or Not",
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 2),
+                      ),
+                    ],
                   ),
                 ),
+              ],
+            ),
+
+            const SizedBox(height: 15),
+            buildTextField("Vehicle Color", _vehicleColorController),
+
+            const SizedBox(height: 12),
+
+            // Registration Number
+            buildTextField("Registration Number", _registrationController),
+            const SizedBox(height: 12),
+            buildTextField("Security Deposit", _securityDepositController),
+            const SizedBox(height: 12),
+            buildTextField("Pickup Location", _pickupLocationController),
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitleText("Seating Capacity"),
+                      DropdownButtonFormField<int>(
+                        value: _seatingCapacity,
+                        items: [2, 4, 5, 7]
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e.toString()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) => setState(() => _seatingCapacity = v),
+
+                        decoration: InputDecoration(
+                          // labelText: "Seating Capacity",
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitleText("Bag Capacity"),
+                      DropdownButtonFormField<int>(
+                        value: _bagCapacity,
+                        items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e.toString()),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) => setState(() => _bagCapacity = v),
+                        decoration: InputDecoration(
+                          // labelText: "Bag Capacity",
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black45,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildTitleText("AC"),
+                const SizedBox(width: 5),
+                Switch(
+                  activeColor: Colors.black,
+                  value: _isAc,
+                  onChanged: (v) => setState(() => _isAc = v),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Rental Price
+            buildTextField("Rental Price per Day", _rentalPriceController),
+            const SizedBox(height: 12),
+
+            // Availability
+            buildTitleText("Availability"),
+            DropdownButtonFormField<bool>(
+              value: _isAvailable,
+
+              items: const [
+                DropdownMenuItem(value: true, child: Text("Available")),
+                DropdownMenuItem(value: false, child: Text("Not Available")),
+              ],
+              onChanged: (v) => setState(() => _isAvailable = v ?? true),
+              decoration: InputDecoration(
+                // labelText: "Available or Not",
+                hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
+                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black45, width: 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.black45, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.black, width: 1.5),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsetsGeometry.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
         child: PrimaryButton(
           text: "Add Vehicle",
-          onPressed: () {
-            _submitAddVehicle(context);
-          },
+          onPressed: () => _submitAddVehicle(context),
         ),
       ),
     );
@@ -601,6 +612,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text("Vehicle added successfully!")));
       Navigator.pop(context);
+      await Provider.of<RentalProvider>(context, listen: false).fetchVehicles();
     } else if (provider.addError != null) {
       ScaffoldMessenger.of(
         context,

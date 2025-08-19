@@ -25,11 +25,17 @@ class _MyGarageScreenState extends State<MyGarageScreen> {
           }
 
           if (provider.error != null) {
-            return Center(child: Text('Error: ${provider.error}'));
+            return Center(child: Text('Something went wrong!'));
+            // return Center(child: Text('Error: ${provider.error}'));
           }
 
           if (provider.vehicles.isEmpty) {
-            return const Center(child: Text("No vehicles found."));
+            return RefreshIndicator(
+              onRefresh: () async {
+                await provider.fetchVehicles();
+              },
+              child: const Center(child: Text("No vehicles found.")),
+            );
           }
 
           return RefreshIndicator(
@@ -68,8 +74,20 @@ class _MyGarageScreenState extends State<MyGarageScreen> {
                                   fit: BoxFit.cover,
                                 )
                               : const Icon(Icons.directions_car),
-                          title: Text(vehicle.vehicleName ?? 'Unnamed'),
-                          subtitle: Text(vehicle.registrationNumber ?? ''),
+                          title: Text(
+                            vehicle.vehicleName ?? 'Unnamed',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                            ),
+                          ),
+                          subtitle: Text(
+                            vehicle.registrationNumber ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           trailing: PopupMenuButton<String>(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(25),
@@ -229,7 +247,13 @@ class _MyGarageScreenState extends State<MyGarageScreen> {
                           child: Row(
                             children: [
                               Expanded(
-                                child: PrimaryButton(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 2,
+                                    backgroundColor: vehicle.isAvailable == true
+                                        ? Colors.black
+                                        : Colors.grey.shade200,
+                                  ),
                                   onPressed: () async {
                                     final provider =
                                         Provider.of<RentalProvider>(
@@ -268,18 +292,30 @@ class _MyGarageScreenState extends State<MyGarageScreen> {
                                       );
                                     }
                                   },
-                                  text: "Available",
-                                  textColor: vehicle.isAvailable == true
-                                      ? Colors.white
-                                      : Colors.black,
-                                  backgroundColor: vehicle.isAvailable == true
-                                      ? Colors.black
-                                      : Colors.grey.shade200,
+
+                                  // text: "Available",
+                                  // textColor: vehicle.isAvailable == true
+                                  //     ? Colors.white
+                                  //     : Colors.black,
+                                  child: Text(
+                                    "Available",
+                                    style: TextStyle(
+                                      color: vehicle.isAvailable == true
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: PrimaryButton(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 2,
+                                    backgroundColor: vehicle.isAvailable == true
+                                        ? Colors.grey.shade200
+                                        : Colors.black,
+                                  ),
                                   onPressed: () async {
                                     final provider =
                                         Provider.of<RentalProvider>(
@@ -318,13 +354,14 @@ class _MyGarageScreenState extends State<MyGarageScreen> {
                                       );
                                     }
                                   },
-                                  text: "Unavailable",
-                                  textColor: vehicle.isAvailable == true
-                                      ? Colors.black
-                                      : Colors.white,
-                                  backgroundColor: vehicle.isAvailable == true
-                                      ? Colors.grey.shade200
-                                      : Colors.black,
+                                  child: Text(
+                                    "Unavailable",
+                                    style: TextStyle(
+                                      color: vehicle.isAvailable == true
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -340,7 +377,7 @@ class _MyGarageScreenState extends State<MyGarageScreen> {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
         child: PrimaryButton(
           text: "Add Vehicle",
           onPressed: () {

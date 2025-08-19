@@ -22,7 +22,7 @@ class _DriverReportsState extends State<DriverReports> {
     super.initState();
     Future.microtask(() async {
       print("Fetching recent rides");
-      bool success = await Provider.of<RaningsNreportsProvider>(
+      bool success = await Provider.of<EaningsNreportsProvider>(
         context,
         listen: false,
       ).fetchEarningsNReport();
@@ -45,7 +45,7 @@ class _DriverReportsState extends State<DriverReports> {
 
   @override
   Widget build(BuildContext context) {
-    final earningsProvider = Provider.of<RaningsNreportsProvider>(context);
+    final earningsProvider = Provider.of<EaningsNreportsProvider>(context);
     final paymentProvider = Provider.of<PaymentProvider>(
       context,
       listen: false,
@@ -278,6 +278,11 @@ class _AvailablePayout extends StatelessWidget {
       context,
       listen: false,
     );
+    final earningsProvider = Provider.of<EaningsNreportsProvider>(
+      context,
+      listen: false,
+    );
+
     return Card(
       margin: EdgeInsets.zero,
       color: Colors.white,
@@ -313,16 +318,26 @@ class _AvailablePayout extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                paymentProvider.openCheckout(
-                  amount: 500,
-                  name: "John Doe",
-                  contact: "9999999999",
-                  email: "john@example.com",
-                );
+                // paymentProvider.openCheckout(
+                //   amount: 500,
+                //   name: "John Doe",
+                //   contact: "9999999999",
+                //   email: "john@example.com",
+                // );
+
+                if (earnings.totalEarnings == 0.0 &&
+                    earningsProvider.isLoading == false) {
+                } else {
+                  var success = earningsProvider.requestCashOut(
+                    earnings.totalEarnings ?? 0.0,
+                  );
+                }
               },
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                child: Text('Cash Out'),
+                child: earningsProvider.isLoading
+                    ? CircularProgressIndicator()
+                    : Text('Cash Out'),
               ),
             ),
           ],

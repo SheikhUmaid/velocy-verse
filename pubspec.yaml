@@ -58,6 +58,8 @@ dependencies:
   flutter_google_places_sdk: ^0.4.2+1
   google_places_autocomplete_text_field: ^2.0.0
   sms_autofill: ^2.4.1
+  shared_preferences: ^2.5.3
+  hive: ^2.2.3
 
 
 dev_dependencies:

@@ -7,7 +7,9 @@ import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'dart:async';
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/utils/util.active_ride_setter.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
+import 'package:velocyverse/utils/util.ride_persistor.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   LiveTrackingScreen({Key? key, required this.otpText}) : super(key: key);
@@ -49,6 +51,12 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
 
   Future<void> _initializeRideData() async {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
+    await activeRideSetter(
+      is_any: true,
+      level: "/riderLiveTracking",
+      rideId: rideProvider.activeId,
+    );
+
     _pickupLocation = LatLng(
       rideProvider.fromLocation!.latitude!,
       rideProvider.fromLocation!.longitude!,

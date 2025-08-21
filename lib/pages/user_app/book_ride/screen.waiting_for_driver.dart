@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/utils/util.ride_persistor.dart';
 
 class WaitingDriverScreen extends StatefulWidget {
   const WaitingDriverScreen({super.key});
@@ -34,6 +35,8 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
 
       // What to do when OTP comes
       rideProvider.onOtpReceived = (otp) {
+        rideProvider.otp = otp;
+        RidePersistor.save(rideProvider);
         _showOtpDialog(context, otp);
       };
       rideProvider.connectToOtpWs(123);
@@ -58,7 +61,7 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
     }
   }
 
-  void _showOtpDialog(BuildContext context, String otp) {
+  void _showOtpDialog(BuildContext context, String otp) async {
     context.goNamed("/riderLiveTracking", extra: otp);
   }
 

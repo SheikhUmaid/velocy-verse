@@ -7,6 +7,8 @@ import 'dart:async';
 
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:velocyverse/utils/util.active_ride_setter.dart';
+import 'package:velocyverse/utils/util.ride_persistor.dart';
 
 class EnRouteScreen extends StatefulWidget {
   const EnRouteScreen({Key? key}) : super(key: key);
@@ -48,7 +50,7 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
   final String timeRemaining = "15 min";
 
   Timer? _locationTimer;
-  DateTime _currentTime = DateTime.now();
+  DateTime currentTime = DateTime.now();
 
   @override
   void initState() {
@@ -67,7 +69,9 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
 
     // ✅ Set the callback for when connection closes
     rideProvider.onRideCompleted = () {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await activeRideClearer();
+        await RidePersistor.clear(rideProvider);
         context.pushNamed("/paymentScreen");
       });
     };
@@ -75,6 +79,14 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
 
   Future<void> _initializeRideData() async {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
+
+    await activeRideSetter(
+      is_any: true,
+      level: "/routeWithDriver",
+      rideId: rideProvider.activeId,
+    );
+    await RidePersistor.save(rideProvider);
+
     _pickupLocation = LatLng(
       rideProvider.fromLocation!.latitude!,
       rideProvider.fromLocation!.longitude!,
@@ -114,7 +126,7 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
     Timer.periodic(const Duration(seconds: 30), (timer) {
       if (mounted) {
         setState(() {
-          _currentTime = DateTime.now();
+          currentTime = DateTime.now();
         });
       }
     });

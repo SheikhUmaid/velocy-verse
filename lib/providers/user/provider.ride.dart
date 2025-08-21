@@ -17,14 +17,32 @@ class RideProvider extends ChangeNotifier {
   String rideType = 'now';
   double? _estimatedPrice;
   int? _id;
+
+  set id(int? id) {
+    _id = id;
+    notifyListeners();
+  }
+
   LocationModel? get fromLocation => _fromLocation;
   LocationModel? get toLocation => _toLocation;
   double? get distance => _distance;
   double? get estimatedPrice => _estimatedPrice;
+  int? get activeId => _id;
 
   WebSocketChannel? _channel;
 
+  set activeId(int? id) {
+    _id = id;
+    notifyListeners();
+  }
+
   String? _otp;
+
+  set otp(String? otp) {
+    _otp = otp;
+    notifyListeners();
+  }
+
   String? get otp => _otp;
 
   void Function(String otp)? onOtpReceived;

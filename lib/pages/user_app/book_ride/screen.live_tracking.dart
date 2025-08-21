@@ -10,6 +10,7 @@ import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/utils/util.active_ride_setter.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.ride_persistor.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   LiveTrackingScreen({Key? key, required this.otpText}) : super(key: key);

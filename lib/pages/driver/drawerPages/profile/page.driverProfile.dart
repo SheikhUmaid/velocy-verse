@@ -15,38 +15,16 @@ class DriverProfile extends StatefulWidget {
 class _DriverProfileState extends State<DriverProfile> {
   bool _darkMode = false;
 
-  // Mock data - replace with actual data models
-  final UserProfile _userProfile = UserProfile(
-    name: 'Alex',
-    email: 'alex@gmail.com',
-    avatarUrl: 'null', // Set to null to show default avatar
-  );
-
-  final List<Vehicle> _vehicles = [
-    Vehicle(
-      name: 'Toyota Camry',
-      plateNumber: 'ABC 123',
-      icon: Icons.directions_car,
-    ),
-    Vehicle(
-      name: 'Ford F-150',
-      plateNumber: 'XYZ 789',
-      icon: Icons.local_shipping,
-    ),
-  ];
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Future.microtask(() async {
       print("Fetching driver profile");
-      bool success =
-          (await Provider.of<DriverProfileProvider>(
-                context,
-                listen: false,
-              ).getDriverProfile())
-              as bool;
+      bool success = await Provider.of<DriverProfileProvider>(
+        context,
+        listen: false,
+      ).getDriverProfile();
       if (!success) {
         debugPrint("Failed to fetch driver profile");
       }
@@ -102,7 +80,7 @@ class _DriverProfileState extends State<DriverProfile> {
                   const SizedBox(height: 24),
 
                   // Settings Options
-                  _buildSettingsOptions(),
+                  // _buildSettingsOptions(),
                 ],
               ),
             );
@@ -129,7 +107,7 @@ class _DriverProfileState extends State<DriverProfile> {
       ),
       child: InkWell(
         onTap: () {
-          context.push('/driverUpdateProfile');
+          context.push('/driverUpdateProfile', extra: profile);
         },
         child: Row(
           children: [
@@ -140,7 +118,7 @@ class _DriverProfileState extends State<DriverProfile> {
               backgroundImage: profile.profileImage != null
                   ? NetworkImage(profile.profileImage!)
                   : null,
-              child: _userProfile.avatarUrl == null
+              child: profile.profileImage == null
                   ? Icon(Icons.person, size: 28, color: Colors.grey[600])
                   : null,
             ),
@@ -207,17 +185,17 @@ class _DriverProfileState extends State<DriverProfile> {
                     color: Colors.black87,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => _onAddVehicleTap(),
-                  child: Text(
-                    'Add Vehicle',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   onTap: () => _onAddVehicleTap(),
+                //   child: Text(
+                //     'Add Vehicle',
+                //     style: TextStyle(
+                //       fontSize: 14,
+                //       color: Colors.blue[600],
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -288,11 +266,11 @@ class _DriverProfileState extends State<DriverProfile> {
                       ),
 
                       // Arrow Icon
-                      Icon(
-                        Icons.chevron_right,
-                        color: Colors.grey[400],
-                        size: 20,
-                      ),
+                      // Icon(
+                      //   Icons.chevron_right,
+                      //   color: Colors.grey[400],
+                      //   size: 20,
+                      // ),
                     ],
                   ),
                 ],
@@ -304,7 +282,7 @@ class _DriverProfileState extends State<DriverProfile> {
     );
   }
 
-  Widget _buildVehicleTile(Vehicle vehicle, bool isLast) {
+  Widget _buildVehicleTile(VehicleInfo vehicle, bool isLast) {
     return InkWell(
       onTap: () => _onVehicleTap(vehicle),
       child: Container(
@@ -320,7 +298,11 @@ class _DriverProfileState extends State<DriverProfile> {
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(vehicle.icon, size: 20, color: Colors.grey[600]),
+                  child: Icon(
+                    CupertinoIcons.car_detailed,
+                    size: 20,
+                    color: Colors.grey[600],
+                  ),
                 ),
 
                 const SizedBox(width: 12),
@@ -331,7 +313,7 @@ class _DriverProfileState extends State<DriverProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        vehicle.name,
+                        vehicle.carName ?? '',
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -340,7 +322,7 @@ class _DriverProfileState extends State<DriverProfile> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        vehicle.plateNumber,
+                        vehicle.vehicleNumber ?? '',
                         style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                       ),
                     ],
@@ -473,9 +455,9 @@ class _DriverProfileState extends State<DriverProfile> {
     debugPrint('Add Vehicle tapped');
   }
 
-  void _onVehicleTap(Vehicle vehicle) {
+  void _onVehicleTap(VehicleInfo vehicle) {
     // Navigate to vehicle details screen
-    debugPrint('Vehicle tapped: ${vehicle.name}');
+    debugPrint('Vehicle tapped: ${vehicle.carName}');
   }
 
   void _onLanguageTap() {
@@ -495,21 +477,4 @@ class _DriverProfileState extends State<DriverProfile> {
     // Apply dark mode theme
     debugPrint('Dark Mode: $value');
   }
-}
-
-// Data Models
-class UserProfile {
-  final String name;
-  final String email;
-  final String? avatarUrl;
-
-  UserProfile({required this.name, required this.email, this.avatarUrl});
-}
-
-class Vehicle {
-  final String name;
-  final String plateNumber;
-  final IconData icon;
-
-  Vehicle({required this.name, required this.plateNumber, required this.icon});
 }

@@ -18,6 +18,7 @@ import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
 import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
+import 'package:velocyverse/pages/login/page.registration_otp.dart';
 import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
 import 'package:velocyverse/pages/onboarding/page.loading.dart';
 import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
@@ -235,6 +236,25 @@ class MyRouter {
         builder: (BuildContext context, GoRouterState state) {
           String phoneNumber = state.extra as String;
           return LoginOTP(phoneNumber: phoneNumber);
+        },
+      ),
+      // /registrationOTP
+      GoRoute(
+        name: '/registrationOTP',
+        path: '/registrationOTP',
+        builder: (BuildContext context, GoRouterState state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          String phoneNumber = extra?['phoneNumber'] as String;
+          String otp = extra?['otp'] as String;
+          String password = extra?['password'] as String;
+          String confirmPassword = extra?['confirmPassword'] as String;
+
+          return RegistrationOTP(
+            phoneNumber: phoneNumber,
+            otp: otp,
+            password: password,
+            confirmPassword: confirmPassword,
+          );
         },
       ),
       GoRoute(

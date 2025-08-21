@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
@@ -8,9 +9,18 @@ import 'package:velocyverse/providers/provider.loader.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
 
-class LoginOTP extends StatelessWidget {
-  LoginOTP({super.key, required this.phoneNumber});
+class RegistrationOTP extends StatelessWidget {
+  RegistrationOTP({
+    super.key,
+    required this.phoneNumber,
+    required this.otp,
+    required this.password,
+    required this.confirmPassword,
+  });
   final String phoneNumber;
+  final String otp;
+  final String password;
+  final String confirmPassword;
   final otpController = TextEditingController();
 
   @override
@@ -33,7 +43,7 @@ class LoginOTP extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "OTP",
+                      "OTP registration",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 44.00,
@@ -62,12 +72,23 @@ class LoginOTP extends StatelessWidget {
                 onPressed: () async {
                   var verifyOTP = await authenticationProvider.fb_verifyOTP(
                     otpController.text.trim(),
-                    true,
+                    false,
                   );
-                  if (verifyOTP == 'rider') {
-                    context.go('/userHome');
-                  } else if (verifyOTP == 'driver') {
-                    context.go('/driverMain');
+                  if (verifyOTP == true) {
+                    final response = await authenticationProvider
+                        .registerRequest(
+                          phoneNumber: phoneNumber,
+                          otp: otp,
+                          password: password,
+                          confirmPassword: confirmPassword,
+                        );
+                    if (response) {
+                      if (context.mounted) {
+                        context.pushNamed("/completeProfile");
+                      }
+                    } else {
+                      debugPrint("Something Went Wrong");
+                    }
                   } else {
                     showFancyErrorToast(context, "Invalid OTP");
                   }

@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:velocyverse/app.dart';
 import 'package:velocyverse/networking/apiservices.dart';
+import 'package:velocyverse/networking/notification_services.dart';
 import 'package:velocyverse/services/secure_storage_service.dart';
 import 'package:velocyverse/utils/util.get_file_extension.dart';
 
@@ -14,7 +18,8 @@ class AuthenticationProvider extends ChangeNotifier {
   final ApiService _apiService;
   String _phoneNumber = '';
   String get phoneNumber => _phoneNumber;
-
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   int? _registeredUser;
 
   set registeredUser(int value) {
@@ -76,9 +81,11 @@ class AuthenticationProvider extends ChangeNotifier {
     required String password,
   }) async {
     try {
+      print('ph no =>> $phoneNumber');
+      print(password);
       final response = await _apiService.postRequest(
         '/auth_api/password-login/',
-        data: {'phone_number': phoneNumber, 'password': password},
+        data: {'phone_number': '+91' + phoneNumber, 'password': password},
         doesNotRequireAuthHeader: true,
       );
 
@@ -312,6 +319,127 @@ class AuthenticationProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Document upload error: $e');
+      return false;
+    }
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String VerificationID = '';
+  set verificationId(String value) {
+    VerificationID = value;
+    notifyListeners();
+  }
+
+  Future<bool> fb_sendOTP(String phNo) async {
+    _isLoading = true;
+    notifyListeners();
+    print('sending otp to $phNo');
+
+    final completer = Completer<bool>();
+
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: "+91$phNo",
+        timeout: const Duration(seconds: 60),
+
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto verification (sometimes works without user input)
+          await _auth.signInWithCredential(credential);
+          if (!completer.isCompleted) completer.complete(true);
+        },
+
+        verificationFailed: (FirebaseAuthException e) {
+          print("Verification failed: ${e.message}");
+          if (!completer.isCompleted) completer.complete(false);
+        },
+
+        codeSent: (String verId, int? resendToken) {
+          verificationId = verId;
+          print('OTP code sent, verId = $verId');
+          _isLoading = false;
+          notifyListeners();
+          if (!completer.isCompleted) completer.complete(true);
+        },
+
+        codeAutoRetrievalTimeout: (String verId) {
+          verificationId = verId;
+        },
+      );
+
+      return completer.future; // Waits until one of the callbacks completes
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      print("Error in fb_sendOTP: $e");
+      return false;
+    }
+  }
+
+  Future<Object> fb_verifyOTP(String otp, bool isLogin) async {
+    print('verifying otp $otp');
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: VerificationID,
+        smsCode: otp,
+      );
+
+      UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
+      User? user = userCredential.user;
+
+      if (user != null) {
+        String? idToken = await user.getIdToken();
+        print('\n\n\n=====send this $idToken to your backend');
+        if (isLogin) {
+          var credsSent = await sendTokenToBackend(idToken!);
+          if (credsSent == 'rider' || credsSent == 'driver') {
+            _isLoading = false;
+            notifyListeners();
+            return credsSent;
+          }
+        } else {
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        }
+      }
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<Object> sendTokenToBackend(String idToken) async {
+    try {
+      final response = await _apiService.postRequest(
+        "/auth_api/firebase-auth/",
+        headers: {"Content-Type": "application/json"},
+        data: {"idToken": idToken, 'd_token': NotificationService().fcmToken},
+      );
+      print('sts code vvvvv');
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        FlutterSecureStorage secureStorage = FlutterSecureStorage();
+        // Store the token securely
+        await secureStorage.write(key: 'role', value: response.data['role']);
+        await SecureStorage.saveTokens(
+          accessToken: response.data['access'],
+          refreshToken: response.data['refresh'],
+        );
+        print('rolw jabid = ${response.data['role']}');
+        return response.data['role'];
+      } else {
+        return false;
+      }
+    } catch (e) {
       return false;
     }
   }

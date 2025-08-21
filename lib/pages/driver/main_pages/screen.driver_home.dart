@@ -1,9 +1,7 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:velocyverse/components/driver/component.ongoingRide.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
 import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
@@ -17,9 +15,7 @@ class DriverHome extends StatefulWidget {
 
 class _DriverHomeState extends State<DriverHome> {
   bool isOnline = false;
-  int selectedTab = 0;
   String selectedRideTab = 'Live';
-
   @override
   Widget build(BuildContext context) {
     final driverProvider = Provider.of<DriverProvider>(context, listen: false);
@@ -27,48 +23,65 @@ class _DriverHomeState extends State<DriverHome> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-
-      // ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header Section
-            _buildHeader(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double width = constraints.maxWidth;
+            bool isTablet = width > 600; // adjust breakpoint as needed
 
-            SizedBox(height: 10),
-            // Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                // padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Go Online Section
-                    _buildGoOnlineSection(),
-                    const SizedBox(height: 20),
+            return Column(
+              children: [
+                _buildHeader(width),
+                SizedBox(height: 10),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet ? width * 0.1 : 16.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildOngoingRideSection(context),
 
-                    // Today's Earnings Section
-                    _buildTodaysEarningsSection(),
-                    const SizedBox(height: 20),
-
-                    // Cash Limit Section
-                    _buildCashLimitSection(),
-                    const SizedBox(height: 20),
-
-                    // Ride Requests Section
-                    _buildRideRequestsSection(),
-                    const SizedBox(height: 20),
-
-                    // Active Ride Card
-                    _buildActiveRideCard(),
-                  ],
+                          const SizedBox(height: 20),
+                          _buildGoOnlineSection(),
+                          const SizedBox(height: 20),
+                          isTablet
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: _buildTodaysEarningsSection(),
+                                    ),
+                                    const SizedBox(width: 20),
+                                    Expanded(child: _buildCashLimitSection()),
+                                  ],
+                                )
+                              : Column(
+                                  children: [
+                                    _buildTodaysEarningsSection(),
+                                    const SizedBox(height: 20),
+                                    _buildCashLimitSection(),
+                                  ],
+                                ),
+                          const SizedBox(height: 20),
+                          _buildRideRequestsSection(),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 500),
+                              child: _buildActiveRideCard(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-
-            // Bottom Navigation
-            // _buildBottomNavigation(),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -81,61 +94,48 @@ class _DriverHomeState extends State<DriverHome> {
     );
 
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: width > 600 ? width * 0.1 : 16,
+        vertical: 16,
+      ),
       color: Colors.white,
       child: Row(
         children: [
-          // Profile Section
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              // border: Border.all(color: Colors.blue, width: 2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: InkWell(
-              onTap: () {
-                print("opening drawer");
-                Scaffold.of(context).openDrawer();
-
-                print("drawer open");
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundColor: Colors.grey[300],
-                    child: const Icon(
-                      Icons.person,
-                      size: 20,
-                      color: Colors.grey,
-                    ),
+          InkWell(
+            onTap: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey[300],
+                  child: const Icon(
+                    Icons.person_2_outlined,
+                    size: 20,
+                    color: Colors.grey,
                   ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${driverProfileProvider.profileDetails?.username ?? '__'}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${driverProfileProvider.profileDetails?.username ?? '__'}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
                       ),
-                      // Text(
-                      //   'ID: DRV2025001',
-                      //   style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                      // ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
           const Spacer(),
-          // Notification Icon
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_outlined),
@@ -144,6 +144,27 @@ class _DriverHomeState extends State<DriverHome> {
         ],
       ),
     );
+  }
+
+  Widget _buildOngoingRideSection(BuildContext context) {
+    final driverProvider = Provider.of<DriverProvider>(context, listen: true);
+
+    return (driverProvider.ongoingRide == null)
+        ? SizedBox.shrink()
+        : OngoingRideCard(
+            onTap: () {
+              driverProvider.ongoingRide!.otpVerified == true
+                  ? context.push('/dropOffNavigation')
+                  : context.push('/pickUpNavigation', extra: true);
+            },
+            ride: ActiveRide(
+              id: driverProvider.ongoingRide!.id ?? 0,
+              fromLocation: driverProvider.ongoingRide!.fromLocation.toString(),
+              toLocation: driverProvider.ongoingRide!.toLocation.toString(),
+              status: driverProvider.ongoingRide!.status.toString(),
+              otpVerified: driverProvider.ongoingRide!.otpVerified ?? false,
+            ),
+          );
   }
 
   Widget _buildGoOnlineSection() {
@@ -177,11 +198,6 @@ class _DriverHomeState extends State<DriverHome> {
             builder: (_, provider, __) {
               return Switch(
                 activeColor: Colors.blue,
-                activeTrackColor: Colors.blue.withOpacity(.3),
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: Colors.grey[300],
-                trackOutlineColor: MaterialStateProperty.all(Colors.white),
-                // trackColor: MaterialStateProperty.all(Colors.grey.shade300),
                 value: isOnline,
                 onChanged: (value) async {
                   await driverProvider.toggleOnlineStatus();
@@ -224,76 +240,56 @@ class _DriverHomeState extends State<DriverHome> {
             ),
           ),
           const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              children: [
-                // Earnings
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '₹ 125',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+          Row(
+            children: const [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '₹ 125',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      Text(
-                        'Total',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Text('Total', style: TextStyle(fontSize: 12)),
+                  ],
                 ),
-                // Trips
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '8',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '8',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      Text(
-                        'Trips',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Text('Trips', style: TextStyle(fontSize: 12)),
+                  ],
                 ),
-                // Rating
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    // border: Border.all(color: Colors.grey[400]!, width: 2),
-                    // borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        '4.9',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      '4.9',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      Text(
-                        'Rating',
-                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Text('Rating', style: TextStyle(fontSize: 10)),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -329,14 +325,10 @@ class _DriverHomeState extends State<DriverHome> {
                 ),
               ),
               const Spacer(),
-              Text(
-                'Max: \$200',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
+              Text('Max: \$200', style: TextStyle(fontSize: 12)),
             ],
           ),
           const SizedBox(height: 12),
-          // Progress Bar
           Container(
             height: 8,
             decoration: BoxDecoration(
@@ -345,7 +337,7 @@ class _DriverHomeState extends State<DriverHome> {
             ),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
-              widthFactor: 0.75, // 75% progress
+              widthFactor: 0.75,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[700],
@@ -355,9 +347,9 @@ class _DriverHomeState extends State<DriverHome> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '\$150 collected - Submit by today',
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 12),
           ),
         ],
       ),
@@ -365,7 +357,6 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildRideRequestsSection() {
-    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
     return Container(
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -455,93 +446,71 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildActiveRideCard() {
-    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
-    return Consumer<DriverProvider>(
-      builder: (context, driverProvider, child) {
-        if (driverProvider.nowRides.isEmpty) {
-          return const Center(
-            child: Text(
-              'No available rides',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
+          child: InkWell(
+            onTap: () {
+              context.push('/rideDetails');
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Downtown Plaza',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          '2.5 km away',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Text(
+                    '\$12.50',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        }
-
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: driverProvider.nowRides.length,
-          itemBuilder: (context, index) {
-            final ride = driverProvider.nowRides[index];
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 6,
-              ),
-              child: InkWell(
-                onTap: () {
-                  driverProvider.activeRide = ride.id;
-                  context.pushNamed('/rideDetail');
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              ride.toLocation ?? 'Unknown Location',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Text(
-                              '${ride.toLatitude}, ${ride.toLongitude}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '₹${ride.price?.toStringAsFixed(2) ?? '0.00'}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+          ),
         );
       },
     );
   }
 }
-
-
 
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU1MDY4NzExLCJpYXQiOjE3NTQ5ODIzMTEsImp0aSI6ImE0NGY5MzhhODcyMjQ0NzdhMGMyOGM5ZTk0ZTA1NDVkIiwidXNlcl9pZCI6ODZ9.Tu45-vef5Hxvy9fALl4BfNf1VR8PjLI36lomlLf_J9w

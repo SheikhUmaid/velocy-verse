@@ -69,7 +69,11 @@ class _DriverHomeState extends State<DriverHome> {
                     const SizedBox(height: 20),
 
                     // Active Ride Card
-                    _buildActiveRideCard(),
+                    Container(
+                      width: 100,
+                      constraints: BoxConstraints(maxWidth: 200),
+                      child: _buildActiveRideCard(),
+                    ),
                   ],
                 ),
               ),

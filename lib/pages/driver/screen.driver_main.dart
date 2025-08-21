@@ -1,7 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:velocyverse/pages/driver/mainPages/page.driverReport.dart';
+import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.driverRecentRides.dart';
 import 'package:velocyverse/pages/driver/main_pages/screen.driver_home.dart';
-import 'package:velocyverse/pages/driver/main_pages/screen.driver_recent_rides.dart';
-import 'package:velocyverse/pages/driver/main_pages/screen.driver_report.dart';
+import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
+import 'package:velocyverse/utils/util.logout.dart';
 
 class DriverMain extends StatefulWidget {
   const DriverMain({super.key});
@@ -29,9 +34,88 @@ class _DriverMainState extends State<DriverMain> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.microtask(() async {
+      print("Fetching driver profile");
+      bool success =
+          (await Provider.of<DriverProfileProvider>(
+                context,
+                listen: false,
+              ).getDriverProfile())
+              as bool;
+      if (!success) {
+        debugPrint("Failed to fetch driver profile");
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<DriverProfileProvider>(context);
     return Scaffold(
       body: SafeArea(child: _screens[_selectedIndex]),
+      drawer: Drawer(
+        shape: RoundedRectangleBorder(),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.grey.shade200,
+                  child: Icon(CupertinoIcons.person, color: Colors.black),
+                ),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${profileProvider.profileDetails?.username ?? ''}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      '${profileProvider.profileDetails?.email}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Divider(color: Colors.grey[300]),
+            ListTile(
+              leading: Icon(CupertinoIcons.person, color: Colors.black),
+              title: Text('Profile settings'),
+              onTap: () {
+                context.push('/driverProfile');
+              },
+            ),
+            ListTile(
+              leading: Icon(CupertinoIcons.settings, color: Colors.black),
+              title: Text('Help & support'),
+            ),
+
+            ListTile(
+              leading: Icon(Icons.support_agent, color: Colors.black),
+              title: Text('Help & support'),
+            ),
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.black),
+              title: Text('Logout'),
+              onTap: () {
+                logout();
+                context.goNamed('/loading');
+              },
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         selectedItemColor: Colors.black,

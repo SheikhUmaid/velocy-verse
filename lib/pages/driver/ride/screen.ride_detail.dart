@@ -341,6 +341,11 @@ class _RideDetailsScreenState extends State<RideDetailsScreen>
                 final response = await driverProvider.acceptRide();
                 if (response) {
                   context.pushNamed("/pickUpNavigation");
+                  //     final driverProvider = Provider.of<DriverProvider>(
+                  //   context,
+                  //   listen: false,
+                  // );
+                  await driverProvider.generateOTP();
                 }
                 if (!response) {
                   showFancyErrorToast(

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocyverse/models/model.driverDetails.dart';
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
+import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
+import 'package:velocyverse/pages/driver/mainPages/page.paymentSuccess.dart';
 import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
 import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
@@ -7,23 +11,32 @@ import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
 import 'package:velocyverse/pages/driver/ride/screen.route_with_driver.dart';
 import 'package:velocyverse/pages/driver/screen.driver_main.dart';
 import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
+import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.recentRideDetails.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
+import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
 import 'package:velocyverse/pages/login/page.authentication.dart';
 import 'package:velocyverse/pages/login/page.login_otp.dart';
 import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
+import 'package:velocyverse/pages/login/page.registration_otp.dart';
 import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
 import 'package:velocyverse/pages/onboarding/page.loading.dart';
 import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
 import 'package:velocyverse/pages/onboarding/page.permissions.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.live_tracking.dart';
+import 'package:velocyverse/pages/user_app/book_ride/screen.payment.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
 import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.add_fav_location.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.profile.dart';
+import 'package:velocyverse/pages/user_app/drawer_screens/screen.rider_update_profile.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
 import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 
 class MyRouter {
   static GoRouter routerConfig = GoRouter(
     initialLocation: '/loading',
+
     debugLogDiagnostics: true,
     routes: <RouteBase>[
       GoRoute(
@@ -31,6 +44,30 @@ class MyRouter {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return AuthScreen();
+        },
+      ),
+      GoRoute(
+        path: '/driverUpdateProfile',
+        name: '/driverUpdateProfile',
+        builder: (context, state) {
+          final profile = state.extra;
+          print("extra == ${state.extra}");
+          return EditProfileScreen(userProfile: profile as DriverDetailsModel);
+        },
+      ),
+      GoRoute(
+        path: '/riderUpdateProfile',
+        name: '/riderUpdateProfile',
+        builder: (context, state) {
+          return RiderProfileUpdate();
+        },
+      ),
+      GoRoute(
+        name: '/paymentSuccess',
+        path: '/paymentSuccess',
+        builder: (BuildContext context, GoRouterState state) {
+          return PaymentStatusScreen();
+          // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
       GoRoute(
@@ -42,6 +79,14 @@ class MyRouter {
         },
       ),
       GoRoute(
+        name: '/paymentScreen',
+        path: '/paymentScreen',
+        builder: (BuildContext context, GoRouterState state) {
+          return PaymentScreen();
+          // return LiveTrackingScreen(otpText: state.extra as String);
+        },
+      ),
+      GoRoute(
         name: '/driverLiveTracking',
         path: '/driverLiveTracking',
         builder: (BuildContext context, GoRouterState state) {
@@ -49,6 +94,7 @@ class MyRouter {
           // return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
+
       GoRoute(
         name: '/riderLiveTracking',
         path: '/riderLiveTracking',
@@ -77,13 +123,7 @@ class MyRouter {
           return RideDetailsScreen();
         },
       ),
-      GoRoute(
-        name: '/driverMain',
-        path: '/driverMain',
-        builder: (BuildContext context, GoRouterState state) {
-          return DriverMain();
-        },
-      ),
+
       GoRoute(
         name: '/documentVerification',
         path: '/documentVerification',
@@ -114,10 +154,24 @@ class MyRouter {
         },
       ),
       GoRoute(
+        name: '/addFavLocation',
+        path: '/addFavLocation',
+        builder: (BuildContext context, GoRouterState state) {
+          return AddFavLocationScreen();
+        },
+      ),
+      GoRoute(
         name: '/waitingForDriver',
         path: '/waitingForDriver',
         builder: (BuildContext context, GoRouterState state) {
           return WaitingDriverScreen();
+        },
+      ),
+      GoRoute(
+        name: '/profileSetting',
+        path: '/profileSetting',
+        builder: (BuildContext context, GoRouterState state) {
+          return ProfileSettingsScreen();
         },
       ),
       GoRoute(
@@ -170,6 +224,84 @@ class MyRouter {
         builder: (BuildContext context, GoRouterState state) {
           String phoneNumber = state.extra as String;
           return LoginOTP(phoneNumber: phoneNumber);
+        },
+      ),
+      // /registrationOTP
+      GoRoute(
+        name: '/registrationOTP',
+        path: '/registrationOTP',
+        builder: (BuildContext context, GoRouterState state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          String phoneNumber = extra?['phoneNumber'] as String;
+          String otp = extra?['otp'] as String;
+          String password = extra?['password'] as String;
+          String confirmPassword = extra?['confirmPassword'] as String;
+
+          return RegistrationOTP(
+            phoneNumber: phoneNumber,
+            otp: otp,
+            password: password,
+            confirmPassword: confirmPassword,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/driverMain',
+        name: '/driverMain',
+        builder: (context, state) {
+          print('pop2ping');
+          return const DriverMain();
+        },
+      ),
+      GoRoute(
+        path: '/rideDetails',
+        name: '/rideDetails',
+        builder: (context, state) {
+          return const RideDetailsScreen();
+        },
+      ),
+      GoRoute(
+        path: '/navPickUp',
+        name: '/navPickUp',
+        builder: (context, state) {
+          return NavigationPickUp();
+        },
+      ),
+      GoRoute(
+        path: '/navDropOff',
+        name: '/navDropOff',
+        builder: (context, state) {
+          return NavigationDropOff();
+        },
+      ),
+      GoRoute(
+        path: '/ridePayment',
+        name: '/ridePayment',
+        builder: (context, state) {
+          return RidePayment();
+        },
+      ),
+      GoRoute(
+        path: '/rideComplete',
+        name: '/rideComplete',
+        builder: (context, state) {
+          return RideComplete();
+        },
+      ),
+      GoRoute(
+        path: '/recentRideDetails',
+        name: '/recentRideDetails',
+        builder: (context, state) {
+          final rideId = state.extra;
+          print("Ride ID: ${rideId}");
+          return RecentRideDetails(rideId: rideId as String);
+        },
+      ),
+      GoRoute(
+        path: '/driverProfile',
+        name: '/driverProfile',
+        builder: (context, state) {
+          return DriverProfile();
         },
       ),
     ],

@@ -19,7 +19,7 @@ class _LoadingState extends State<Loading> {
 
   void checkLoginStatus() async {
     bool loggedIn = await isLoggedin();
-
+    print("is log in = ${loggedIn}");
     if (context.mounted) {
       if (loggedIn) {
         if (await isDriver()) {
@@ -35,6 +35,38 @@ class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Velocy",
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: 140,
+              child: LinearProgressIndicator(
+                color: Colors.black,
+                backgroundColor: Colors.black12,
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          textAlign: TextAlign.center,
+          "Made in India",
+          style: TextStyle(color: Colors.grey),
+        ),
+      ),
+    );
   }
 }

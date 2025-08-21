@@ -6,6 +6,7 @@ import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
 
 class LoginOTP extends StatelessWidget {
@@ -20,13 +21,13 @@ class LoginOTP extends StatelessWidget {
       listen: false,
     );
     return Scaffold(
+      appBar: AppBar(title: Text("Velocy")),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomAppBar(title: "Velocy"),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
@@ -39,7 +40,6 @@ class LoginOTP extends StatelessWidget {
                         fontSize: 44.00,
                       ),
                     ),
-                    Text("(one time password)"),
                   ],
                 ),
               ),
@@ -61,27 +61,39 @@ class LoginOTP extends StatelessWidget {
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () async {
-                  context.read<LoaderProvider>().showLoader();
-                  final response = await authenticationProvider.loginWithOTP(
-                    phoneNumber: phoneNumber,
-                    otp: otpController.text,
+                  var verifyOTP = await authenticationProvider.fb_verifyOTP(
+                    otpController.text.trim(),
+                    true,
                   );
-                  if (response) {
-                    if (await isDriver()) {
-                      if (context.mounted) {
-                        context.pushNamed("/driverMain");
-                        context.read<LoaderProvider>().hideLoader();
-                      }
-                    } else {
-                      if (context.mounted) {
-                        context.pushNamed("/userHome");
-                        context.read<LoaderProvider>().hideLoader();
-                      }
-                    }
+                  if (verifyOTP == 'rider') {
+                    context.go('/userHome');
+                  } else if (verifyOTP == 'driver') {
+                    context.go('/driverMain');
                   } else {
-                    debugPrint("Something Went Wrong");
-                    context.read<LoaderProvider>().hideLoader();
+                    showFancyErrorToast(context, "Invalid OTP");
                   }
+                  ;
+                  // context.read<LoaderProvider>().showLoader();
+                  // final response = await authenticationProvider.loginWithOTP(
+                  //   phoneNumber: "+91$phoneNumber",
+                  //   otp: otpController.text,
+                  // );
+                  // if (response) {
+                  //   if (await isDriver()) {
+                  //     if (context.mounted) {
+                  //       context.pushNamed("/driverMain");
+                  //       context.read<LoaderProvider>().hideLoader();
+                  //     }
+                  //   } else {
+                  //     if (context.mounted) {
+                  //       context.pushNamed("/userHome");
+                  //       context.read<LoaderProvider>().hideLoader();
+                  //     }
+                  //   }
+                  // } else {
+                  //   showFancyErrorToast(context, "Invalid OTP");
+                  //   context.read<LoaderProvider>().hideLoader();
+                  // }
                 },
               ),
             ],

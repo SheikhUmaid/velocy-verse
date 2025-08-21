@@ -41,19 +41,27 @@ dependencies:
   image_picker: ^1.1.2
   google_maps_flutter: ^2.12.3
   geolocator: ^14.0.2
-  permission_handler: ^12.0.1
+  permission_handler: ^11.3.0
   fluttertoast: ^8.2.12
   geocoding: ^4.0.0
-<<<<<<< HEAD
   intl: ^0.20.2
   url_launcher: ^6.3.2
-=======
->>>>>>> 2d751ce20f5ca16cbcffa0b39e581dc59c1c659a
   http: ^1.5.0
   file_picker: ^10.2.4
   flutter_polyline_points: ^3.0.1
+  razorpay_flutter: ^1.4.0
   web_socket_channel: ^3.0.3
-  url_launcher: ^6.3.2
+  flutter_svg: ^2.2.0
+  get: ^4.7.2
+  lottie: ^3.3.1
+  google_api_headers: ^4.5.5
+  flutter_google_places_sdk: ^0.4.2+1
+  google_places_autocomplete_text_field: ^2.0.0
+  firebase_auth: ^6.0.1
+  firebase_core: ^4.0.0
+  firebase_messaging: ^16.0.0
+  flutter_local_notifications: ^19.4.0
+
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +86,11 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/
+    - assets/animations/
+    - assets/app_images/
+    - assets/app_images/app_icon/
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

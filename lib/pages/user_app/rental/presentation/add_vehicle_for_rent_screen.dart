@@ -192,9 +192,11 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
               const SizedBox(height: 12),
 
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         buildTitleText("Available From"),
                         InkWell(
@@ -225,6 +227,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         buildTitleText("Available To"),
                         InkWell(
@@ -601,6 +604,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text("Vehicle added successfully!")));
       Navigator.pop(context);
+      await Provider.of<RentalProvider>(context, listen: false).fetchVehicles();
     } else if (provider.addError != null) {
       ScaffoldMessenger.of(
         context,

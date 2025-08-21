@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 
 import 'package:velocyverse/credentials.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class EnRouteScreen extends StatefulWidget {
   const EnRouteScreen({Key? key}) : super(key: key);
@@ -27,26 +30,20 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
     42.3601,
     -71.0589,
   ); // Current driver location
-  final LatLng _pickupLocation = const LatLng(
-    42.3736,
-    -71.0530,
-  ); // Pickup location
-  final LatLng _dropLocation = const LatLng(
-    42.3850,
-    -71.0420,
-  ); // Final destination
+  LatLng _pickupLocation = const LatLng(42.3736, -71.0530); // Pickup location
+  LatLng _dropLocation = const LatLng(42.3850, -71.0420); // Final destination
 
   // Driver details
-  final String driverName = "Michael Smith";
+  String driverName = "Michael Smith";
   final String driverRating = "4.89";
   final String totalTrips = "2.8k trips";
-  final String carModel = "Toyota Camry";
-  final String licensePlate = "ABC 123";
+  String carModel = "Toyota Camry";
+  String licensePlate = "ABC 123";
   final String carColor = "Black";
 
   // Trip details
-  final String currentLocation = "123 Main Street";
-  final String destination = "456 Oak Avenue";
+  String currentLocation = "123 Main Street";
+  String destination = "456 Oak Avenue";
   final String estimatedArrival = "12:45 PM";
   final String timeRemaining = "15 min";
 
@@ -56,10 +53,48 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
   @override
   void initState() {
     super.initState();
+
     _addMarkers();
     _createRoute();
     _startLocationUpdates();
     _startTimeUpdates();
+    _initializeRideData();
+
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
+
+    // Pass actual rideId instead of 123
+    rideProvider.connectRideWebSocket(123);
+
+    // ✅ Set the callback for when connection closes
+    rideProvider.onRideCompleted = () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.pushNamed("/paymentScreen");
+      });
+    };
+  }
+
+  Future<void> _initializeRideData() async {
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
+    _pickupLocation = LatLng(
+      rideProvider.fromLocation!.latitude!,
+      rideProvider.fromLocation!.longitude!,
+    );
+    currentLocation = rideProvider.fromLocation!.address;
+    destination = rideProvider.toLocation!.address;
+    _dropLocation = LatLng(
+      rideProvider.toLocation!.latitude!,
+      rideProvider.toLocation!.longitude!,
+    );
+    final rideResponse = await rideProvider.driverArrivedScreen();
+    setState(() {
+      final ride = rideResponse;
+      driverName = ride!.data['data']['driver']['username'];
+      carModel = ride.data['data']['vehicle_name'];
+      licensePlate = ride.data['data']['vehicle_number'];
+    });
+    _addMarkers();
+    // _createRoute();
+    _startLocationUpdates();
   }
 
   @override
@@ -270,12 +305,12 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
                   _mapController = controller;
                 },
                 initialCameraPosition: CameraPosition(
-                  target: _driverLocation,
+                  target: _pickupLocation,
                   zoom: 13,
                 ),
                 polylines: _polylines,
                 markers: _markers,
-                myLocationEnabled: false,
+                myLocationEnabled: true,
                 zoomControlsEnabled: false,
                 mapToolbarEnabled: false,
                 compassEnabled: true,

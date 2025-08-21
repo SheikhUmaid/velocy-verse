@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:velocyverse/models/model.loaction.dart';
 import 'package:velocyverse/networking/apiservices.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -26,6 +27,12 @@ class RideProvider extends ChangeNotifier {
   String? _otp;
   String? get otp => _otp;
 
+  void Function(String otp)? onOtpReceived;
+  void Function()? onOtpVerified;
+  bool _rideCompleted = false;
+  bool get rideCompleted => _rideCompleted;
+
+  VoidCallback? onRideCompleted; // ✅ callback property
   set distance(double? d) {
     if (d != null) {
       // Round to 2 decimal places before storing
@@ -52,7 +59,10 @@ class RideProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> confirmRide() async {
+  Future<bool> confirmRide({
+    // String? scheduleDateTime,
+    DateTime? scheduledTime,
+  }) async {
     try {
       final response = await _apiService.postRequest(
         "/rider/confirm_location/",
@@ -66,6 +76,9 @@ class RideProvider extends ChangeNotifier {
           "to_latitude": _toLocation!.latitude,
           "to_longitude": _toLocation!.longitude,
           "distance_km": _distance,
+          "scheduled_time": DateFormat(
+            "yyyy-MM-dd'T'HH:mm",
+          ).format(scheduledTime ?? DateTime(1234, 1, 1, 0, 0)),
         },
         // headers: {'Authorization': 'Bearer $accessToken'},
       );
@@ -80,7 +93,8 @@ class RideProvider extends ChangeNotifier {
     } catch (e) {
       // rethrow;
       debugPrint(e.toString());
-      return false;
+      rethrow;
+      // return false;
     }
   }
 
@@ -168,9 +182,20 @@ class RideProvider extends ChangeNotifier {
         try {
           final data = jsonDecode(message);
 
+          debugPrint(data.toString());
+
           if (data['type'] == 'otp') {
             _otp = data['otp'];
             notifyListeners();
+            if (onOtpReceived != null) {
+              onOtpReceived!(_otp!);
+            }
+          }
+
+          if (data['type'] == 'otp_verified') {
+            // _otp = data['otp'];
+            notifyListeners();
+            if (onOtpVerified != null) {}
           }
         } catch (e) {
           debugPrint("Error decoding WS message: $e");
@@ -181,8 +206,71 @@ class RideProvider extends ChangeNotifier {
       },
       onDone: () {
         debugPrint("WebSocket closed");
+        onOtpVerified!();
       },
     );
+  }
+
+  void connectRideWebSocket(int rideId) {
+    final channel = WebSocketChannel.connect(
+      Uri.parse('ws://82.25.104.152:9000/ws/rider/otp/$_id/'),
+    );
+
+    channel.stream.listen(
+      (message) {
+        final data = jsonDecode(message);
+        debugPrint("WS Data: $data");
+
+        switch (data['type']) {
+          case 'otp':
+            print("📩 OTP Received: ${data['otp']}");
+            break;
+
+          case 'ride_completed':
+            print("✅ Ride Completed: ${data['message']}");
+            _rideCompleted = true;
+            notifyListeners(); // UI updates
+            break;
+
+          default:
+            print("Unknown message type: $data");
+        }
+      },
+      onError: (error) {
+        print("⚠️ WebSocket Error: $error");
+      },
+      onDone: () {
+        print("❌ WebSocket Closed");
+        // 🔹 Trigger callback if set
+        if (onRideCompleted != null) {
+          onRideCompleted!();
+        }
+      },
+    );
+  }
+
+  Future<bool> finalizePayment() async {
+    try {
+      final response = await _apiService.postRequest(
+        "rider/finalize-payment/",
+        data: {
+          "ride_id": _id,
+          "payment_method": "upi",
+          "tip_amount": 9,
+          "upi_payment_id": "111",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      // rethrow;
+      debugPrint(e.toString());
+      return false;
+    }
   }
 
   void disconnectWs() {

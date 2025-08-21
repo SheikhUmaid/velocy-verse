@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:velocyverse/pages/user_app/ride_share/data/find_sharing_rides_model.dart';
+import 'package:velocyverse/pages/user_app/ride_share/data/my_rides_model.dart';
+import 'package:velocyverse/pages/user_app/ride_share/data/my_vehicles_model.dart';
 import 'package:velocyverse/pages/user_app/ride_share/data/shared_ride_details_model.dart';
 import 'package:velocyverse/pages/user_app/ride_share/ride_share_api_service/ride_share_api_service.dart';
 
@@ -18,6 +22,21 @@ class RideShareProvider extends ChangeNotifier {
 
   SharedRideDetailsResponseModel? get sharedRideDetailsResponseModel =>
       _sharedRideDetailsResponseModel;
+
+  MyRidesResponseModel _myRidesResponseModel = MyRidesResponseModel(
+    status: false,
+    message: '',
+    data: [],
+  );
+  MyRidesResponseModel get myRidesResponseModel => _myRidesResponseModel;
+
+  MyVehiclesResponseModel _myVehiclesResponseModel = MyVehiclesResponseModel(
+    status: false,
+    message: '',
+    data: [],
+  );
+  MyVehiclesResponseModel get myVehiclesResponseModel =>
+      _myVehiclesResponseModel;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -58,6 +77,64 @@ class RideShareProvider extends ChangeNotifier {
     try {
       _sharedRideDetailsResponseModel = await _rideShareApiService
           .fetchRideShareDetails(rideId, segmentId);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchMyRides() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _myRidesResponseModel = await _rideShareApiService.fetchMyRidesRequest();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchMyVehicles() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _myVehiclesResponseModel = await _rideShareApiService
+          .fetchMyVehiclesRequest();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addVehicleRequest({
+    required String vehicleNumber,
+    required String modelName,
+    required int seatCapacity,
+    required File aadharCard,
+    required File drivingLicense,
+    required File registrationDoc,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _rideShareApiService.addVehiclesForRideSharing(
+        vehicleNumber: vehicleNumber,
+        modelName: modelName,
+        seatCapacity: seatCapacity,
+        aadharCard: aadharCard,
+        drivingLicense: drivingLicense,
+        registrationDoc: registrationDoc,
+      );
     } catch (e) {
       _error = e.toString();
     } finally {

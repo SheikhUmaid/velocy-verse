@@ -43,7 +43,7 @@ Widget _buildPermissionBottomSheet(BuildContext context) {
 
             if (status.isGranted && mediaStatus.isGranted) {
               context.goNamed('/login');
-            } else if (status.isDenied) {
+            } else if (status.isDenied && mediaStatus.isDenied) {
               Fluttertoast.showToast(
                 msg: "Oops We can not procced without permission!",
                 toastLength: Toast.LENGTH_SHORT,
@@ -95,6 +95,6 @@ Widget _buildBackgroundImage() {
   return Image.asset(
     AppImage.permission.value,
     width: double.infinity,
-    fit: BoxFit.cover,
+    fit: BoxFit.fill,
   );
 }

@@ -13,7 +13,7 @@ class PriceInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(8),
@@ -35,24 +35,24 @@ class PriceInputField extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          GestureDetector(
-            onTap: onPriceSet,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text(
-                'Ok',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: onPriceSet,
+          //   child: Container(
+          //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          //     decoration: BoxDecoration(
+          //       color: Colors.black,
+          //       borderRadius: BorderRadius.circular(6),
+          //     ),
+          //     child: const Text(
+          //       'Ok',
+          //       style: TextStyle(
+          //         color: Colors.white,
+          //         fontSize: 14,
+          //         fontWeight: FontWeight.w500,
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

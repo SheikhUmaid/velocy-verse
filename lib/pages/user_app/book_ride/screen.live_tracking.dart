@@ -10,7 +10,7 @@ import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
-  LiveTrackingScreen({Key? key, required this.otpText}) : super(key: key);
+  LiveTrackingScreen({super.key, required this.otpText});
   String otpText;
 
   @override
@@ -150,26 +150,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Live Tracking"),
+        leading: IconButton(
+          onPressed: () => context.pushReplacementNamed('/userHome'),
+          icon: const Icon(Icons.arrow_back, size: 24),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, size: 24),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Live Tracking',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 10),
+
             // Map Section
             Expanded(
               flex: 3,
@@ -385,6 +377,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                 });
 
                                 return Dialog(
+                                  backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -395,7 +388,11 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const CircularProgressIndicator(), // Loading indicator
+                                        // const CircularProgressIndicator(),
+                                        // // Loading indicator
+                                        const Text(
+                                          "Share the OTP to the driver",
+                                        ),
                                         const SizedBox(height: 20),
                                         Text(
                                           "Your OTP is:",
@@ -413,7 +410,25 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: const Text("OK"),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.black,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Text(
+                                              "OK",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -584,19 +599,23 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text('Cancel Ride'),
           content: const Text('Are you sure you want to cancel this ride?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('No'),
+              child: const Text('No', style: TextStyle(color: Colors.black54)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context); // Go back to previous screen
               },
-              child: const Text('Yes, Cancel'),
+              child: const Text(
+                'Yes, Cancel',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           ],
         );

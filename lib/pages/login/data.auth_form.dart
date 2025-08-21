@@ -229,7 +229,7 @@ class _AuthFormState extends State<AuthForm> with CodeAutoFill {
                   context.read<LoaderProvider>().showLoader();
                   final response = await authenticationProvider
                       .loginWithPassword(
-                        phoneNumber: phoneController.text,
+                        phoneNumber: "+91${phoneController.text}",
                         password: passwordController.text,
                       );
                   if (response == 'driver') {

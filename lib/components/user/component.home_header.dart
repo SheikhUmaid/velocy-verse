@@ -29,12 +29,12 @@ class ComponentHomeHeader extends StatelessWidget {
               color: Colors.grey[200],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(50),
               child: Consumer<RiderProfileProvider>(
                 builder: (_, prov, __) {
                   // prov.getRiderProfile();
                   return Image.network(
-                    prov.profileURL ?? "", // Replace with actual asset
+                    prov.profileURL ?? "",
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(

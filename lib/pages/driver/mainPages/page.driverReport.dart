@@ -278,11 +278,6 @@ class _AvailablePayout extends StatelessWidget {
       context,
       listen: false,
     );
-    final earningsProvider = Provider.of<EaningsNreportsProvider>(
-      context,
-      listen: false,
-    );
-
     return Card(
       margin: EdgeInsets.zero,
       color: Colors.white,
@@ -318,26 +313,16 @@ class _AvailablePayout extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                // paymentProvider.openCheckout(
-                //   amount: 500,
-                //   name: "John Doe",
-                //   contact: "9999999999",
-                //   email: "john@example.com",
-                // );
-
-                if (earnings.totalEarnings == 0.0 &&
-                    earningsProvider.isLoading == false) {
-                } else {
-                  var success = earningsProvider.requestCashOut(
-                    earnings.totalEarnings ?? 0.0,
-                  );
-                }
+                paymentProvider.openCheckout(
+                  amount: 500, // ₹500
+                  name: "John Doe",
+                  contact: "9999999999",
+                  email: "john@example.com",
+                );
               },
-              child: Padding(
+              child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                child: earningsProvider.isLoading
-                    ? CircularProgressIndicator()
-                    : Text('Cash Out'),
+                child: Text('Cash Out'),
               ),
             ),
           ],

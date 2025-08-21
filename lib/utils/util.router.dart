@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-<<<<<<< HEAD
-// import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
-=======
 import 'package:velocyverse/models/model.driverDetails.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
 import 'package:velocyverse/pages/driver/mainPages/page.paymentSuccess.dart';
->>>>>>> sheikh
 import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
-
-import 'package:velocyverse/models/model.driverDetails.dart';
-import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart'
-    hide UserProfile;
-import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
 import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
 import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
@@ -121,9 +112,7 @@ class MyRouter {
         name: '/pickUpNavigation',
         path: '/pickUpNavigation',
         builder: (BuildContext context, GoRouterState state) {
-          bool? isOngoing = state.extra as bool?;
-          print('isOngoing $isOngoing');
-          return NavigationPickUp(ongoingRide: isOngoing ?? false);
+          return NavigationPickUp();
         },
       ),
       GoRoute(
@@ -236,7 +225,14 @@ class MyRouter {
           return LoginOTP(phoneNumber: phoneNumber);
         },
       ),
-
+      GoRoute(
+        path: '/driverMain',
+        name: '/driverMain',
+        builder: (context, state) {
+          print('pop2ping');
+          return const DriverMain();
+        },
+      ),
       GoRoute(
         path: '/rideDetails',
         name: '/rideDetails',
@@ -286,22 +282,6 @@ class MyRouter {
         name: '/driverProfile',
         builder: (context, state) {
           return DriverProfile();
-        },
-      ),
-      GoRoute(
-        path: '/driverUpdateProfile',
-        name: '/driverUpdateProfile',
-        builder: (context, state) {
-          final profile = state.extra;
-          print("extra == ${state.extra}");
-          return EditProfileScreen(userProfile: profile as DriverDetailsModel);
-        },
-      ),
-      GoRoute(
-        name: '/driverMain',
-        path: '/driverMain',
-        builder: (BuildContext context, GoRouterState state) {
-          return DriverMain();
         },
       ),
     ],

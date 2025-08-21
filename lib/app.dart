@@ -75,6 +75,7 @@ class MyApp extends StatelessWidget {
             surfaceTintColor: const Color(0xFFF5F5F5),
             elevation: 0.2,
             shadowColor: Colors.grey,
+            scrolledUnderElevation: 0.2,
             titleTextStyle: TextStyle(
               fontWeight: FontWeight.w600,
               color: Colors.black,

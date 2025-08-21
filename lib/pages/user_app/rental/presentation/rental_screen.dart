@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/my_garage_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/received_rental_requests_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/rental_vehicle_details_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/sent_rental_requests_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:velocyverse/utils/responsive_wraper.dart';
 
 class RentalScreen extends StatefulWidget {
   const RentalScreen({super.key});
@@ -123,6 +123,7 @@ class _RentalScreenState extends State<RentalScreen>
 
               // TabBar
               TabBar(
+                tabAlignment: TabAlignment.center,
                 isScrollable: true,
                 indicator: BoxDecoration(
                   border: Border.all(color: Colors.black),
@@ -159,200 +160,210 @@ class _RentalScreenState extends State<RentalScreen>
                                     Center(child: Text("No vehicles found")),
                                   ],
                                 )
-                              : ListView.builder(
-                                  padding: const EdgeInsets.all(12),
-                                  itemCount: vehicles.length,
-                                  itemBuilder: (context, index) {
-                                    final v = vehicles[index];
-                                    return InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                RentalVehicleDetailScreen(
-                                                  vehicleId: v.id!,
-                                                  isAvailable: v.isAvailable!,
-                                                ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          bottom: 15,
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.grey.withValues(
-                                                alpha: 0.5,
-                                              ),
-                                              blurRadius: 1,
-                                              spreadRadius: 0.1,
+                              : ResponsiveWraper(
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.all(12),
+                                    itemCount: vehicles.length,
+                                    itemBuilder: (context, index) {
+                                      final v = vehicles[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  RentalVehicleDetailScreen(
+                                                    vehicleId: v.id!,
+                                                    isAvailable: v.isAvailable!,
+                                                  ),
                                             ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
+                                          );
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 15,
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withValues(
+                                                  alpha: 0.5,
+                                                ),
+                                                blurRadius: 1,
+                                                spreadRadius: 0.1,
                                               ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Expanded(
-                                                    child: Column(
+                                            ],
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            v.vehicleName ?? "",
+                                                            maxLines: 1,
+                                                            style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            v.vehicleType ?? "",
+                                                            style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            v.isAvailable ==
+                                                                true
+                                                            ? Colors
+                                                                  .grey
+                                                                  .shade500
+                                                            : Colors
+                                                                  .grey
+                                                                  .shade300,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        v.isAvailable == true
+                                                            ? "Available"
+                                                            : "Unavailable",
+                                                        style: TextStyle(
+                                                          color:
+                                                              v.isAvailable ==
+                                                                  true
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // Image
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: v.images.isNotEmpty
+                                                    ? Image.network(
+                                                        v.images.first,
+                                                        height: 200,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Container(
+                                                        height: 200,
+                                                        color: Colors.grey[300],
+                                                        child: const Icon(
+                                                          Icons.directions_car,
+                                                          size: 50,
+                                                        ),
+                                                      ),
+                                              ),
+
+                                              // Info row
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.group,
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      "${v.seatingCapacity ?? 0} seats",
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    const Icon(
+                                                      Icons.work,
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      "${v.bagCapacity ?? 0} bags",
+                                                    ),
+                                                    const Spacer(),
+                                                    Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          v.vehicleName ?? "",
-                                                          maxLines: 1,
-                                                          style: const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
+                                                          "₹${v.rentalPricePerHour ?? ''}",
+                                                          style:
+                                                              const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
                                                         ),
-                                                        Text(
-                                                          v.vehicleType ?? "",
+                                                        const SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        const Text(
+                                                          "per hour",
                                                           style: TextStyle(
-                                                            color: Colors
-                                                                .grey[600],
+                                                            color: Colors.grey,
+                                                            fontSize: 12,
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 4,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          v.isAvailable == true
-                                                          ? Colors.grey.shade500
-                                                          : Colors
-                                                                .grey
-                                                                .shade300,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                    ),
-                                                    child: Text(
-                                                      v.isAvailable == true
-                                                          ? "Available"
-                                                          : "Unavailable",
-                                                      style: TextStyle(
-                                                        color:
-                                                            v.isAvailable ==
-                                                                true
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-
-                                            // Image
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: v.images.isNotEmpty
-                                                  ? Image.network(
-                                                      v.images.first,
-                                                      height: 200,
-                                                      width: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : Container(
-                                                      height: 200,
-                                                      color: Colors.grey[300],
-                                                      child: const Icon(
-                                                        Icons.directions_car,
-                                                        size: 50,
-                                                      ),
-                                                    ),
-                                            ),
-
-                                            // Info row
-                                            Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.group,
-                                                    size: 18,
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    "${v.seatingCapacity ?? 0} seats",
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  const Icon(
-                                                    Icons.work,
-                                                    size: 18,
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    "${v.bagCapacity ?? 0} bags",
-                                                  ),
-                                                  const Spacer(),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "₹${v.rentalPricePerHour ?? ''}",
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      const Text(
-                                                        "per hour",
-                                                        style: TextStyle(
-                                                          color: Colors.grey,
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
                                 ),
                         );
                       }).toList(),

@@ -237,6 +237,7 @@ class _SharedRideDetailsScreenState extends State<SharedRideDetailsScreen> {
                   ),
                   const SizedBox(width: 10),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         shareRideDetail.rideCreator!.username ?? "Ride Creator",
@@ -245,7 +246,61 @@ class _SharedRideDetailsScreenState extends State<SharedRideDetailsScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Text(shareRideDetail.rideCreator!.avgRating.toString()),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star_rate_rounded,
+                            color: Colors.black,
+                            size: 20,
+                          ),
+                          Text(
+                            "${shareRideDetail.rideCreator!.avgRating.toString()}/5 | ${shareRideDetail.rideCreator!.ratingUserCount ?? "0"} Ratings",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    blurRadius: 1,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    "Your booking won't be confirmed until the driver approves your request.",
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                  Row(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.not_interested_rounded),
+                          const SizedBox(width: 5),
+                          Text("No Pets"),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      Row(
+                        children: [
+                          Icon(Icons.groups_rounded),
+                          const SizedBox(width: 5),
+                          Text("Max 2 in the back"),
+                        ],
+                      ),
                     ],
                   ),
                 ],

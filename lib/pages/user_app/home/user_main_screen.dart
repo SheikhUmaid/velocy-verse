@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:velocyverse/pages/user_app/corporate/corporate_screen.dart';
 import 'package:velocyverse/pages/user_app/page.home.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/rental_screen.dart';
-
 import 'package:velocyverse/pages/user_app/ride_share/presentation/ride_share_screen.dart';
 import 'package:velocyverse/utils/svg_image.dart';
 
-import 'package:velocyverse/pages/user_app/ride_share/ride_share_screen.dart';
-import 'package:velocyverse/utils/svg_image.dart';
-
 class UserMainScreen extends StatefulWidget {
+  const UserMainScreen({super.key});
 
   @override
   State<UserMainScreen> createState() => _UserMainScreenState();

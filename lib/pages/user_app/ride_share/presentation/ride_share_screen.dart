@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/pages/user_app/ride_share/presentation/available_rides_screen.dart';
+import 'package:velocyverse/pages/user_app/ride_share/presentation/my_rides_screen.dart';
 import 'package:velocyverse/pages/user_app/ride_share/provider/ride_share_provider.dart';
 
 class RideShareScreen extends StatefulWidget {
@@ -111,8 +112,13 @@ class _RideShareScreenState extends State<RideShareScreen> {
                 borderRadius: BorderRadiusGeometry.circular(10),
               ),
             ),
-            onPressed: () {},
-            label: Text("Publish", style: TextStyle(color: Colors.black)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyRidesScreen()),
+              );
+            },
+            label: Text("My Rides", style: TextStyle(color: Colors.black)),
           ),
         ],
       ),

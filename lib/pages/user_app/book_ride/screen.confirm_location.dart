@@ -21,24 +21,24 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   final TextEditingController dropController = TextEditingController();
   DateTime? scheduledDateTime; // new field
 
-  List<LocationSuggestion> suggestions = [
-    LocationSuggestion(
-      name: 'Egmore Railway Station',
-      address: 'Gandhi Irwin Road, Egmore, Chennai',
-    ),
-    LocationSuggestion(
-      name: 'Egmore Railway Station',
-      address: 'Gandhi Irwin Road, Egmore, Chennai',
-    ),
-    LocationSuggestion(
-      name: 'Egmore Railway Station',
-      address: 'Gandhi Irwin Road, Egmore, Chennai',
-    ),
-    LocationSuggestion(
-      name: 'Egmore Railway Station',
-      address: 'Gandhi Irwin Road, Egmore, Chennai',
-    ),
-  ];
+  // List<LocationSuggestion> suggestions = [
+  //   LocationSuggestion(
+  //     name: 'Egmore Railway Station',
+  //     address: 'Gandhi Irwin Road, Egmore, Chennai',
+  //   ),
+  //   LocationSuggestion(
+  //     name: 'Egmore Railway Station',
+  //     address: 'Gandhi Irwin Road, Egmore, Chennai',
+  //   ),
+  //   LocationSuggestion(
+  //     name: 'Egmore Railway Station',
+  //     address: 'Gandhi Irwin Road, Egmore, Chennai',
+  //   ),
+  //   LocationSuggestion(
+  //     name: 'Egmore Railway Station',
+  //     address: 'Gandhi Irwin Road, Egmore, Chennai',
+  //   ),
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +46,10 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
+      appBar: AppBar(title: Text("Book Ride")),
       body: SafeArea(
         child: Column(
           children: [
-            const CustomAppBar(title: 'Book a Ride'),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(16),
@@ -70,14 +70,14 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                     ComponentLocationInput(),
 
                     // Location Suggestions
-                    Expanded(
-                      child: ComponentLocationSuggestions(
-                        suggestions: suggestions,
-                        onSuggestionTap: (suggestion) {
-                          print('Selected: ${suggestion.name}');
-                        },
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: ComponentLocationSuggestions(
+                    //     suggestions: suggestions,
+                    //     onSuggestionTap: (suggestion) {
+                    //       print('Selected: ${suggestion.name}');
+                    //     },
+                    //   ),
+                    // ),
 
                     // Date & Time Picker (only if scheduled ride)
                     if (rideProvider.rideType == 'scheduled')
@@ -140,77 +140,76 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                           ),
                         ),
                       ),
-
-                    // Confirm Location Button
-                    SizedBox(
-                      width: double.maxFinite,
-                      child: PrimaryButton(
-                        text: 'Confirm Location',
-                        onPressed: () async {
-                          // ensure date/time is picked for scheduled rides
-                          if (rideProvider.rideType == 'scheduled' &&
-                              scheduledDateTime == null) {
-                            showFancyErrorToast(
-                              context,
-                              "Please select a date and time for your scheduled ride",
-                            );
-                            return;
-                          }
-
-                          if (rideProvider.fromLocation == null ||
-                              rideProvider.toLocation == null) {
-                            showFancyErrorToast(
-                              context,
-                              rideProvider.fromLocation == null &&
-                                      rideProvider.toLocation == null
-                                  ? "Please select pickup and drop-off locations"
-                                  : rideProvider.fromLocation == null
-                                  ? "Please select pickup location"
-                                  : "Please select drop-off location",
-                            );
-                            return;
-                          }
-
-                          try {
-                            await getDistanceAndDuration(
-                              originLat: rideProvider.fromLocation!.latitude,
-                              originLng: rideProvider.fromLocation!.longitude,
-                              destLat: rideProvider.toLocation!.latitude,
-                              destLng: rideProvider.toLocation!.longitude,
-                              context: context,
-                            );
-
-                            final response = await rideProvider.confirmRide(
-                              scheduledTime: scheduledDateTime,
-                            );
-
-                            if (context.mounted) {
-                              if (response) {
-                                context.pushNamed('/selectVehicle');
-                              } else {
-                                showFancyErrorToast(
-                                  context,
-                                  "Failed to confirm ride. Please try again.",
-                                );
-                              }
-                            }
-                          } catch (e) {
-                            // rethrow;
-                            if (context.mounted) {
-                              showFancyErrorToast(
-                                context,
-                                "An error occurred: ${e.toString()}",
-                              );
-                            }
-                          }
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
             ),
           ],
+        ),
+      ),
+      // Confirm Location Button
+      bottomNavigationBar: Padding(
+        padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 8),
+        child: PrimaryButton(
+          text: 'Confirm Location',
+          onPressed: () async {
+            // ensure date/time is picked for scheduled rides
+            if (rideProvider.rideType == 'scheduled' &&
+                scheduledDateTime == null) {
+              showFancyErrorToast(
+                context,
+                "Please select a date and time for your scheduled ride",
+              );
+              return;
+            }
+
+            if (rideProvider.fromLocation == null ||
+                rideProvider.toLocation == null) {
+              showFancyErrorToast(
+                context,
+                rideProvider.fromLocation == null &&
+                        rideProvider.toLocation == null
+                    ? "Please select pickup and drop-off locations"
+                    : rideProvider.fromLocation == null
+                    ? "Please select pickup location"
+                    : "Please select drop-off location",
+              );
+              return;
+            }
+
+            try {
+              await getDistanceAndDuration(
+                originLat: rideProvider.fromLocation!.latitude,
+                originLng: rideProvider.fromLocation!.longitude,
+                destLat: rideProvider.toLocation!.latitude,
+                destLng: rideProvider.toLocation!.longitude,
+                context: context,
+              );
+
+              final response = await rideProvider.confirmRide(
+                scheduledTime: scheduledDateTime,
+              );
+
+              if (context.mounted) {
+                if (response) {
+                  context.pushNamed('/selectVehicle');
+                } else {
+                  showFancyErrorToast(
+                    context,
+                    "Failed to confirm ride. Please try again.",
+                  );
+                }
+              }
+            } catch (e) {
+              // rethrow;
+              if (context.mounted) {
+                showFancyErrorToast(
+                  context,
+                  "An error occurred: ${e.toString()}",
+                );
+              }
+            }
+          },
         ),
       ),
     );

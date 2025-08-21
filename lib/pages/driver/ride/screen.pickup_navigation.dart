@@ -13,9 +13,6 @@ import 'package:velocyverse/utils/util.maike_phone_call.dart';
 import 'package:velocyverse/utils/util.success_toast.dart';
 
 class NavigationPickUp extends StatefulWidget {
-  final bool ongoingRide;
-  const NavigationPickUp({super.key, this.ongoingRide = false});
-
   @override
   _NavigationPickUpState createState() => _NavigationPickUpState();
 }
@@ -23,14 +20,11 @@ class NavigationPickUp extends StatefulWidget {
 class _NavigationPickUpState extends State<NavigationPickUp> {
   GoogleMapController? _mapController;
   LatLng? _currentPosition;
-  LatLng pickupLocation = LatLng(
-    37.78825,
-    -122.4324,
-  ); // Example pickup location
+  late LatLng? pickupLocation; // Example pickup location
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
-
   bool _routeDrawn = false;
+  bool _otpVerified = false;
 
   @override
   void initState() {
@@ -61,8 +55,13 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
+    final prov = Provider.of<DriverProvider>(context, listen: false);
 
     setState(() {
+      pickupLocation = LatLng(
+        double.parse(prov.rideDetail!.data!.fromLatitude.toString()),
+        double.parse(prov.rideDetail!.data!.fromLongitude.toString()),
+      );
       _currentPosition = LatLng(position.latitude, position.longitude);
       _addMarkers();
     });
@@ -91,7 +90,7 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
     _markers.add(
       Marker(
         markerId: MarkerId('pickup'),
-        position: pickupLocation,
+        position: pickupLocation!,
         infoWindow: InfoWindow(title: "Pickup Location"),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       ),
@@ -113,8 +112,8 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
         _currentPosition!.longitude,
       ),
       destination: PointLatLng(
-        pickupLocation.latitude,
-        pickupLocation.longitude,
+        pickupLocation!.latitude,
+        pickupLocation!.longitude,
       ),
       // travelMode: TravelMode.driving,
     );
@@ -169,67 +168,56 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
               },
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: _buildBottomDetails(
-              context,
-              ongoingRide: widget.ongoingRide,
-            ),
-          ),
+          Expanded(flex: 2, child: _buildBottomDetails(context)),
         ],
       ),
     );
   }
 
-  Widget _buildBottomDetails(
-    BuildContext context, {
-    required bool ongoingRide,
-  }) {
+  Widget _buildBottomDetails(BuildContext context) {
     final driverProvder = Provider.of<DriverProvider>(context, listen: false);
 
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildLocationTile(
-            'Pick up',
-            ongoingRide
-                ? driverProvder.ongoingRide!.fromLocation.toString()
-                : driverProvder.rideDetail!.data!.fromLocation.toString(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildLocationTile(
+              'Pick up',
+              driverProvder.rideDetail!.data!.fromLocation.toString(),
 
-            Colors.green,
-          ),
-          SizedBox(height: 12),
-          _buildLocationTile(
-            'Drop off',
-            ongoingRide
-                ? driverProvder.ongoingRide!.toLocation.toString()
-                : driverProvder.rideDetail!.data!.toLocation.toString(),
-            Colors.red,
-          ),
-          SizedBox(height: 20),
-          _buildUserInfo(ongoingRide: ongoingRide),
-          SizedBox(height: 24),
-          _buildActionButtons(context),
-          SizedBox(height: 24),
+              Colors.green,
+            ),
+            SizedBox(height: 12),
+            _buildLocationTile(
+              'Drop off',
+              driverProvder.rideDetail!.data!.toLocation.toString(),
+              Colors.red,
+            ),
+            SizedBox(height: 20),
+            _buildUserInfo(),
+            SizedBox(height: 24),
+            _buildActionButtons(context),
+            SizedBox(height: 24),
 
-          SizedBox(height: MediaQuery.of(context).padding.bottom),
-        ],
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
+        ),
       ),
     );
   }
@@ -269,7 +257,7 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
     );
   }
 
-  Widget _buildUserInfo({required bool ongoingRide}) {
+  Widget _buildUserInfo() {
     final driverProvder = Provider.of<DriverProvider>(context, listen: false);
     return Row(
       children: [
@@ -280,33 +268,37 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
         SizedBox(width: 12),
         Expanded(
           child: Text(
-            ongoingRide
-                ? driverProvder.ongoingRide!.rider!.username.toString()
-                : driverProvder.rideDetail!.data!.user!.username.toString(),
+            driverProvder.rideDetail!.data!.user!.username.toString(),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),
-        _iconButton(Icons.phone),
+        _iconButton(
+          Icons.phone,
+          onTap: () async {
+            await makePhoneCall(
+              driverProvder.rideDetail!.data!.user!.phoneNumber.toString(),
+            );
+          },
+        ),
         SizedBox(width: 12),
         _iconButton(Icons.message),
       ],
     );
   }
 
-  Widget _iconButton(IconData icon) {
-    return CircleAvatar(
-      backgroundColor: Colors.grey[100],
-      child: Icon(icon, color: Colors.grey[700], size: 20),
+  Widget _iconButton(IconData icon, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: CircleAvatar(
+        backgroundColor: Colors.grey[100],
+        child: Icon(icon, color: Colors.grey[700], size: 20),
+      ),
     );
   }
 
   Widget _buildActionButtons(BuildContext context) {
     return Column(
       children: [
-        _fullButton(Icons.notifications, 'Notify Arrival', Colors.black, () {}),
-        SizedBox(height: 12),
-        _outlinedButton(Icons.cancel_outlined, 'Cancel Ride', () {}),
-        SizedBox(height: 12),
         _fullButton(CupertinoIcons.paperplane, 'Begin', Colors.black, () async {
           final driverProvider = Provider.of<DriverProvider>(
             context,
@@ -326,26 +318,18 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
           }
         }),
         SizedBox(height: 12),
+        _outlinedButton(Icons.cancel_outlined, 'Cancel Ride', () {}),
+        SizedBox(height: 12),
         _fullButton(
           CupertinoIcons.text_aligncenter,
           'Verify OTP',
           Colors.black,
           () async {
-            //  if (!_otpVerified) {
-            //   _showOtpDialog(context);
-            //   _otpVerified = true;
-            // } else {
-            //   showFancySuccessToast(context, "OTP has been already verified");
-
-            //
-            final driverProvider = Provider.of<DriverProvider>(
-              context,
-              listen: false,
-            );
-            final response = await driverProvider.generateOTP();
-            if (response) {
+            if (!_otpVerified) {
               _showOtpDialog(context);
-              //
+              _otpVerified = true;
+            } else {
+              showFancySuccessToast(context, "OTP has been already verified");
             }
           },
         ),
@@ -384,7 +368,18 @@ class _NavigationPickUpState extends State<NavigationPickUp> {
                   context,
                   listen: false,
                 );
-                await driverProvider.verifyOTP(otp: enteredOtp);
+                final response = await driverProvider.verifyOTP(
+                  otp: enteredOtp,
+                );
+                if (response) {
+                  showFancySuccessToast(
+                    context,
+                    "OTP has been verified successfully! You may begin the ride!",
+                  );
+                  Navigator.of(context).pop(); // Close without doing anything
+
+                  // context.goNamed("/driverLiveTracking");
+                }
               },
               child: const Text("Verify"),
             ),

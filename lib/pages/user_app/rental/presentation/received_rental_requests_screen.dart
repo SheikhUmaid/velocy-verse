@@ -5,6 +5,7 @@ import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/pages/user_app/rental/data/received_rental_requests_model.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/rental_request_rider_profile_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:velocyverse/utils/responsive_wraper.dart';
 
 class ReceivedRentalRequestsScreen extends StatefulWidget {
   const ReceivedRentalRequestsScreen({super.key});
@@ -44,18 +45,20 @@ class _ReceivedRentalRequestsScreenState
             return const Center(child: Text("No requests found"));
           }
 
-          return RefreshIndicator(
-            onRefresh: () => Provider.of<RentalProvider>(
-              context,
-              listen: false,
-            ).fetchReceivedVehilces(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: requests.length,
-              itemBuilder: (context, index) {
-                final request = requests[index];
-                return _buildRequestCard(context, request);
-              },
+          return ResponsiveWraper(
+            child: RefreshIndicator(
+              onRefresh: () => Provider.of<RentalProvider>(
+                context,
+                listen: false,
+              ).fetchReceivedVehilces(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final request = requests[index];
+                  return _buildRequestCard(context, request);
+                },
+              ),
             ),
           );
         },

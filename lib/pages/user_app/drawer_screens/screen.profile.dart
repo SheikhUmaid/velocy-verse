@@ -16,6 +16,7 @@ class ProfileSettingsScreen extends StatelessWidget {
     );
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(title: Text("Settings")),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -34,50 +35,11 @@ class ProfileSettingsScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header with back button and title
+                // User Profile Section
                 Container(
                   padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          context.pop();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black87,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          'Settings',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 40), // Balance the back button
-                    ],
-                  ),
-                ),
-
-                // Divider
-                Container(height: 1, color: Colors.grey.shade200),
-
-                // User Profile Section
-                GestureDetector(
-                  onTap: () {
-                    // Navigate to profile edit
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
+                  child: InkWell(
+                    onTap: () => context.pushNamed("/riderUpdateProfile"),
                     child: Row(
                       children: [
                         // Profile Avatar
@@ -92,10 +54,24 @@ class ProfileSettingsScreen extends StatelessWidget {
                               width: 1,
                             ),
                           ),
-                          child: const Icon(
-                            Icons.person,
-                            color: Colors.black87,
-                            size: 30,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Consumer<RiderProfileProvider>(
+                              builder: (_, prov, __) {
+                                // prov.getRiderProfile();
+                                return Image.network(
+                                  profileProvider.profileURL ?? "",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.person,
+                                      size: 30,
+                                      color: Colors.grey,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
 
@@ -127,13 +103,10 @@ class ProfileSettingsScreen extends StatelessWidget {
                         ),
 
                         // Arrow Icon
-                        InkWell(
-                          onTap: () => context.pushNamed("/riderUpdateProfile"),
-                          child: Icon(
-                            Icons.chevron_right,
-                            color: Colors.grey.shade500,
-                            size: 24,
-                          ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey.shade500,
+                          size: 24,
                         ),
                       ],
                     ),

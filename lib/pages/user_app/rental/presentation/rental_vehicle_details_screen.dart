@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/pages/user_app/rental/presentation/rental_vehicle_owner_info_screen.dart';
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:velocyverse/utils/responsive_wraper.dart';
 
 class RentalVehicleDetailScreen extends StatefulWidget {
   final int vehicleId;
@@ -147,7 +148,7 @@ class _RentalVehicleDetailScreenState extends State<RentalVehicleDetailScreen> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
                       "http://82.25.104.152/${v.images.first}",
-                      height: 200,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),

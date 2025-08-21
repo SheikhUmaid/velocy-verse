@@ -33,31 +33,30 @@ Widget _buildPermissionBottomSheet(BuildContext context) {
             ),
           ),
           onPressed: () async {
-            // var status = await Permission.location.request();
-            // // Request media/gallery permission
-            // var mediaStatus = await Permission.photos.request();
-            // // For Android below 13, use Permission.storage instead
-            // if (mediaStatus.isDenied) {
-            //   mediaStatus = await Permission.storage.request();
-            // }
+            var status = await Permission.location.request();
+            // Request media/gallery permission
+            var mediaStatus = await Permission.photos.request();
+            // For Android below 13, use Permission.storage instead
+            if (mediaStatus.isDenied) {
+              mediaStatus = await Permission.storage.request();
+            }
 
-            // if (status.isGranted && mediaStatus.isGranted) {
-            //   context.goNamed('/login');
-            // } else if (status.isDenied) {
-            //   Fluttertoast.showToast(
-            //     msg: "Oops We can not procced without permission!",
-            //     toastLength: Toast.LENGTH_SHORT,
-            //     gravity: ToastGravity.BOTTOM,
-            //     timeInSecForIosWeb: 1,
-            //     backgroundColor: Colors.black,
-            //     textColor: Colors.white,
-            //     fontSize: 16.0,
-            //   );
-            // }
-            context.goNamed('/login');
+            if (status.isGranted && mediaStatus.isGranted) {
+              context.goNamed('/login');
+            } else if (status.isDenied) {
+              Fluttertoast.showToast(
+                msg: "Oops We can not procced without permission!",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+            }
           },
           child: Text(
-            "Allow ePermissions",
+            "Allow Permissions",
             style: TextStyle(color: Colors.white),
           ),
         ),

@@ -18,30 +18,38 @@ class DriverReports extends StatefulWidget {
 class _DriverReportsState extends State<DriverReports> {
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-
     Future.microtask(() async {
-      final earningsProvider = Provider.of<EaningsNreportsProvider>(
+      print("Fetching recent rides");
+      bool success = await Provider.of<EaningsNreportsProvider>(
         context,
         listen: false,
-      );
-      final ridesProvider = Provider.of<RecentRidesProvider>(
+      ).fetchEarningsNReport();
+      if (!success) {
+        debugPrint("Failed to fetch earnings");
+      }
+    });
+    //
+    Future.microtask(() async {
+      print("Fetching recent rides");
+      bool success = await Provider.of<RecentRidesProvider>(
         context,
         listen: false,
-      );
-
-      bool earningsSuccess = await earningsProvider.fetchEarningsNReport();
-      if (!earningsSuccess) debugPrint("Failed to fetch earnings");
-
-      bool ridesSuccess = await ridesProvider.fetchRideHistory();
-      if (!ridesSuccess) debugPrint("Failed to fetch ride history");
+      ).fetchRideHistory();
+      if (!success) {
+        debugPrint("Failed to fetch earnings");
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final earningsProvider = Provider.of<EaningsNreportsProvider>(context);
-
+    final paymentProvider = Provider.of<PaymentProvider>(
+      context,
+      listen: false,
+    );
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -50,6 +58,10 @@ class _DriverReportsState extends State<DriverReports> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         centerTitle: true,
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () => Navigator.pop(context),
+        // ),
       ),
       backgroundColor: Colors.white,
       body: Builder(
@@ -59,7 +71,6 @@ class _DriverReportsState extends State<DriverReports> {
           } else if (earningsProvider.earnings == null) {
             return const Center(child: Text("No earnings data available"));
           }
-
           final earnings = earningsProvider.earnings!;
           return ListView(
             padding: const EdgeInsets.symmetric(
@@ -69,12 +80,13 @@ class _DriverReportsState extends State<DriverReports> {
               const SizedBox(height: DriverReports._verticalSpacing),
               _EarningsSummary(earnings),
               const SizedBox(height: DriverReports._verticalSpacing),
+              // const _EarningsPeriodSelector(),
               const SizedBox(height: 20),
               _IncentiveTracker(earnings),
               const SizedBox(height: DriverReports._verticalSpacing),
               _AvailablePayout(earnings),
               const SizedBox(height: DriverReports._verticalSpacing),
-              const _RecentRides(),
+              _RecentRides(),
             ],
           );
         },
@@ -83,7 +95,6 @@ class _DriverReportsState extends State<DriverReports> {
   }
 }
 
-// Earnings summary card
 class _EarningsSummary extends StatelessWidget {
   final EarningsNreportModel earnings;
   const _EarningsSummary(this.earnings);
@@ -102,13 +113,10 @@ class _EarningsSummary extends StatelessWidget {
               children: [
                 Text(
                   '₹${earnings.totalEarnings}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 28,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                 ),
-                const Spacer(),
-                const Text(
+                Spacer(),
+                Text(
                   'Total Earnings',
                   style: TextStyle(color: Colors.grey, fontSize: 16),
                 ),
@@ -139,7 +147,6 @@ class _EarningsSummary extends StatelessWidget {
   }
 }
 
-// Info box for earnings
 class _InfoBox extends StatelessWidget {
   final String label;
   final String value;
@@ -174,7 +181,49 @@ class _InfoBox extends StatelessWidget {
   }
 }
 
-// Incentive tracker
+class _EarningsPeriodSelector extends StatelessWidget {
+  const _EarningsPeriodSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    // Illustrative only, hard coded on Daily as in image
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _PeriodButton(label: "Daily", isActive: true),
+        const SizedBox(width: 14),
+        _PeriodButton(label: "Weekly"),
+        const SizedBox(width: 14),
+        _PeriodButton(label: "Monthly"),
+      ],
+    );
+  }
+}
+
+class _PeriodButton extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  const _PeriodButton({required this.label, this.isActive = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      decoration: BoxDecoration(
+        color: isActive ? Colors.black : const Color(0xFFF8F8F8),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isActive ? Colors.white : Colors.black87,
+          fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
+        ),
+      ),
+    );
+  }
+}
+
 class _IncentiveTracker extends StatelessWidget {
   final EarningsNreportModel earnings;
   const _IncentiveTracker(this.earnings);
@@ -190,9 +239,18 @@ class _IncentiveTracker extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Cash acceptance limit',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            Row(
+              children: const [
+                Text(
+                  'Cash acceptance limit',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+                // Spacer(),
+                // Text(
+                //   '4 days left',
+                //   style: TextStyle(color: Colors.grey, fontSize: 14),
+                // ),
+              ],
             ),
             const SizedBox(height: 16),
             LinearProgressIndicator(
@@ -210,18 +268,16 @@ class _IncentiveTracker extends StatelessWidget {
   }
 }
 
-// Available payout card
 class _AvailablePayout extends StatelessWidget {
   final EarningsNreportModel earnings;
   const _AvailablePayout(this.earnings);
 
   @override
   Widget build(BuildContext context) {
-    final earningsProvider = Provider.of<EaningsNreportsProvider>(
+    final paymentProvider = Provider.of<PaymentProvider>(
       context,
       listen: false,
     );
-
     return Card(
       margin: EdgeInsets.zero,
       color: Colors.white,
@@ -235,17 +291,14 @@ class _AvailablePayout extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Available for payout',
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '₹${earnings.totalEarnings}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ],
               ),
@@ -259,15 +312,18 @@ class _AvailablePayout extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: earnings.totalEarnings == 0.0
-                  ? null
-                  : () async {
-                      var success = await earningsProvider.requestCashOut(
-                        earnings.totalEarnings?.floor() ?? 0,
-                      );
-                      debugPrint('Cashout success: $success');
-                    },
-              child: const Text("Cash Out"),
+              onPressed: () {
+                paymentProvider.openCheckout(
+                  amount: 500, // ₹500
+                  name: "John Doe",
+                  contact: "9999999999",
+                  email: "john@example.com",
+                );
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                child: Text('Cash Out'),
+              ),
             ),
           ],
         ),
@@ -278,6 +334,7 @@ class _AvailablePayout extends StatelessWidget {
 
 class _RecentRides extends StatelessWidget {
   const _RecentRides();
+
   @override
   Widget build(BuildContext context) {
     final recentRidesProvider = Provider.of<RecentRidesProvider>(context);
@@ -332,12 +389,14 @@ class _RideHistoryTile extends StatelessWidget {
   final String title;
   final String dateTime;
   final String fare;
+
   const _RideHistoryTile({
     required this.icon,
     required this.title,
     required this.dateTime,
     required this.fare,
   });
+
   @override
   Widget build(BuildContext context) {
     return Padding(

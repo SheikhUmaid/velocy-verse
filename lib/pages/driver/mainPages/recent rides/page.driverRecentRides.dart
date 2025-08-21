@@ -15,17 +15,20 @@ class _DriverRecentRidesState extends State<DriverRecentRides> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      debugPrint("Fetching recent rides");
+      print("Fetching recent rides");
       bool success = await Provider.of<RecentRidesProvider>(
         context,
         listen: false,
       ).fetchRideHistory();
-      if (!success) debugPrint("Failed to fetch ride history");
+      if (!success) {
+        debugPrint("Failed to fetch ride history");
+      }
     });
   }
 
   Future<bool> _willPop() async {
     context.go('/driverMain');
+    print('popping ');
     return false;
   }
 
@@ -51,61 +54,146 @@ class _DriverRecentRidesState extends State<DriverRecentRides> {
               ),
             ),
             centerTitle: true,
-            bottom: const TabBar(
+            bottom: TabBar(
               indicatorColor: Colors.black,
               labelColor: Colors.black,
               unselectedLabelColor: Colors.grey,
-              tabs: [
+              tabs: const [
                 Tab(text: 'History'),
                 Tab(text: 'Scheduled'),
                 Tab(text: 'Cancelled'),
               ],
             ),
           ),
+
           body: TabBarView(
             children: [
-              _buildRideList(rideProvider, RideType.completed),
-              _buildRideList(rideProvider, RideType.scheduled),
-              _buildRideList(rideProvider, RideType.cancelled),
+              //? Completed
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Builder(
+                  builder: (context) {
+                    if (rideProvider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (rideProvider.rideHistory == null) {
+                      return const Center(child: Text("No rides found"));
+                    }
+
+                    final completedRides =
+                        rideProvider.rideHistory!.completedRides;
+
+                    if (completedRides.isEmpty) {
+                      return const Center(child: Text("No recent rides"));
+                    }
+
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemCount: completedRides.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 20),
+                      itemBuilder: (context, index) {
+                        final ride = completedRides[index];
+                        return _buildRideCard(
+                          context: context,
+                          time:
+                              "${ride.date ?? 'N/A'}, ${ride.startTime ?? 'N/A'}",
+                          pickupLocation: ride.fromLocation.toString(),
+                          dropLocation: ride.toLocation.toString(),
+                          payment: "₹${ride.amountReceived ?? 0}",
+                          distance: ride.distance!.toInt().toString() + " km",
+                          rideId: ride.id ?? 0,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              //  ?Scheduled
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Builder(
+                  builder: (context) {
+                    if (rideProvider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (rideProvider.rideHistory == null) {
+                      return const Center(child: Text("No rides found"));
+                    }
+
+                    final completedRides =
+                        rideProvider.rideHistory!.scheduledRides;
+
+                    if (completedRides.isEmpty) {
+                      return const Center(child: Text("No recent rides"));
+                    }
+
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemCount: completedRides.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 20),
+                      itemBuilder: (context, index) {
+                        final ride = completedRides[index];
+                        return _buildRideCard(
+                          context: context,
+                          time:
+                              "${ride.date ?? 'N/A'}, ${ride.startTime ?? 'N/A'}",
+                          pickupLocation: ride.fromLocation.toString(),
+                          dropLocation: ride.toLocation.toString(),
+                          payment: "₹${ride.amountReceived ?? 0}",
+                          distance: ride.distance!.toInt().toString() + " km",
+                          rideId: ride.id ?? 0,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              // ? Cancelled
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Builder(
+                  builder: (context) {
+                    if (rideProvider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (rideProvider.rideHistory == null) {
+                      return const Center(child: Text("No rides found"));
+                    }
+
+                    final completedRides =
+                        rideProvider.rideHistory!.cancelledRides;
+
+                    if (completedRides.isEmpty) {
+                      return const Center(child: Text("No recent rides"));
+                    }
+
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemCount: completedRides.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 20),
+                      itemBuilder: (context, index) {
+                        final ride = completedRides[index];
+                        return _buildRideCard(
+                          context: context,
+                          time:
+                              "${ride.date ?? 'N/A'}, ${ride.startTime ?? 'N/A'}",
+                          pickupLocation: ride.fromLocation.toString(),
+                          dropLocation: ride.toLocation.toString(),
+                          payment: "₹${ride.amountReceived ?? 0}",
+                          distance: ride.distance!.toInt().toString() + " km",
+                          rideId: ride.id ?? 0,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildRideList(RecentRidesProvider provider, RideType type) {
-    if (provider.isLoading)
-      return const Center(child: CircularProgressIndicator());
-    if (provider.rideHistory == null)
-      return const Center(child: Text("No rides found"));
-
-    final rides = switch (type) {
-      RideType.completed => provider.rideHistory!.completedRides,
-      RideType.scheduled => provider.rideHistory!.scheduledRides,
-      RideType.cancelled => provider.rideHistory!.cancelledRides,
-    };
-
-    if (rides.isEmpty) return const Center(child: Text("No recent rides"));
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        itemCount: rides.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 20),
-        itemBuilder: (context, index) {
-          final ride = rides[index];
-          return _buildRideCard(
-            context: context,
-            time: "${ride.date ?? 'N/A'}, ${ride.startTime ?? 'N/A'}",
-            pickupLocation: ride.fromLocation.toString(),
-            dropLocation: ride.toLocation.toString(),
-            payment: "₹${ride.amountReceived ?? 0}",
-            distance: "${ride.distance?.toInt() ?? 0} km",
-            rideId: ride.id ?? 0,
-          );
-        },
       ),
     );
   }
@@ -134,8 +222,9 @@ class _DriverRecentRidesState extends State<DriverRecentRides> {
         ],
       ),
       child: InkWell(
-        onTap: () =>
-            context.push('/recentRideDetails', extra: rideId.toString()),
+        onTap: () {
+          context.push('/recentRideDetails', extra: rideId.toString());
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -181,11 +270,81 @@ class _DriverRecentRidesState extends State<DriverRecentRides> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildRideInfoRow(pickupLocation, 'Payment', payment),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              pickupLocation,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Payment',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              Text(
+                                payment,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 24),
-                      _buildRideInfoRow(dropLocation, 'Distance', distance),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              dropLocation,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Distance',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              Text(
+                                distance,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -196,36 +355,7 @@ class _DriverRecentRidesState extends State<DriverRecentRides> {
       ),
     );
   }
-
-  Widget _buildRideInfoRow(String location, String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Text(
-            location,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              label,
-              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-            ),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 }
-
-enum RideType { completed, scheduled, cancelled }
 
 class DottedLinePainter extends CustomPainter {
   @override
@@ -234,15 +364,19 @@ class DottedLinePainter extends CustomPainter {
     const dashSpace = 2.0;
     double startY = 0;
     final paint = Paint()
-      ..color = Colors.grey
-      ..strokeWidth = 2;
+      ..color = Colors.grey[400]!
+      ..strokeWidth = 2.0;
 
     while (startY < size.height) {
-      canvas.drawLine(Offset(0, startY), Offset(0, startY + dashHeight), paint);
+      canvas.drawLine(
+        Offset(size.width / 2, startY),
+        Offset(size.width / 2, startY + dashHeight),
+        paint,
+      );
       startY += dashHeight + dashSpace;
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

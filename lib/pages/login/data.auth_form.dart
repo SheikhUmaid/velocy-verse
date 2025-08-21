@@ -15,6 +15,8 @@ import 'package:velocyverse/providers/login/provider.authentication.dart';
 import 'package:velocyverse/providers/provider.loader.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
+import 'package:velocyverse/utils/util.success_toast.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -23,13 +25,27 @@ class AuthForm extends StatefulWidget {
   State<AuthForm> createState() => _AuthFormState();
 }
 
-class _AuthFormState extends State<AuthForm> {
+class _AuthFormState extends State<AuthForm> with CodeAutoFill {
   bool isLogin = true;
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final otpfill = SmsAutoFill();
+  @override
+  void initState() {
+    super.initState();
+    listenForCode();
+  }
+
+  @override
+  void codeUpdated() {
+    debugPrint("Coode UPDATED BAHE");
+    setState(() {
+      otpController.text = code ?? ""; // auto-filled
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +70,32 @@ class _AuthFormState extends State<AuthForm> {
               },
             ),
             const SizedBox(height: 32),
-            PhoneInputField(controller: phoneController, label: 'Phone Number'),
+            PhoneInputField(
+              controller: phoneController,
+              label: 'Phone Number',
+              onTenDigits: !isLogin
+                  ? () async {
+                      authenticationProvider.phoneNumber =
+                          "+91${phoneController.text}";
+                      context.read<LoaderProvider>().showLoader();
+                      final res = await authenticationProvider.sendOtp(
+                        mode: "register",
+                      );
+                      if (res) {
+                        context.read<LoaderProvider>().hideLoader();
+                        showFancySuccessToast(
+                          context,
+                          "Sent OTP to +91${phoneController.text}",
+                        );
+                      } else {
+                        showFancyErrorToast(
+                          context,
+                          "Failed to send OTP, Please check the number",
+                        );
+                      }
+                    }
+                  : null,
+            ),
             const SizedBox(height: 24),
             if (!isLogin) ...[
               CustomTextField(
@@ -76,12 +117,15 @@ class _AuthFormState extends State<AuthForm> {
                 padding: const EdgeInsets.all(8.0),
                 child: InkWell(
                   onTap: () async {
-                    if (phoneController.text.isEmpty ||
-                        phoneController.text.length != 10 ||
-                        !RegExp(r'^[0-9]+$').hasMatch(phoneController.text)) {
+                    final phone = phoneController.text.trim();
+
+                    // Check if phone number is exactly 10 digits
+                    if (phone.isEmpty ||
+                        phone.length != 10 ||
+                        !RegExp(r'^[0-9]+$').hasMatch(phone)) {
                       showFancyErrorToast(
                         context,
-                        "Phone number must be 10 digits.",
+                        "Enter a valid 10-digit phone number",
                       );
                       return;
                     }
@@ -284,6 +328,7 @@ class _AuthFormState extends State<AuthForm> {
     otpController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    cancel(); // stop listening
     super.dispose();
   }
 

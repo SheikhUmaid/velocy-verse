@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:velocyverse/models/model.driverDetails.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
@@ -32,6 +33,7 @@ import 'package:velocyverse/pages/user_app/drawer_screens/screen.profile.dart';
 import 'package:velocyverse/pages/user_app/drawer_screens/screen.rider_update_profile.dart';
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
 import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class MyRouter {
   static GoRouter routerConfig = GoRouter(
@@ -99,9 +101,19 @@ class MyRouter {
         name: '/riderLiveTracking',
         path: '/riderLiveTracking',
         builder: (BuildContext context, GoRouterState state) {
-          return LiveTrackingScreen(otpText: state.extra as String);
+          final rideProvider = Provider.of<RideProvider>(
+            context,
+            listen: false,
+          );
+
+          final otp = state.extra != null
+              ? state.extra as String
+              : rideProvider.otp ?? ""; // fallback from provider
+
+          return LiveTrackingScreen(otpText: otp);
         },
       ),
+
       GoRoute(
         name: '/dropOffNavigation',
         path: '/dropOffNavigation',

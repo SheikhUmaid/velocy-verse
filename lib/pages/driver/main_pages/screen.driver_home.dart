@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:velocyverse/components/driver/component.ongoingRide.dart';
 import 'package:velocyverse/providers/driver/provider.driver.dart';
 import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
+import 'package:velocyverse/providers/user/provider.ride.dart';
 
 class DriverHome extends StatefulWidget {
   const DriverHome({super.key});
@@ -86,7 +87,7 @@ class _DriverHomeState extends State<DriverHome> {
     );
   }
 
-  Widget _buildHeader(double width) {
+  Widget _buildHeader() {
     final driverProfileProvider = Provider.of<DriverProfileProvider>(
       context,
       listen: true,

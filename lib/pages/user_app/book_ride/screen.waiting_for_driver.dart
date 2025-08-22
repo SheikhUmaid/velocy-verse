@@ -68,11 +68,11 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Waiting for driver')),
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: Column(
           children: [
-            const CustomAppBar(title: 'Waiting for driver'),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(16),
@@ -81,7 +81,7 @@ class _WaitingDriverScreenState extends State<WaitingDriverScreen>
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),

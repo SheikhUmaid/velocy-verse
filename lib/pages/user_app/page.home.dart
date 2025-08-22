@@ -74,7 +74,25 @@ class _UserHomeState extends State<UserHome> {
                 leading: CircleAvatar(
                   radius: 28,
                   backgroundColor: Colors.grey.shade200,
-                  child: Icon(CupertinoIcons.person, color: Colors.black),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Consumer<RiderProfileProvider>(
+                      builder: (_, prov, __) {
+                        // prov.getRiderProfile();
+                        return Image.network(
+                          prov.profileURL ?? "",
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.person,
+                              size: 30,
+                              color: Colors.grey,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,8 +263,4 @@ class _UserHomeState extends State<UserHome> {
       ),
     );
   }
-}
-
-extension on ScaffoldMessengerState {
-  void openDrawer() {}
 }

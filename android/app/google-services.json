@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "449881593781",
+    "project_id": "velocytax-344c7",
+    "storage_bucket": "velocytax-344c7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449881593781:android:6d648142e340837fc7abfc",
+        "android_client_info": {
+          "package_name": "com.velocyverse.velocytax"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYbEgDQRzpVB1bF-s13ZgylY9PjANox9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,7 +9,6 @@ import 'package:velocyverse/pages/user_app/rental/data/received_rental_requests_
 import 'package:velocyverse/pages/user_app/rental/data/rental_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_detail.dart';
 import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_owner_info_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rider_handover_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
 import 'package:velocyverse/pages/user_app/rental/data/vehicles_for_rent_model.dart';
 import 'package:velocyverse/pages/user_app/rental/rental_api_service/rental_api_service.dart';
@@ -48,8 +47,6 @@ class RentalProvider extends ChangeNotifier {
 
   HandoverModel? _handoverModel;
   HandoverModel? get handoverModel => _handoverModel;
-  RiderHandoverModel? _riderHandoverModel;
-  RiderHandoverModel? get riderHandoverModel => _riderHandoverModel;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -179,22 +176,6 @@ class RentalProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchHandoverRiderDetails(int requestId) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _riderHandoverModel = await _rentalApiService
-          .fetchHanderOverForRiderRequest(requestId);
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   Future<void> submitHandoverDetails(
     int requestId,
     bool handedOverCarKeys,
@@ -300,23 +281,6 @@ class RentalProvider extends ChangeNotifier {
 
     try {
       await _rentalApiService.toggleAvailability(vehicleId);
-      _isSuccess = true;
-    } catch (e) {
-      _sendError = e.toString();
-    } finally {
-      _isSending = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> cancelRequest(int requestId) async {
-    _isSending = true;
-    _isSuccess = false;
-    _sendError = null;
-    notifyListeners();
-
-    try {
-      await _rentalApiService.cancelRequest(requestId);
       _isSuccess = true;
     } catch (e) {
       _sendError = e.toString();

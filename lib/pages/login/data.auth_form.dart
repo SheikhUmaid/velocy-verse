@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:velocyverse/app.dart';
 import 'package:velocyverse/components/base/component.custom_text_field.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/components/login/component.auth_toggle.dart';
@@ -11,7 +12,6 @@ import 'package:velocyverse/providers/provider.loader.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.is_driver.dart';
 import 'package:velocyverse/utils/util.success_toast.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -20,26 +20,16 @@ class AuthForm extends StatefulWidget {
   State<AuthForm> createState() => _AuthFormState();
 }
 
-class _AuthFormState extends State<AuthForm> with CodeAutoFill {
+class _AuthFormState extends State<AuthForm> {
   bool isLogin = true;
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  final otpfill = SmsAutoFill();
   @override
   void initState() {
     super.initState();
-    listenForCode();
-  }
-
-  @override
-  void codeUpdated() {
-    debugPrint("Coode UPDATED BAHE");
-    setState(() {
-      otpController.text = code ?? ""; // auto-filled
-    });
   }
 
   @override
@@ -83,6 +73,7 @@ class _AuthFormState extends State<AuthForm> with CodeAutoFill {
                           "Sent OTP to +91${phoneController.text}",
                         );
                       } else {
+                        context.read<LoaderProvider>().hideLoader();
                         showFancyErrorToast(
                           context,
                           "Failed to send OTP, Please check the number",
@@ -112,37 +103,41 @@ class _AuthFormState extends State<AuthForm> with CodeAutoFill {
                 padding: const EdgeInsets.all(8.0),
                 child: InkWell(
                   onTap: () async {
-                    final phone = phoneController.text.trim();
-
-                    // Check if phone number is exactly 10 digits
-                    if (phone.isEmpty ||
-                        phone.length != 10 ||
-                        !RegExp(r'^[0-9]+$').hasMatch(phone)) {
+                    if (phoneController.text.isEmpty ||
+                        phoneController.text.length != 10 ||
+                        !RegExp(r'^[0-9]+$').hasMatch(phoneController.text)) {
                       showFancyErrorToast(
                         context,
-                        "Enter a valid 10-digit phone number",
+                        "Phone number must be 10 digits.",
                       );
                       return;
                     }
 
-                    authenticationProvider.phoneNumber = "+91$phone";
-                    context.read<LoaderProvider>().showLoader();
-
-                    final res = await authenticationProvider.sendOtp(
-                      mode: "login",
+                    var sendOTP = await authenticationProvider.fb_sendOTP(
+                      phoneController.text.trim(),
                     );
-
-                    context.read<LoaderProvider>().hideLoader();
-
-                    if (res) {
-                      if (context.mounted) {
-                        context.pushNamed(
-                          '/loginOTP',
-                          extra: phoneController.text,
-                        );
-                      }
+                    if (!sendOTP) {
+                      print(sendOTP);
+                      showFancyErrorToast(
+                        context,
+                        "Failed to send OTP. jefib Please try again.",
+                      );
                     } else {
-                      showFancyErrorToast(context, "Error sending OTP");
+                      context.goNamed(
+                        '/loginOTP',
+                        extra: phoneController.text.trim(),
+                      );
+                      rootScaffoldMessengerKey.currentState?.showSnackBar(
+                        SnackBar(
+                          content: Text("Otp sent successfully!"),
+                          backgroundColor: Colors.green,
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: const Text(
@@ -229,7 +224,7 @@ class _AuthFormState extends State<AuthForm> with CodeAutoFill {
                   context.read<LoaderProvider>().showLoader();
                   final response = await authenticationProvider
                       .loginWithPassword(
-                        phoneNumber: phoneController.text,
+                        phoneNumber: "+91${phoneController.text}",
                         password: passwordController.text,
                       );
                   if (response == 'driver') {
@@ -276,7 +271,6 @@ class _AuthFormState extends State<AuthForm> with CodeAutoFill {
     otpController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    cancel(); // stop listening
     super.dispose();
   }
 }

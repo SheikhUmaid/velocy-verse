@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/app.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/components/user/component.favorite_locations.dart';
-import 'package:velocyverse/components/user/component.home_header.dart';
-import 'package:velocyverse/components/user/component.live_offers.dart';
-import 'package:velocyverse/components/user/component.location_display.dart';
-import 'package:velocyverse/components/user/component.map_view.dart';
-import 'package:velocyverse/components/user/component.ride_type_selector.dart';
-import 'package:velocyverse/components/user/component.search_bar.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
-import 'package:velocyverse/utils/util.get_current_location.dart';
-import 'package:velocyverse/utils/util.get_current_position.dart';
-import 'package:velocyverse/utils/util.logout.dart';
+import 'package:VelocyTaxzz/app.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/components/user/component.favorite_locations.dart';
+import 'package:VelocyTaxzz/components/user/component.home_header.dart';
+import 'package:VelocyTaxzz/components/user/component.live_offers.dart';
+import 'package:VelocyTaxzz/components/user/component.location_display.dart';
+import 'package:VelocyTaxzz/components/user/component.map_view.dart';
+import 'package:VelocyTaxzz/components/user/component.ride_type_selector.dart';
+import 'package:VelocyTaxzz/components/user/component.search_bar.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/utils/util.get_current_location.dart';
+import 'package:VelocyTaxzz/utils/util.get_current_position.dart';
+import 'package:VelocyTaxzz/utils/util.logout.dart';
 
 class UserHome extends StatefulWidget {
   const UserHome({super.key});
@@ -103,28 +103,48 @@ class _UserHomeState extends State<UserHome> {
                 context.push('/profileSetting');
               },
             ),
-            ListTile(
-              leading: Icon(CupertinoIcons.location, color: Colors.black),
-              title: Text('Add favorite loaction'),
-              onTap: () => context.pushNamed("/addFavLocation"),
-            ),
+            // ListTile(
+            //   leading: Icon(CupertinoIcons.location, color: Colors.black),
+            //   title: Text('Add favorite loaction'),
+            //   onTap: () => context.pushNamed("/addFavLocation"),
+            // ),
             ListTile(
               leading: Icon(CupertinoIcons.location, color: Colors.black),
               title: Text('My rides'),
               onTap: () => context.pushNamed("/myRides"),
             ),
+
+            // ListTile(
+            //   leading: Icon(CupertinoIcons.star, color: Colors.black),
+            //   title: Text('Rewards'),
+            //   onTap: () => context.pushNamed("/addFavoriteLocation"),
+            // ),
+            // ListTile(
+            //   leading: Icon(CupertinoIcons.settings, color: Colors.black),
+            //   title: Text('Help & support'),
+            // ),
             ListTile(
-              leading: Icon(CupertinoIcons.star, color: Colors.black),
-              title: Text('Rewards'),
-              onTap: () => context.pushNamed("/addFavoriteLocation"),
+              onTap: () {
+                context.push('/privacyPolicy');
+              },
+              leading: Icon(
+                CupertinoIcons.shield_lefthalf_fill,
+                color: Colors.black,
+              ),
+              title: Text('Privacy policy'),
+            ),
+            ListTile(
+              onTap: () {
+                context.goNamed('/driverTnC');
+              },
+              leading: Icon(CupertinoIcons.folder_circle, color: Colors.black),
+              title: Text('Terms & Conditions'),
             ),
 
             ListTile(
-              leading: Icon(CupertinoIcons.settings, color: Colors.black),
-              title: Text('Help & support'),
-            ),
-
-            ListTile(
+              onTap: () {
+                context.push('/helpNsupport');
+              },
               leading: Icon(Icons.support_agent, color: Colors.black),
               title: Text('Help & support'),
             ),
@@ -132,8 +152,30 @@ class _UserHomeState extends State<UserHome> {
               leading: Icon(Icons.logout, color: Colors.black),
               title: Text('Logout'),
               onTap: () {
-                logout();
-                context.goNamed('/loading');
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Logout'),
+                      content: Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            logout();
+                            context.goNamed('/loading');
+                          },
+                          child: Text('Logout'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                // logout();
+                // context.goNamed('/loading');
               },
             ),
           ],

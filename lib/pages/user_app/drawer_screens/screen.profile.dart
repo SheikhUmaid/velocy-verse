@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
-import 'package:velocyverse/utils/util.logout.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/utils/util.logout.dart';
 
 class ProfileSettingsScreen extends StatelessWidget {
   const ProfileSettingsScreen({super.key});
@@ -141,24 +141,24 @@ class ProfileSettingsScreen extends StatelessWidget {
                 ),
 
                 // Settings Options
-                Column(
-                  children: [
-                    _buildSettingItem(
-                      icon: Icons.tune,
-                      title: 'Preferences',
-                      onTap: () {
-                        // _onPreferencesTap();
-                      },
-                    ),
+                // Column(
+                //   children: [
+                //     _buildSettingItem(
+                //       icon: Icons.tune,
+                //       title: 'Preferences',
+                //       onTap: () {
+                //         // _onPreferencesTap();
+                //       },
+                //     ),
 
-                    _buildSettingItem(
-                      icon: Icons.language,
-                      title: 'Language & Region',
-                      subtitle: 'English (US)',
-                      onTap: () {},
-                    ),
-                  ],
-                ),
+                //     _buildSettingItem(
+                //       icon: Icons.language,
+                //       title: 'Language & Region',
+                //       subtitle: 'English (US)',
+                //       onTap: () {},
+                //     ),
+                //   ],
+                // ),
 
                 // Log Out Section
                 Expanded(child: SizedBox()),

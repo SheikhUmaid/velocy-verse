@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+<<<<<<< Updated upstream
 import 'package:provider/provider.dart';
 import 'package:velocyverse/models/model.driverDetails.dart';
 import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
@@ -34,6 +35,45 @@ import 'package:velocyverse/pages/user_app/drawer_screens/screen.rider_update_pr
 import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
 import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
+=======
+import 'package:VelocyTaxzz/models/model.driverDetails.dart';
+import 'package:VelocyTaxzz/pages/common/driver_tnc_screen.dart';
+import 'package:VelocyTaxzz/pages/common/helpNsupport.dart';
+import 'package:VelocyTaxzz/pages/common/privacy_policy_screen.dart';
+import 'package:VelocyTaxzz/pages/common/user_tnc_screen.dart';
+import 'package:VelocyTaxzz/pages/driver/drawerPages/profile/page.driverProfile.dart';
+import 'package:VelocyTaxzz/pages/driver/drawerPages/profile/page.updateProfile.dart';
+import 'package:VelocyTaxzz/pages/driver/mainPages/page.paymentSuccess.dart';
+import 'package:VelocyTaxzz/pages/driver/ride/screen.driver_live_tracking.dart';
+import 'package:VelocyTaxzz/pages/driver/ride/screen.drop_navigation.dart';
+import 'package:VelocyTaxzz/pages/driver/ride/screen.pickup_navigation.dart';
+import 'package:VelocyTaxzz/pages/driver/ride/screen.ride_detail.dart';
+import 'package:VelocyTaxzz/pages/driver/ride/screen.route_with_driver.dart';
+import 'package:VelocyTaxzz/pages/driver/screen.driver_main.dart';
+import 'package:VelocyTaxzz/pages/login/diver/screen.document_upload.dart';
+import 'package:VelocyTaxzz/pages/driver/mainPages/recent%20rides/page.recentRideDetails.dart';
+import 'package:VelocyTaxzz/pages/driver/mainPages/ride/page.ridePayment.dart';
+import 'package:VelocyTaxzz/pages/driver/mainPages/ride/page.rideComplete.dart';
+import 'package:VelocyTaxzz/pages/login/page.authentication.dart';
+import 'package:VelocyTaxzz/pages/login/page.login_otp.dart';
+import 'package:VelocyTaxzz/pages/login/diver/screen.driver_registeration.dart';
+import 'package:VelocyTaxzz/pages/login/page.registration_otp.dart';
+import 'package:VelocyTaxzz/pages/login/profile_setup/page.profile_setup.dart';
+import 'package:VelocyTaxzz/pages/onboarding/page.loading.dart';
+import 'package:VelocyTaxzz/pages/onboarding/page.onboarding.dart';
+import 'package:VelocyTaxzz/pages/onboarding/page.permissions.dart';
+import 'package:VelocyTaxzz/pages/user_app/book_ride/screen.confirm_location.dart';
+import 'package:VelocyTaxzz/pages/user_app/book_ride/screen.live_tracking.dart';
+import 'package:VelocyTaxzz/pages/user_app/book_ride/screen.payment.dart';
+import 'package:VelocyTaxzz/pages/user_app/book_ride/screen.select_vehicle.dart';
+import 'package:VelocyTaxzz/pages/user_app/book_ride/screen.waiting_for_driver.dart';
+import 'package:VelocyTaxzz/pages/user_app/drawer_screens/history/page.riderRecentRides.dart';
+import 'package:VelocyTaxzz/pages/user_app/drawer_screens/screen.add_fav_location.dart';
+import 'package:VelocyTaxzz/pages/user_app/drawer_screens/screen.profile.dart';
+import 'package:VelocyTaxzz/pages/user_app/drawer_screens/screen.rider_update_profile.dart';
+import 'package:VelocyTaxzz/pages/user_app/home/user_main_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/book_ride/page.select_location.dart';
+>>>>>>> Stashed changes
 
 class MyRouter {
   static GoRouter routerConfig = GoRouter(
@@ -101,19 +141,9 @@ class MyRouter {
         name: '/riderLiveTracking',
         path: '/riderLiveTracking',
         builder: (BuildContext context, GoRouterState state) {
-          final rideProvider = Provider.of<RideProvider>(
-            context,
-            listen: false,
-          );
-
-          final otp = state.extra != null
-              ? state.extra as String
-              : rideProvider.otp ?? ""; // fallback from provider
-
-          return LiveTrackingScreen(otpText: otp);
+          return LiveTrackingScreen(otpText: state.extra as String);
         },
       ),
-
       GoRoute(
         name: '/dropOffNavigation',
         path: '/dropOffNavigation',
@@ -248,12 +278,20 @@ class MyRouter {
           String otp = extra?['otp'] as String;
           String password = extra?['password'] as String;
           String confirmPassword = extra?['confirmPassword'] as String;
+<<<<<<< Updated upstream
 
+=======
+          String? verificationId = extra?['verificationId'] as String?;
+>>>>>>> Stashed changes
           return RegistrationOTP(
             phoneNumber: phoneNumber,
             otp: otp,
             password: password,
             confirmPassword: confirmPassword,
+<<<<<<< Updated upstream
+=======
+            verificationId: verificationId,
+>>>>>>> Stashed changes
           );
         },
       ),
@@ -314,6 +352,41 @@ class MyRouter {
         name: '/driverProfile',
         builder: (context, state) {
           return DriverProfile();
+        },
+      ),
+      GoRoute(
+        path: '/helpNsupport',
+        name: '/helpNsupport',
+        builder: (context, state) {
+          return HelpSupportScreen();
+        },
+      ),
+      GoRoute(
+        path: '/driverTnC',
+        name: '/driverTnC',
+        builder: (context, state) {
+          return DriverTnCScreen();
+        },
+      ),
+      GoRoute(
+        path: '/userTnC',
+        name: '/userTnC',
+        builder: (context, state) {
+          return UserTncScreen();
+        },
+      ),
+      GoRoute(
+        path: '/privacyPolicy',
+        name: '/privacyPolicy',
+        builder: (context, state) {
+          return PrivacyPolicyScreen();
+        },
+      ),
+      GoRoute(
+        name: '/myRides',
+        path: '/myRides',
+        builder: (BuildContext context, GoRouterState state) {
+          return RiderRecentRides();
         },
       ),
     ],

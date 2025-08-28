@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
 
 class ComponentRideTypeSelector extends StatelessWidget {
   final String selectedType;

@@ -1,15 +1,23 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+<<<<<<< Updated upstream
 import 'package:velocyverse/app.dart';
 import 'package:velocyverse/networking/apiservices.dart';
 import 'package:velocyverse/networking/notification_services.dart';
 import 'package:velocyverse/services/secure_storage_service.dart';
 import 'package:velocyverse/utils/util.get_file_extension.dart';
+=======
+import 'package:VelocyTaxzz/networking/apiservices.dart';
+import 'package:VelocyTaxzz/networking/notification_services.dart';
+import 'package:VelocyTaxzz/services/secure_storage_service.dart';
+import 'package:VelocyTaxzz/utils/util.get_file_extension.dart';
+>>>>>>> Stashed changes
 
 class AuthenticationProvider extends ChangeNotifier {
   AuthenticationProvider({required ApiService apiService})
@@ -282,165 +290,327 @@ class AuthenticationProvider extends ChangeNotifier {
     required File? vehicleInsurance,
   }) async {
     try {
-      FormData formData = FormData.fromMap({
+      final formData = FormData.fromMap({
         'license_plate_number': licensePlateNumber,
         'vehicle_type': vehicleType,
-        'user_id': _registeredUser,
+        'user_id': _registeredUser!.toInt(),
         if (vehicleRegistrationDoc != null)
           'vehicle_registration_doc': await MultipartFile.fromFile(
             vehicleRegistrationDoc.path,
             filename:
-                'vehicle_registration.${getFileExtension(vehicleRegistrationDoc.path)}',
+                'vehicle_registration${getFileExtension(vehicleRegistrationDoc.path)}',
           ),
         if (driverLicense != null)
           'driver_license': await MultipartFile.fromFile(
             driverLicense.path,
-            filename: 'driver_license.${getFileExtension(driverLicense.path)}',
+            filename: 'driver_license${getFileExtension(driverLicense.path)}',
           ),
         if (vehicleInsurance != null)
           'vehicle_insurance': await MultipartFile.fromFile(
             vehicleInsurance.path,
             filename:
-                'vehicle_insurance.${getFileExtension(vehicleInsurance.path)}',
+                'vehicle_insurance${getFileExtension(vehicleInsurance.path)}',
           ),
+      });
+
+      // Debugging: check what’s being sent
+      print('Uploading fields: ${formData.fields}');
+      formData.files.forEach((file) {
+        print('Uploading file: ${file.key} -> ${file.value.filename}');
       });
 
       final response = await _apiService.postRequest(
         '/auth_api/document-upload/',
         data: formData,
-        headers: {'Content-Type': 'multipart/form-data'},
         doesNotRequireAuthHeader: true,
+        // ❌ don’t set Content-Type manually, Dio will add correct multipart boundary
       );
 
       if (response.statusCode == 200) {
         return true;
       } else {
+        print('Upload failed with status: ${response.statusCode}');
         return false;
       }
-    } catch (e) {
-      print('Document upload error: $e');
+    } catch (e, stack) {
+      print('Document upload errorrrrrrrrrrrrrrrrrrrr: $e');
+      print(stack);
       return false;
     }
   }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String VerificationID = '';
+  String? _resendToken;
   set verificationId(String value) {
     VerificationID = value;
     notifyListeners();
   }
 
-  Future<bool> fb_sendOTP(String phNo) async {
+  // Future<bool> fb_sendOTP(String phNo) async {
+  //   _isLoading = true;
+  //   notifyListeners();
+
+  //   final completer =
+  //       Completer<bool>(); // 👈 wait until OTP send status is known
+
+  //   try {
+  //     await _auth.verifyPhoneNumber(
+  //       phoneNumber: "+91$phNo",
+  //       timeout: const Duration(seconds: 60),
+
+  //       verificationCompleted: (PhoneAuthCredential credential) async {
+  //         try {
+  //           await _auth.signInWithCredential(credential);
+  //           debugPrint("✅ Auto verification completed");
+  //         } catch (e) {
+  //           debugPrint("❌ Auto sign-in failed: $e");
+  //         }
+  //         _isLoading = false;
+  //         notifyListeners();
+  //       },
+
+  //       verificationFailed: (FirebaseAuthException e) {
+  //         debugPrint("❌ Verification failed: ${e.message}");
+  //         _isLoading = false;
+  //         notifyListeners();
+  //         if (!completer.isCompleted) completer.complete(false); // ❌ failed
+  //       },
+
+  //       codeSent: (String verId, int? newResendToken) {
+  //         VerificationID = verId;
+  //         _resendToken = _resendToken;
+  //         debugPrint("📩 OTP code sent");
+  //         _isLoading = false;
+  //         notifyListeners();
+  //         if (!completer.isCompleted) completer.complete(true); // ✅ success
+  //       },
+
+  //       codeAutoRetrievalTimeout: (String verId) {
+  //         VerificationID = verId;
+  //         debugPrint("⌛ Auto-retrieval timeout");
+  //         _isLoading = false;
+  //         notifyListeners();
+  //       },
+
+  //       // forceResendingToken: _resendToken,
+  //     );
+
+  //     return completer.future; // 👈 wait here
+  //   } catch (e) {
+  //     debugPrint("❌ Error in fb_sendOTP: $e");
+  //     _isLoading = false;
+  //     notifyListeners();
+  //     return false;
+  //   }
+  // }
+
+  // ?
+  Future<bool> fb_sendOTP(String phNo, {bool forceResend = false}) async {
     _isLoading = true;
     notifyListeners();
-    print('sending otp to $phNo');
 
     final completer = Completer<bool>();
 
     try {
       await _auth.verifyPhoneNumber(
-        phoneNumber: "+91$phNo",
+        phoneNumber: '+91$phNo',
         timeout: const Duration(seconds: 60),
 
+        // forceResendingToken: forceResend ? _resendToken : null,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto verification (sometimes works without user input)
-          await _auth.signInWithCredential(credential);
-          if (!completer.isCompleted) completer.complete(true);
+          try {
+            // If auto-retrieval succeeds, this signs in without manual code entry
+            await _auth.signInWithCredential(credential);
+            debugPrint('✅ Auto verification completed');
+          } catch (e) {
+            debugPrint('❌ Auto sign-in failed: $e');
+          } finally {
+            _isLoading = false;
+            notifyListeners();
+          }
         },
 
         verificationFailed: (FirebaseAuthException e) {
-          print("Verification failed: ${e.message}");
+          debugPrint('❌ Verification failed: ${e.code} ${e.message}');
+          _isLoading = false;
+          notifyListeners();
           if (!completer.isCompleted) completer.complete(false);
         },
 
-        codeSent: (String verId, int? resendToken) {
-          verificationId = verId;
-          print('OTP code sent, verId = $verId');
+        codeSent: (String verId, int? newResendToken) {
+          VerificationID = verId;
+          _resendToken = newResendToken.toString();
+          debugPrint('📩 OTP code sent. resendToken=$_resendToken');
           _isLoading = false;
           notifyListeners();
           if (!completer.isCompleted) completer.complete(true);
         },
 
         codeAutoRetrievalTimeout: (String verId) {
-          verificationId = verId;
+          VerificationID = verId;
+          debugPrint('⌛ Auto-retrieval timeout');
+          _isLoading = false;
+          notifyListeners();
+          // no completer here; code may still arrive manually
         },
       );
 
-      return completer.future; // Waits until one of the callbacks completes
+      return await completer.future;
     } catch (e) {
+      debugPrint('❌ Error in fb_sendOTP: $e');
       _isLoading = false;
       notifyListeners();
-      print("Error in fb_sendOTP: $e");
       return false;
     }
   }
+  // ?==========
 
-  Future<Object> fb_verifyOTP(String otp, bool isLogin) async {
-    print('verifying otp $otp');
+  // Future<Object?> fb_verifyOTP(String otp, bool isLogin) async {
+  //   debugPrint("🔑 Verifying OTP: $otp");
+  //   _isLoading = true;
+  //   notifyListeners();
+
+  //   try {
+  //     if (VerificationID == null) {
+  //       throw Exception("VerificationId is null. Please request OTP again.");
+  //     }
+
+  //     final credential = PhoneAuthProvider.credential(
+  //       verificationId: VerificationID!,
+  //       smsCode: otp,
+  //     );
+
+  //     final userCredential = await _auth.signInWithCredential(credential);
+  //     final user = userCredential.user;
+
+  //     if (user != null) {
+  //       final idToken = await user.getIdToken();
+  //       debugPrint("🎟 Firebase Token: $idToken");
+
+  //       if (isLogin) {
+  //         final credsSent = await sendTokenToBackend(idToken!);
+  //         if (credsSent == 'rider' || credsSent == 'driver') {
+  //           _isLoading = false;
+  //           notifyListeners();
+  //           return credsSent;
+  //         }
+  //       } else {
+  //         _isLoading = false;
+  //         notifyListeners();
+  //         return "success";
+  //       }
+  //     }
+
+  //     _isLoading = false;
+  //     notifyListeners();
+  //     return null;
+  //   } on FirebaseAuthException catch (e) {
+  //     debugPrint("❌ FirebaseAuthException: ${e.message}");
+  //     _isLoading = false;
+  //     notifyListeners();
+  //     return null;
+  //   } catch (e) {
+  //     debugPrint("❌ Error verifying OTP: $e");
+  //     _isLoading = false;
+  //     notifyListeners();
+  //     return null;
+  //   }
+  // }
+
+  // ?
+  Future<Object?> fb_verifyOTP(String otp, bool isLogin) async {
+    debugPrint('🔑 Verifying OTP: $otp');
     _isLoading = true;
     notifyListeners();
 
     try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: VerificationID,
+      if (VerificationID == null || VerificationID!.isEmpty) {
+        throw Exception('Missing verificationId. Please request OTP again.');
+      }
+
+      final credential = PhoneAuthProvider.credential(
+        verificationId: VerificationID!,
         smsCode: otp,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(
-        credential,
-      );
-      User? user = userCredential.user;
+      final userCredential = await _auth.signInWithCredential(credential);
+      final user = userCredential.user;
 
       if (user != null) {
-        String? idToken = await user.getIdToken();
-        print('\n\n\n=====send this $idToken to your backend');
+        final idToken = await user.getIdToken();
+        debugPrint('🎟 Firebase ID token received');
+
         if (isLogin) {
-          var credsSent = await sendTokenToBackend(idToken!);
-          if (credsSent == 'rider' || credsSent == 'driver') {
-            _isLoading = false;
-            notifyListeners();
-            return credsSent;
-          }
+          final role = await sendTokenToBackend(idToken!);
+          _isLoading = false;
+          notifyListeners();
+          return (role == 'rider' || role == 'driver') ? role : null;
         } else {
           _isLoading = false;
           notifyListeners();
           return true;
         }
       }
+
       _isLoading = false;
       notifyListeners();
-      return false;
+      return null;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('❌ FirebaseAuthException: ${e.code} ${e.message}');
+      _isLoading = false;
+      notifyListeners();
+      return null;
     } catch (e) {
+      debugPrint('❌ Error verifying OTP: $e');
       _isLoading = false;
       notifyListeners();
-      return false;
+      return null;
     }
   }
 
-  Future<Object> sendTokenToBackend(String idToken) async {
+  // ?===========
+  Future<String?> sendTokenToBackend(String idToken) async {
     try {
       final response = await _apiService.postRequest(
         "/auth_api/firebase-auth/",
         headers: {"Content-Type": "application/json"},
-        data: {"idToken": idToken, 'd_token': NotificationService().fcmToken},
+        data: {
+          "idToken": idToken,
+          "d_token": NotificationService().fcmToken ?? "",
+        },
       );
-      print('sts code vvvvv');
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        FlutterSecureStorage secureStorage = FlutterSecureStorage();
-        // Store the token securely
-        await secureStorage.write(key: 'role', value: response.data['role']);
-        await SecureStorage.saveTokens(
-          accessToken: response.data['access'],
-          refreshToken: response.data['refresh'],
-        );
-        print('rolw jabid = ${response.data['role']}');
-        return response.data['role'];
+
+      print('Status code from backend: ${response.statusCode}');
+
+      if (response.statusCode == 200 && response.data != null) {
+        final role = response.data['role'] as String?;
+        final accessToken = response.data['access'] as String?;
+        final refreshToken = response.data['refresh'] as String?;
+
+        if (role != null && (role == "rider" || role == "driver")) {
+          final secureStorage = FlutterSecureStorage();
+          await secureStorage.write(key: 'role', value: role);
+
+          await SecureStorage.saveTokens(
+            accessToken: accessToken ?? "",
+            refreshToken: refreshToken ?? "",
+          );
+
+          print('Role received = $role');
+          return role;
+        } else {
+          print("Invalid role or missing tokens from backend");
+          return null;
+        }
       } else {
-        return false;
+        print("Backend rejected token. Status: ${response.statusCode}");
+        return null;
       }
-    } catch (e) {
-      return false;
+    } catch (e, stack) {
+      print("Error in sendTokenToBackend: $e");
+      print(stack);
+      return null;
     }
   }
 }

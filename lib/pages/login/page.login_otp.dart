@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.custom_text_field.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/providers/login/provider.authentication.dart';
-import 'package:velocyverse/providers/provider.loader.dart';
-import 'package:velocyverse/utils/util.error_toast.dart';
-import 'package:velocyverse/utils/util.is_driver.dart';
+import 'package:VelocyTaxzz/components/base/component.custom_text_field.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/providers/login/provider.authentication.dart';
+import 'package:VelocyTaxzz/providers/provider.loader.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
 
 class LoginOTP extends StatelessWidget {
   LoginOTP({super.key, required this.phoneNumber});
@@ -19,8 +18,9 @@ class LoginOTP extends StatelessWidget {
       context,
       listen: false,
     );
+
     return Scaffold(
-      appBar: AppBar(title: Text("Velocy")),
+      appBar: AppBar(title: const Text("Velocy")),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: SingleChildScrollView(
@@ -31,12 +31,12 @@ class LoginOTP extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
+                  children: const [
                     Text(
                       "OTP",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 44.00,
+                        fontSize: 44.0,
                       ),
                     ),
                   ],
@@ -45,8 +45,8 @@ class LoginOTP extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  "The OTP has been sent to you +91$phoneNumber",
-                  style: TextStyle(color: Colors.grey),
+                  "The OTP has been sent to +91$phoneNumber",
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ),
               CustomTextField(
@@ -57,9 +57,11 @@ class LoginOTP extends StatelessWidget {
               ),
 
               const SizedBox(height: 32),
+
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () async {
+<<<<<<< Updated upstream
                   var verifyOTP = await authenticationProvider.fb_verifyOTP(
                     otpController.text.trim(),
                     true,
@@ -93,6 +95,37 @@ class LoginOTP extends StatelessWidget {
                   //   showFancyErrorToast(context, "Invalid OTP");
                   //   context.read<LoaderProvider>().hideLoader();
                   // }
+=======
+                  final otp = otpController.text.trim();
+
+                  if (otp.isEmpty) {
+                    showFancyErrorToast(context, "Please enter the OTP");
+                    return;
+                  }
+
+                  // Show loader while verifying
+                  context.read<LoaderProvider>().showLoader();
+
+                  final verifyOTP = await authenticationProvider.fb_verifyOTP(
+                    otp,
+                    true,
+                  );
+
+                  // Hide loader
+                  if (context.mounted) {
+                    context.read<LoaderProvider>().hideLoader();
+                  }
+
+                  if (verifyOTP == 'rider') {
+                    if (context.mounted) context.go('/userHome');
+                  } else if (verifyOTP == 'driver') {
+                    if (context.mounted) context.go('/driverMain');
+                  } else {
+                    if (context.mounted) {
+                      showFancyErrorToast(context, "Invalid or expired OTP");
+                    }
+                  }
+>>>>>>> Stashed changes
                 },
               ),
             ],

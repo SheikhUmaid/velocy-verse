@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+<<<<<<< Updated upstream
 import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+=======
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+>>>>>>> Stashed changes
 
 class RiderPickupHandoverScreen extends StatefulWidget {
   final int requestId;

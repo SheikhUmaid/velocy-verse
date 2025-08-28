@@ -2,13 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.custom_app_bar.dart';
-import 'package:velocyverse/components/base/component.custom_text_field.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/components/user/component.vehcle_selector.dart';
-import 'package:velocyverse/providers/login/provider.authentication.dart';
-import 'package:velocyverse/providers/provider.loader.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/components/base/component.custom_app_bar.dart';
+import 'package:VelocyTaxzz/components/base/component.custom_text_field.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/components/user/component.vehcle_selector.dart';
+import 'package:VelocyTaxzz/providers/login/provider.authentication.dart';
+import 'package:VelocyTaxzz/providers/provider.loader.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
 
 class DriverRegisterationScreen extends StatefulWidget {
   const DriverRegisterationScreen({super.key});

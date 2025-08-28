@@ -17,22 +17,26 @@ class ComponentLocationDisplay extends StatelessWidget {
             color: Color(0xFF6B7280),
           ),
           const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Current Location',
-                style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
-              ),
-              Text(
-                currentLocation,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Current Location',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
                 ),
-              ),
-            ],
+                Text(
+                  currentLocation,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    overflow: TextOverflow.ellipsis,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

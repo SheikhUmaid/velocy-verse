@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:velocyverse/credentials.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/credentials.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
 
 Future<void> getDistanceAndDuration({
   required double? originLat,

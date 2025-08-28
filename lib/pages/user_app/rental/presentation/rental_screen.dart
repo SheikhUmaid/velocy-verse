@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
@@ -331,3 +332,385 @@ class _RentalScreenState extends State<RentalScreen>
     );
   }
 }
+=======
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/my_garage_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/received_rental_requests_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/rental_vehicle_details_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/sent_rental_requests_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/utils/responsive_wraper.dart';
+
+class RentalScreen extends StatefulWidget {
+  const RentalScreen({super.key});
+
+  @override
+  State<RentalScreen> createState() => _RentalScreenState();
+}
+
+class _RentalScreenState extends State<RentalScreen>
+    with SingleTickerProviderStateMixin {
+  final List<String> tabs = ["All", "SUV", "Sedan", "Hatchback"];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<RentalProvider>(context, listen: false).fetchRentalVehicles();
+    });
+  }
+
+  Future<void> _onRefresh() async {
+    await Provider.of<RentalProvider>(
+      context,
+      listen: false,
+    ).fetchRentalVehicles();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(title: const Text("Rental")),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 10),
+              // Top Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                      child: Text(
+                        "Sent Requests",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SentRentalRequestsScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReceivedRentalRequestsScreen(),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.grey.shade300,
+                      ),
+                      child: Text(
+                        "Received Requests",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              // My Garage Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                    backgroundColor: Colors.grey.shade300,
+                  ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyGarageScreen()),
+                  ),
+                  child: Text(
+                    "My Garage",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // TabBar
+              TabBar(
+                tabAlignment: TabAlignment.center,
+                isScrollable: true,
+                indicator: BoxDecoration(
+                  border: Border.all(color: Colors.black),
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor: Colors.white,
+                dividerColor: Colors.transparent,
+                tabs: tabs.map((t) => Tab(text: t)).toList(),
+              ),
+              const SizedBox(height: 8),
+              // Tab Views
+              Expanded(
+                child: Consumer<RentalProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (provider.error != null) {
+                      return Center(child: Text("Error: ${provider.error}"));
+                    }
+                    return TabBarView(
+                      children: tabs.map((type) {
+                        final vehicles = provider.filteredVehicles(type);
+                        return RefreshIndicator(
+                          onRefresh: () => _onRefresh(),
+                          child: vehicles.isEmpty
+                              ? ListView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  children: const [
+                                    SizedBox(height: 200),
+                                    Center(child: Text("No vehicles found")),
+                                  ],
+                                )
+                              : ResponsiveWraper(
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.all(12),
+                                    itemCount: vehicles.length,
+                                    itemBuilder: (context, index) {
+                                      final v = vehicles[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  RentalVehicleDetailScreen(
+                                                    vehicleId: v.id!,
+                                                    isAvailable: v.isAvailable!,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 15,
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withValues(
+                                                  alpha: 0.5,
+                                                ),
+                                                blurRadius: 1,
+                                                spreadRadius: 0.1,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            v.vehicleName ?? "",
+                                                            maxLines: 1,
+                                                            style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            v.vehicleType ?? "",
+                                                            style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            v.isAvailable ==
+                                                                true
+                                                            ? Colors
+                                                                  .grey
+                                                                  .shade500
+                                                            : Colors
+                                                                  .grey
+                                                                  .shade300,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        v.isAvailable == true
+                                                            ? "Available"
+                                                            : "Unavailable",
+                                                        style: TextStyle(
+                                                          color:
+                                                              v.isAvailable ==
+                                                                  true
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // Image
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: v.images.isNotEmpty
+                                                    ? Image.network(
+                                                        v.images.first,
+                                                        height: 200,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Container(
+                                                        height: 200,
+                                                        color: Colors.grey[300],
+                                                        child: const Icon(
+                                                          Icons.directions_car,
+                                                          size: 50,
+                                                        ),
+                                                      ),
+                                              ),
+
+                                              // Info row
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.group,
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      "${v.seatingCapacity ?? 0} seats",
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    const Icon(
+                                                      Icons.work,
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      "${v.bagCapacity ?? 0} bags",
+                                                    ),
+                                                    const Spacer(),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "₹${v.rentalPricePerHour ?? ''}",
+                                                          style:
+                                                              const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        const Text(
+                                                          "per hour",
+                                                          style: TextStyle(
+                                                            color: Colors.grey,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+>>>>>>> Stashed changes

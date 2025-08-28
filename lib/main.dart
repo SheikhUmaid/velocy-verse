@@ -1,12 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:flutter/services.dart';
 import 'package:velocyverse/app.dart';
 import 'package:velocyverse/networking/apiservices.dart';
 import 'package:velocyverse/networking/notification_services.dart';
 import 'package:velocyverse/pages/user_app/rental/rental_api_service/rental_api_service.dart';
+=======
+import 'package:VelocyTaxzz/app.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
+import 'package:VelocyTaxzz/networking/notification_services.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/rental_api_service/rental_api_service.dart';
+>>>>>>> Stashed changes
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

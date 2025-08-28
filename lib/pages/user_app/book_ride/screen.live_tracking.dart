@@ -3,14 +3,22 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
 import 'dart:async';
+<<<<<<< Updated upstream
 import 'package:velocyverse/credentials.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/utils/util.active_ride_setter.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.ride_persistor.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
+=======
+import 'package:VelocyTaxzz/credentials.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/utils/util.active_ride_setter.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
+import 'package:VelocyTaxzz/utils/util.ride_persistor.dart';
+>>>>>>> Stashed changes
 
 class LiveTrackingScreen extends StatefulWidget {
   LiveTrackingScreen({Key? key, required this.otpText}) : super(key: key);

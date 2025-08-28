@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/credentials.dart';
-import 'package:velocyverse/models/model.loaction.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/credentials.dart';
+import 'package:VelocyTaxzz/models/model.loaction.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
 
 // 🚨 Add this package in pubspec.yaml
 // google_places_autocomplete_text_field: ^0.1.3 (check latest version)

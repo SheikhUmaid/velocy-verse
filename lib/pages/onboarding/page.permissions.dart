@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:velocyverse/utils/svg_image.dart';
+import 'package:VelocyTaxzz/utils/svg_image.dart';
 
 class Permissions extends StatelessWidget {
   const Permissions({super.key});

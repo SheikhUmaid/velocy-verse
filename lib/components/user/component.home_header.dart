@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
 
 class ComponentHomeHeader extends StatelessWidget {
   final String userName;

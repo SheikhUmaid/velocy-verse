@@ -1,11 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/pages/user_app/rental/presentation/edit_your_vehicle_screen.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/edit_your_vehicle_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/utils/responsive_wraper.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
+import 'package:VelocyTaxzz/utils/util.success_toast.dart';
 
 class AddVehicleForRentScreen extends StatefulWidget {
   const AddVehicleForRentScreen({super.key});
@@ -56,23 +61,72 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
     }
   }
 
+  // Future<void> _pickVehicleDocument() async {
+  //   final picker = ImagePicker();
+  //   final picked = await picker.pickImage(source: ImageSource.gallery);
+  //   if (picked != null) {
+  //     setState(() {
+  //       _vehicleDocument = picked;
+  //     });
+  //   }
+  // }
   Future<void> _pickVehicleDocument() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _vehicleDocument = picked;
-      });
+    var mediaStatus = await Permission.photos.request();
+    // For Android below 13, use Permission.storage instead
+    if (mediaStatus.isDenied) {
+      mediaStatus = await Permission.storage.request();
+    }
+
+    if (mediaStatus.isGranted) {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      if (picked != null) {
+        setState(() {
+          _vehicleDocument = picked;
+        });
+      }
+    } else if (mediaStatus.isDenied) {
+      Fluttertoast.showToast(
+        msg: "Oops We can not procced without permission!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else if (mediaStatus.isPermanentlyDenied) {
+      openAppSettings(); // from permission_handler
     }
   }
 
   Future<void> _pickImages() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickMultiImage();
-    if (picked != null && picked.isNotEmpty) {
-      setState(() {
-        _newImages.addAll(picked);
-      });
+    var mediaStatus = await Permission.photos.request();
+    // For Android below 13, use Permission.storage instead
+    if (mediaStatus.isDenied) {
+      mediaStatus = await Permission.storage.request();
+    }
+
+    if (mediaStatus.isGranted) {
+      final picker = ImagePicker();
+      final picked = await picker.pickMultiImage();
+      if (picked != null && picked.isNotEmpty) {
+        setState(() {
+          _newImages.addAll(picked);
+        });
+      }
+    } else if (mediaStatus.isDenied) {
+      Fluttertoast.showToast(
+        msg: "Oops We can not procced without permission!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else if (mediaStatus.isPermanentlyDenied) {
+      openAppSettings();
     }
   }
 
@@ -80,13 +134,16 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Add Vehicle")),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      body: ResponsiveWraper(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 8),
               Text("Upload Vehicle Photos"),
+              const SizedBox(height: 8),
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -137,7 +194,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                   }
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text("Upload Vehicle Document"),
               const SizedBox(height: 8),
               InkWell(
@@ -187,9 +244,9 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                         ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
               buildTextField("Vehicle Name", _vehicleNameController),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -208,7 +265,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               horizontal: 10,
                             ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
+                              border: Border.all(color: Colors.black45),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
@@ -239,7 +296,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               horizontal: 10,
                             ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
+                              border: Border.all(color: Colors.black45),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
@@ -258,10 +315,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                 ],
               ),
 
-              const SizedBox(height: 12),
-
-              // Available To Date Picker
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // Vehicle Type
               buildTitleText("Vehicle Type"),
@@ -273,22 +327,22 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                 onChanged: (v) => setState(() => _selectedVehicleType = v),
                 decoration: InputDecoration(
                   // labelText: "Vehicle Type",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black45, width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
+                    borderSide: BorderSide(color: Colors.black45, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 2),
+                    borderSide: BorderSide(color: Colors.black, width: 1.5),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 15),
               Row(
                 children: [
                   Expanded(
@@ -307,20 +361,24 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                           onChanged: (v) => setState(() => _fuelType = v),
                           decoration: InputDecoration(
                             // labelText: "Fuel Type",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 10,
                             ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black45,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                color: Colors.black,
+                                color: Colors.black45,
                                 width: 1,
                               ),
                             ),
@@ -328,7 +386,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
                                 color: Colors.black,
-                                width: 2,
+                                width: 1.5,
                               ),
                             ),
                           ),
@@ -352,20 +410,24 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               .toList(),
                           onChanged: (v) => setState(() => _transmission = v),
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 10,
                             ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black45,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                color: Colors.black,
+                                color: Colors.black45,
                                 width: 1,
                               ),
                             ),
@@ -373,7 +435,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
                                 color: Colors.black,
-                                width: 2,
+                                width: 1.5,
                               ),
                             ),
                           ),
@@ -384,7 +446,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                 ],
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 15),
               buildTextField("Vehicle Color", _vehicleColorController),
 
               const SizedBox(height: 12),
@@ -392,7 +454,11 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
               // Registration Number
               buildTextField("Registration Number", _registrationController),
               const SizedBox(height: 12),
-              buildTextField("Security Deposit", _securityDepositController),
+              buildTextField(
+                "Security Deposit",
+                _securityDepositController,
+                keyboardType: TextInputType.number,
+              ),
               const SizedBox(height: 12),
               buildTextField("Pickup Location", _pickupLocationController),
               const SizedBox(height: 12),
@@ -419,20 +485,24 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
 
                           decoration: InputDecoration(
                             // labelText: "Seating Capacity",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 10,
                             ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black45,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                color: Colors.black,
+                                color: Colors.black45,
                                 width: 1,
                               ),
                             ),
@@ -440,7 +510,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
                                 color: Colors.black,
-                                width: 2,
+                                width: 1.5,
                               ),
                             ),
                           ),
@@ -467,20 +537,24 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                           onChanged: (v) => setState(() => _bagCapacity = v),
                           decoration: InputDecoration(
                             // labelText: "Bag Capacity",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 1,
-                              ),
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
                             ),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 10,
                             ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black45,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
-                                color: Colors.black,
+                                color: Colors.black45,
                                 width: 1,
                               ),
                             ),
@@ -488,7 +562,7 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
                                 color: Colors.black,
-                                width: 2,
+                                width: 1.5,
                               ),
                             ),
                           ),
@@ -498,16 +572,28 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                   ),
                 ],
               ),
-
-              const SizedBox(width: 12),
-
-              const SizedBox(width: 12),
-              buildTitleText("AC"),
-              Switch(value: _isAc, onChanged: (v) => setState(() => _isAc = v)),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  buildTitleText("AC"),
+                  const SizedBox(width: 5),
+                  Switch(
+                    activeColor: Colors.black,
+                    value: _isAc,
+                    onChanged: (v) => setState(() => _isAc = v),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
 
               // Rental Price
-              buildTextField("Rental Price per Day", _rentalPriceController),
+              buildTextField(
+                "Rental Price per Day",
+                _rentalPriceController,
+                keyboardType: TextInputType.number,
+              ),
               const SizedBox(height: 12),
 
               // Availability
@@ -522,18 +608,19 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
                 onChanged: (v) => setState(() => _isAvailable = v ?? true),
                 decoration: InputDecoration(
                   // labelText: "Available or Not",
+                  hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black45, width: 1),
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
+                    borderSide: BorderSide(color: Colors.black45, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black, width: 2),
+                    borderSide: BorderSide(color: Colors.black, width: 1.5),
                   ),
                 ),
               ),
@@ -542,12 +629,10 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsetsGeometry.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
         child: PrimaryButton(
           text: "Add Vehicle",
-          onPressed: () {
-            _submitAddVehicle(context);
-          },
+          onPressed: () => _submitAddVehicle(context),
         ),
       ),
     );
@@ -569,11 +654,11 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
         _vehicleColorController.text.isEmpty ||
         _newImages.isEmpty ||
         _vehicleDocument == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please fill all fields and upload images/documents"),
-        ),
+      showFancyMessageToast(
+        context,
+        "Please fill all fields and upload images/documents",
       );
+
       return;
     }
 
@@ -600,15 +685,14 @@ class _AddVehicleForRentScreenState extends State<AddVehicleForRentScreen> {
     );
 
     if (provider.addSuccess) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vehicle added successfully!")));
+      showFancySuccessToast(context, "Vehicle added successfully!");
       Navigator.pop(context);
       await Provider.of<RentalProvider>(context, listen: false).fetchVehicles();
     } else if (provider.addError != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(provider.addError!)));
+      showFancyErrorToast(context, "Failed to Add Vehicle\nTry again");
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(SnackBar(content: Text(provider.addError!)));
     }
   }
 }

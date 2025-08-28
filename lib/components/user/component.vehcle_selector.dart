@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+<<<<<<< Updated upstream
 import 'package:velocyverse/providers/user/provider.ride.dart';
+=======
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/utils/responsive_wrapper.dart';
+>>>>>>> Stashed changes
 
 class VehicleSelector extends StatelessWidget {
   final String selectedVehicle;
@@ -15,6 +20,7 @@ class VehicleSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
+<<<<<<< Updated upstream
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
@@ -47,6 +53,42 @@ class VehicleSelector extends StatelessWidget {
           },
         ),
       ],
+=======
+    return ResponsiveWrapper(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          VehicleOption(
+            type: 'bike',
+            icon: 'http://backend.velocytax.in/media/vehicle_types/bike.png',
+            isSelected: selectedVehicle == 'bike',
+            onTap: () async {
+              await rideProvider.getEstimatedPrice(vehicleId: 2);
+              onVehicleSelected('bike');
+            },
+          ),
+          VehicleOption(
+            type: 'auto',
+            icon: 'http://backend.velocytax.in/media/vehicle_types/auto.png',
+            isSelected: selectedVehicle == 'auto',
+            onTap: () async {
+              await rideProvider.getEstimatedPrice(vehicleId: 4);
+              onVehicleSelected('auto');
+            },
+          ),
+          VehicleOption(
+            type: 'car',
+            icon:
+                'http://backend.velocytax.in/media/vehicle_types/car_DsJ2mjy.png',
+            isSelected: selectedVehicle == 'car',
+            onTap: () async {
+              await rideProvider.getEstimatedPrice(vehicleId: 9);
+              onVehicleSelected('car');
+            },
+          ),
+        ],
+      ),
+>>>>>>> Stashed changes
     );
   }
 }

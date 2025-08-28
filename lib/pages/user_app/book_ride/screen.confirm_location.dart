@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+<<<<<<< Updated upstream
 import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
 import 'package:velocyverse/components/user/component.location_input.dart';
@@ -8,6 +9,13 @@ import 'package:velocyverse/components/user/component.location_suggestion.dart';
 import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/utils/util.error_toast.dart';
 import 'package:velocyverse/utils/util.get_distance_duration.dart';
+=======
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/components/user/component.location_input.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
+import 'package:VelocyTaxzz/utils/util.get_distance_duration.dart';
+>>>>>>> Stashed changes
 
 class ConfirmLocationScreen extends StatefulWidget {
   const ConfirmLocationScreen({super.key});

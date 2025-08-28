@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+<<<<<<< Updated upstream
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocyverse/components/base/component.custom_app_bar.dart';
 import 'package:velocyverse/components/base/component.primary_button.dart';
@@ -12,6 +13,17 @@ import 'package:velocyverse/providers/user/provider.ride.dart';
 import 'package:velocyverse/utils/util.active_ride_setter.dart';
 import 'package:velocyverse/utils/util.ride_persistor.dart';
 import 'package:velocyverse/utils/util.success_toast.dart';
+=======
+import 'package:VelocyTaxzz/components/base/component.custom_app_bar.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/components/user/component.location_input.dart';
+import 'package:VelocyTaxzz/components/user/component.price_input_filed.dart';
+import 'package:VelocyTaxzz/components/user/component.vehcle_selector.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/utils/util.active_ride_setter.dart';
+import 'package:VelocyTaxzz/utils/util.ride_persistor.dart';
+import 'package:VelocyTaxzz/utils/util.success_toast.dart';
+>>>>>>> Stashed changes
 
 class SelectVehicleScreen extends StatefulWidget {
   const SelectVehicleScreen({super.key});

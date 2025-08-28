@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
-import 'package:velocyverse/utils/util.active_ride_setter.dart';
-import 'package:velocyverse/utils/util.is_driver.dart';
-import 'package:velocyverse/utils/util.is_logged_in.dart';
-import 'package:velocyverse/utils/util.ride_persistor.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/utils/util.active_ride_setter.dart';
+import 'package:VelocyTaxzz/utils/util.is_driver.dart';
+import 'package:VelocyTaxzz/utils/util.is_logged_in.dart';
+import 'package:VelocyTaxzz/utils/util.ride_persistor.dart';
 
 class Loading extends StatefulWidget {
   const Loading({super.key});

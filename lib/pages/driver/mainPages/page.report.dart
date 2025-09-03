@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/app.dart';
-import 'package:velocyverse/models/model.earningsNreport.dart';
-import 'package:velocyverse/providers/driver/provider.earningNreport.dart';
-import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
-import 'package:velocyverse/providers/payment/provider.payment.dart';
+import 'package:VelocyTaxzz/app.dart';
+import 'package:VelocyTaxzz/models/model.earningsNreport.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.earningNreport.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.rideHistory.dart';
+import 'package:VelocyTaxzz/providers/payment/provider.payment.dart';
 
 class DriverReports extends StatefulWidget {
   const DriverReports({Key? key}) : super(key: key);

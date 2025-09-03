@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:velocyverse/utils/util.error_toast.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
 
 class SocialLoginButtons extends StatelessWidget {
   const SocialLoginButtons({super.key});

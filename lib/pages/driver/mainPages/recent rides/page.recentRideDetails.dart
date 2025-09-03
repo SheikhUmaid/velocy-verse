@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/models/model.recentRideModel.dart';
-import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
+import 'package:VelocyTaxzz/models/model.recentRideModel.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.rideHistory.dart';
 
 class RecentRideDetails extends StatefulWidget {
   const RecentRideDetails({Key? key, required this.rideId}) : super(key: key);

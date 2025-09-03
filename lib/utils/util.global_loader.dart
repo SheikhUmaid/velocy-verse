@@ -1,7 +1,7 @@
 // lib/widgets/global_loader.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/providers/provider.loader.dart';
+import 'package:VelocyTaxzz/providers/provider.loader.dart';
 
 class GlobalLoader extends StatelessWidget {
   const GlobalLoader({super.key});

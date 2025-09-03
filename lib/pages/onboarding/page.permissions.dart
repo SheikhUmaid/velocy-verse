@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:velocyverse/utils/svg_image.dart';
+import 'package:VelocyTaxzz/utils/svg_image.dart';
 
 class Permissions extends StatelessWidget {
   const Permissions({super.key});
@@ -43,7 +43,7 @@ Widget _buildPermissionBottomSheet(BuildContext context) {
 
             if (status.isGranted && mediaStatus.isGranted) {
               context.goNamed('/login');
-            } else if (status.isDenied) {
+            } else if (status.isDenied && mediaStatus.isDenied) {
               Fluttertoast.showToast(
                 msg: "Oops We can not procced without permission!",
                 toastLength: Toast.LENGTH_SHORT,
@@ -70,10 +70,10 @@ Widget _buildPermissionReasons() {
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      // _buildPermissionItem(
-      //   icon: SvgImage.location.value,
-      //   text: "To locate you and get rides easily",
-      // ),
+      _buildPermissionItem(
+        icon: SvgImage.location.value,
+        text: "To locate you and get rides easily",
+      ),
       const SizedBox(height: 12),
       // Phone permission UI — commented out for now
       _buildPermissionItem(
@@ -95,6 +95,6 @@ Widget _buildBackgroundImage() {
   return Image.asset(
     AppImage.permission.value,
     width: double.infinity,
-    fit: BoxFit.cover,
+    fit: BoxFit.fill,
   );
 }

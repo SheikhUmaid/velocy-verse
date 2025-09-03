@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/utils/util.logout.dart';
 
 class RiderProfileUpdate extends StatefulWidget {
   const RiderProfileUpdate({super.key});
@@ -354,13 +356,13 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        // box-shadow: [
-        //   BoxShadow(
-        //     color: Colors.black.withOpacity(0.04),
-        //     blurRadius: 10,
-        //     offset: const Offset(0, 2),
-        //   ),
-        // ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,7 +376,28 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
             ),
           ),
           const SizedBox(height: 12),
-
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: _onDeleteAccountTap,
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.red),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: const Text(
+                'Delete Account',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             'This action cannot be undone. All your data will be permanently deleted.',
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -627,14 +650,24 @@ class _RiderProfileUpdateState extends State<RiderProfileUpdate> {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
-              _showErrorSnackBar('Account deletion not implemented in demo');
+              Navigator.pop(context); // Close dialog
+              // Handle account deletion
+              logout();
+              _launchWebsite('https://backend.velocytax.in/delete-account/');
+              // _showErrorSnackBar('Account deletion not implemented in demo');
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
+  }
+
+  void _launchWebsite(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   // Utility Methods

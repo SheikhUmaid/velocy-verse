@@ -5,10 +5,8 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
-import 'package:velocyverse/credentials.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-import 'package:velocyverse/utils/util.active_ride_setter.dart';
-import 'package:velocyverse/utils/util.ride_persistor.dart';
+import 'package:VelocyTaxzz/credentials.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
 
 class EnRouteScreen extends StatefulWidget {
   const EnRouteScreen({Key? key}) : super(key: key);
@@ -50,7 +48,7 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
   final String timeRemaining = "15 min";
 
   Timer? _locationTimer;
-  DateTime currentTime = DateTime.now();
+  DateTime _currentTime = DateTime.now();
 
   @override
   void initState() {
@@ -69,9 +67,7 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
 
     // ✅ Set the callback for when connection closes
     rideProvider.onRideCompleted = () {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await activeRideClearer();
-        await RidePersistor.clear(rideProvider);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         context.pushNamed("/paymentScreen");
       });
     };
@@ -79,14 +75,6 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
 
   Future<void> _initializeRideData() async {
     final rideProvider = Provider.of<RideProvider>(context, listen: false);
-
-    await activeRideSetter(
-      is_any: true,
-      level: "/routeWithDriver",
-      rideId: rideProvider.activeId,
-    );
-    await RidePersistor.save(rideProvider);
-
     _pickupLocation = LatLng(
       rideProvider.fromLocation!.latitude!,
       rideProvider.fromLocation!.longitude!,
@@ -126,7 +114,7 @@ class _EnRouteScreenState extends State<EnRouteScreen> {
     Timer.periodic(const Duration(seconds: 30), (timer) {
       if (mounted) {
         setState(() {
-          currentTime = DateTime.now();
+          _currentTime = DateTime.now();
         });
       }
     });

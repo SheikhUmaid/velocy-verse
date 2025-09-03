@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
 
 class RiderPickupHandoverScreen extends StatefulWidget {
   final int requestId;

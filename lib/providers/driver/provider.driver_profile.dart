@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' hide MultipartFile, Response;
-import 'package:velocyverse/models/model.driverDetails.dart';
-import 'package:velocyverse/networking/apiservices.dart';
+import 'package:VelocyTaxzz/models/model.driverDetails.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
 
 class DriverProfileProvider extends ChangeNotifier {
   DriverProfileProvider({required ApiService apiService})

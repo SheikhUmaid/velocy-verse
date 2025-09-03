@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:velocyverse/models/driver/model.ongoingRide.dart';
-import 'package:velocyverse/models/model.ride_detail.dart' hide Data;
-import 'package:velocyverse/models/model.ride_request.dart';
-import 'package:velocyverse/networking/apiservices.dart';
-import 'package:velocyverse/services/secure_storage_service.dart';
+import 'package:VelocyTaxzz/models/driver/model.ongoingRide.dart';
+import 'package:VelocyTaxzz/models/model.ride_detail.dart' hide Data;
+import 'package:VelocyTaxzz/models/model.ride_request.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
+import 'package:VelocyTaxzz/services/secure_storage_service.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class DriverProvider extends ChangeNotifier {

@@ -7,14 +7,14 @@ class DriverDetailsModel {
   });
 
   final String? username;
-  final dynamic? email;
+  final dynamic email;
   final String? profileImage;
   final VehicleInfo? vehicleInfo;
 
   factory DriverDetailsModel.fromJson(Map<String, dynamic> json) {
     return DriverDetailsModel(
       username: json["username"],
-      email: json["email"] == null ? '__' : json["email"],
+      email: json["email"] == null ? '' : json["email"],
       profileImage: json["profile_image"],
       vehicleInfo: json["vehicle_info"] == null
           ? null

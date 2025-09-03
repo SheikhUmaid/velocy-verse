@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velocyverse/components/base/component.custom_app_bar.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/components/user/component.location_input.dart';
-import 'package:velocyverse/components/user/component.price_input_filed.dart';
-import 'package:velocyverse/components/user/component.vehcle_selector.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-import 'package:velocyverse/utils/util.active_ride_setter.dart';
-import 'package:velocyverse/utils/util.ride_persistor.dart';
-import 'package:velocyverse/utils/util.success_toast.dart';
+import 'package:VelocyTaxzz/components/base/component.custom_app_bar.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/components/user/component.location_input.dart';
+import 'package:VelocyTaxzz/components/user/component.price_input_filed.dart';
+import 'package:VelocyTaxzz/components/user/component.vehcle_selector.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/utils/util.active_ride_setter.dart';
+import 'package:VelocyTaxzz/utils/util.ride_persistor.dart';
+import 'package:VelocyTaxzz/utils/util.success_toast.dart';
 
 class SelectVehicleScreen extends StatefulWidget {
   const SelectVehicleScreen({super.key});
@@ -58,11 +57,11 @@ class _SelectVehicleScreenState extends State<SelectVehicleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("Book a Ride")),
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: Column(
           children: [
-            const CustomAppBar(title: 'Book a Ride'),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.all(16),
@@ -232,7 +231,7 @@ class _SelectVehicleScreenState extends State<SelectVehicleScreen> {
 
                       // Request ride button
                       PrimaryButton(
-                        text: 'Request ba Ride',
+                        text: 'Request Ride',
                         onPressed: () async {
                           final rideProvider = Provider.of<RideProvider>(
                             context,

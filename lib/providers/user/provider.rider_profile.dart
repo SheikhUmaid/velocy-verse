@@ -1,6 +1,6 @@
 // providers/user/provider.rider_profile.dart
 import 'package:flutter/material.dart';
-import 'package:velocyverse/networking/apiservices.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
 import 'package:dio/dio.dart';
 
 class RiderProfileProvider extends ChangeNotifier {

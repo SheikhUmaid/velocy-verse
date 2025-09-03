@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/pages/user_app/rental/presentation/rental_vehicle_owner_info_screen.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/rental_vehicle_owner_info_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/utils/responsive_wraper.dart';
 
 class RentalVehicleDetailScreen extends StatefulWidget {
   final int vehicleId;
@@ -147,7 +148,7 @@ class _RentalVehicleDetailScreenState extends State<RentalVehicleDetailScreen> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
                       "http://82.25.104.152/${v.images.first}",
-                      height: 200,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -411,12 +412,7 @@ class _RentalVehicleDetailScreenState extends State<RentalVehicleDetailScreen> {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16,
-          bottom: 12,
-          top: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: PrimaryButton(
           text: widget.isAvailable ? "Send Request" : "Unavailable",
           backgroundColor: widget.isAvailable ? Colors.black : Colors.grey,

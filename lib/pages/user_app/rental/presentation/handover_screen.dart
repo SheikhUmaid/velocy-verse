@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
 
 class HandoverScreen extends StatefulWidget {
   final int requestId;
@@ -52,18 +53,20 @@ class _HandoverScreenState extends State<HandoverScreen> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 // Vehicle card
                 Container(
                   color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
                   child: Row(
                     children: [
                       Container(
-                        height: 50,
-                        width: 50,
+                        height: 75,
+                        width: 75,
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(8),
@@ -111,6 +114,7 @@ class _HandoverScreenState extends State<HandoverScreen> {
 
                 // Handover checklist
                 Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   color: Colors.white,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,6 +138,7 @@ class _HandoverScreenState extends State<HandoverScreen> {
 
                 // Payment details
                 Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   color: Colors.white,
                   child: Column(
                     children: [
@@ -226,12 +231,16 @@ class _HandoverScreenState extends State<HandoverScreen> {
                         );
                         // Navigator.popUntil(context, ModalRoute.withName('/rental'));
                       } else if (provider.sendError != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(provider.sendError!),
-                            backgroundColor: Colors.red,
-                          ),
+                        showFancyErrorToast(
+                          context,
+                          "Something went wrong\nTry again",
                         );
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   SnackBar(
+                        //     content: Text(provider.sendError!),
+                        //     backgroundColor: Colors.red,
+                        //   ),
+                        // );
                       }
                     },
             );

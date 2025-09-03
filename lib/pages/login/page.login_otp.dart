@@ -61,41 +61,6 @@ class LoginOTP extends StatelessWidget {
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () async {
-<<<<<<< Updated upstream
-                  var verifyOTP = await authenticationProvider.fb_verifyOTP(
-                    otpController.text.trim(),
-                    true,
-                  );
-                  if (verifyOTP == 'rider') {
-                    context.go('/userHome');
-                  } else if (verifyOTP == 'driver') {
-                    context.go('/driverMain');
-                  } else {
-                    showFancyErrorToast(context, "Invalid OTP");
-                  }
-                  ;
-                  // context.read<LoaderProvider>().showLoader();
-                  // final response = await authenticationProvider.loginWithOTP(
-                  //   phoneNumber: "+91$phoneNumber",
-                  //   otp: otpController.text,
-                  // );
-                  // if (response) {
-                  //   if (await isDriver()) {
-                  //     if (context.mounted) {
-                  //       context.pushNamed("/driverMain");
-                  //       context.read<LoaderProvider>().hideLoader();
-                  //     }
-                  //   } else {
-                  //     if (context.mounted) {
-                  //       context.pushNamed("/userHome");
-                  //       context.read<LoaderProvider>().hideLoader();
-                  //     }
-                  //   }
-                  // } else {
-                  //   showFancyErrorToast(context, "Invalid OTP");
-                  //   context.read<LoaderProvider>().hideLoader();
-                  // }
-=======
                   final otp = otpController.text.trim();
 
                   if (otp.isEmpty) {
@@ -125,7 +90,6 @@ class LoginOTP extends StatelessWidget {
                       showFancyErrorToast(context, "Invalid or expired OTP");
                     }
                   }
->>>>>>> Stashed changes
                 },
               ),
             ],

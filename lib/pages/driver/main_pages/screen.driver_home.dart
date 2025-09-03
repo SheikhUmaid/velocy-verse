@@ -1,16 +1,11 @@
+import 'package:VelocyTaxzz/models/model.earningsNreport.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.earningNreport.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-<<<<<<< Updated upstream
-import 'package:velocyverse/components/driver/component.ongoingRide.dart';
-import 'package:velocyverse/providers/driver/provider.driver.dart';
-import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-=======
 import 'package:VelocyTaxzz/components/driver/component.ongoingRide.dart';
 import 'package:VelocyTaxzz/providers/driver/provider.driver.dart';
 import 'package:VelocyTaxzz/providers/driver/provider.driver_profile.dart';
->>>>>>> Stashed changes
 
 class DriverHome extends StatefulWidget {
   const DriverHome({super.key});
@@ -22,11 +17,28 @@ class DriverHome extends StatefulWidget {
 class _DriverHomeState extends State<DriverHome> {
   bool isOnline = false;
   String selectedRideTab = 'Live';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.microtask(() async {
+      // ?Fetch earning
+      final earningsProvider = Provider.of<EaningsNreportsProvider>(
+        context,
+        listen: false,
+      );
+
+      bool earningsSuccess = await earningsProvider.fetchEarningsNReport();
+      if (!earningsSuccess) debugPrint("Failed to fetch earnings");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final driverProvider = Provider.of<DriverProvider>(context, listen: false);
     driverProvider.driverINIT();
-
+    final earningsProvider = Provider.of<EaningsNreportsProvider>(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
@@ -54,22 +66,53 @@ class _DriverHomeState extends State<DriverHome> {
                           _buildGoOnlineSection(),
                           const SizedBox(height: 20),
                           isTablet
-                              ? Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: _buildTodaysEarningsSection(),
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Expanded(child: _buildCashLimitSection()),
-                                  ],
+                              ? Builder(
+                                  builder: (context) {
+                                    if (earningsProvider.isLoading) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else if (earningsProvider.earnings !=
+                                        null) {
+                                      return Row(
+                                        children: [
+                                          _buildTodaysEarningsSection(
+                                            earningsProvider.earnings!,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Expanded(
+                                            child: _buildCashLimitSection(
+                                              earningsProvider.earnings!,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return SizedBox.shrink();
+                                  },
                                 )
-                              : Column(
-                                  children: [
-                                    _buildTodaysEarningsSection(),
-                                    const SizedBox(height: 20),
-                                    _buildCashLimitSection(),
-                                  ],
+                              : Builder(
+                                  builder: (context) {
+                                    if (earningsProvider.isLoading) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else if (earningsProvider.earnings !=
+                                        null) {
+                                      return Column(
+                                        children: [
+                                          _buildTodaysEarningsSection(
+                                            earningsProvider.earnings!,
+                                          ),
+                                          const SizedBox(height: 20),
+                                          _buildCashLimitSection(
+                                            earningsProvider.earnings!,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return SizedBox.shrink();
+                                  },
                                 ),
                           const SizedBox(height: 20),
                           _buildRideRequestsSection(),
@@ -115,13 +158,18 @@ class _DriverHomeState extends State<DriverHome> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.grey[300],
-                  child: const Icon(
-                    Icons.person_2_outlined,
-                    size: 20,
-                    color: Colors.grey,
-                  ),
+                  radius: 28,
+                  backgroundColor: Colors.grey.shade200,
+                  backgroundImage:
+                      driverProfileProvider.profileDetails!.profileImage != null
+                      ? NetworkImage(
+                          driverProfileProvider.profileDetails!.profileImage!,
+                        )
+                      : null,
+                  child:
+                      driverProfileProvider.profileDetails!.profileImage == null
+                      ? Icon(Icons.person, size: 28, color: Colors.grey[600])
+                      : null,
                 ),
                 const SizedBox(width: 8),
                 Column(
@@ -141,12 +189,12 @@ class _DriverHomeState extends State<DriverHome> {
               ],
             ),
           ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_outlined),
-            color: Colors.grey[700],
-          ),
+          // const Spacer(),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.notifications_outlined),
+          //   color: Colors.grey[700],
+          // ),
         ],
       ),
     );
@@ -219,7 +267,7 @@ class _DriverHomeState extends State<DriverHome> {
     );
   }
 
-  Widget _buildTodaysEarningsSection() {
+  Widget _buildTodaysEarningsSection(EarningsNreportModel earnings) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -238,7 +286,7 @@ class _DriverHomeState extends State<DriverHome> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Today's Earnings",
+            "Earnings",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -247,13 +295,13 @@ class _DriverHomeState extends State<DriverHome> {
           ),
           const SizedBox(height: 12),
           Row(
-            children: const [
+            children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '₹ 125',
+                      earnings.totalEarnings!.toStringAsFixed(2),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -269,14 +317,14 @@ class _DriverHomeState extends State<DriverHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '8',
+                      earnings.todayEarnings.toString(),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    Text('Trips', style: TextStyle(fontSize: 12)),
+                    Text('Today\'s', style: TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
@@ -284,14 +332,14 @@ class _DriverHomeState extends State<DriverHome> {
                 child: Column(
                   children: [
                     Text(
-                      '4.9',
+                      earnings.yesterdayEarnings.toString(),
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    Text('Rating', style: TextStyle(fontSize: 10)),
+                    Text('Yesterday', style: TextStyle(fontSize: 10)),
                   ],
                 ),
               ),
@@ -302,7 +350,7 @@ class _DriverHomeState extends State<DriverHome> {
     );
   }
 
-  Widget _buildCashLimitSection() {
+  Widget _buildCashLimitSection(EarningsNreportModel earnings) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -323,40 +371,30 @@ class _DriverHomeState extends State<DriverHome> {
           Row(
             children: [
               Text(
-                'Cash Limit',
+                'Cash acceptance limit',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[800],
                 ),
               ),
-              const Spacer(),
-              Text('Max: \$200', style: TextStyle(fontSize: 12)),
+              // const Spacer(),
+              // Text('Max: \$200', style: TextStyle(fontSize: 12)),
             ],
           ),
           const SizedBox(height: 12),
-          Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: 0.75,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[700],
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
+          LinearProgressIndicator(
+            value: (earnings.remainingCashLimit ?? 0).toDouble() / 5,
+            backgroundColor: Colors.grey[300],
+            color: Colors.black,
+            minHeight: 8,
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(height: 8),
-          const Text(
-            '\$150 collected - Submit by today',
-            style: TextStyle(fontSize: 12),
-          ),
+          // const SizedBox(height: 8),
+          // const Text(
+          //   '\$150 collected - Submit by today',
+          //   style: TextStyle(fontSize: 12),
+          // ),
         ],
       ),
     );
@@ -452,67 +490,87 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   Widget _buildActiveRideCard() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
-          child: InkWell(
-            onTap: () {
-              context.push('/rideDetails');
-            },
-            child: Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Downtown Plaza',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Text(
-                          '2.5 km away',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Text(
-                    '\$12.50',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    return Consumer<DriverProvider>(
+      builder: (context, driverProvider, child) {
+        if (driverProvider.nowRides.isEmpty) {
+          return const Center(
+            child: Text(
+              'No available rides',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
-          ),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: driverProvider.nowRides.length,
+          itemBuilder: (context, index) {
+            final ride = driverProvider.nowRides[index];
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 6,
+              ),
+              child: InkWell(
+                onTap: () {
+                  driverProvider.activeRide = ride.id;
+                  context.pushNamed('/rideDetail');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ride.toLocation ?? 'Unknown Location',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              '${ride.toLatitude}, ${ride.toLongitude}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '₹${ride.price?.toStringAsFixed(2) ?? '0.00'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );

@@ -1,3 +1,4 @@
+import 'package:VelocyTaxzz/providers/driver/provider.earningNreport.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -39,12 +40,10 @@ class _DriverMainState extends State<DriverMain> {
     super.initState();
     Future.microtask(() async {
       print("Fetching driver profile");
-      bool success =
-          (await Provider.of<DriverProfileProvider>(
-                context,
-                listen: false,
-              ).getDriverProfile())
-              as bool;
+      bool success = (await Provider.of<DriverProfileProvider>(
+        context,
+        listen: false,
+      ).getDriverProfile());
       if (!success) {
         debugPrint("Failed to fetch driver profile");
       }
@@ -75,6 +74,7 @@ class _DriverMainState extends State<DriverMain> {
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<DriverProfileProvider>(context);
+    final profile = profileProvider.profileDetails;
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -90,7 +90,12 @@ class _DriverMainState extends State<DriverMain> {
                   leading: CircleAvatar(
                     radius: 28,
                     backgroundColor: Colors.grey.shade200,
-                    child: Icon(CupertinoIcons.person, color: Colors.black),
+                    backgroundImage: profile!.profileImage != null
+                        ? NetworkImage(profile.profileImage!)
+                        : null,
+                    child: profile.profileImage == null
+                        ? Icon(Icons.person, size: 28, color: Colors.grey[600])
+                        : null,
                   ),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

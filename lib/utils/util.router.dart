@@ -1,41 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-<<<<<<< Updated upstream
-import 'package:provider/provider.dart';
-import 'package:velocyverse/models/model.driverDetails.dart';
-import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
-import 'package:velocyverse/pages/driver/drawerPages/profile/page.updateProfile.dart';
-import 'package:velocyverse/pages/driver/mainPages/page.paymentSuccess.dart';
-import 'package:velocyverse/pages/driver/ride/screen.driver_live_tracking.dart';
-import 'package:velocyverse/pages/driver/ride/screen.drop_navigation.dart';
-import 'package:velocyverse/pages/driver/ride/screen.pickup_navigation.dart';
-import 'package:velocyverse/pages/driver/ride/screen.ride_detail.dart';
-import 'package:velocyverse/pages/driver/ride/screen.route_with_driver.dart';
-import 'package:velocyverse/pages/driver/screen.driver_main.dart';
-import 'package:velocyverse/pages/login/diver/screen.document_upload.dart';
-import 'package:velocyverse/pages/driver/mainPages/recent%20rides/page.recentRideDetails.dart';
-import 'package:velocyverse/pages/driver/mainPages/ride/page.ridePayment.dart';
-import 'package:velocyverse/pages/driver/mainPages/ride/page.rideComplete.dart';
-import 'package:velocyverse/pages/login/page.authentication.dart';
-import 'package:velocyverse/pages/login/page.login_otp.dart';
-import 'package:velocyverse/pages/login/diver/screen.driver_registeration.dart';
-import 'package:velocyverse/pages/login/page.registration_otp.dart';
-import 'package:velocyverse/pages/login/profile_setup/page.profile_setup.dart';
-import 'package:velocyverse/pages/onboarding/page.loading.dart';
-import 'package:velocyverse/pages/onboarding/page.onboarding.dart';
-import 'package:velocyverse/pages/onboarding/page.permissions.dart';
-import 'package:velocyverse/pages/user_app/book_ride/screen.confirm_location.dart';
-import 'package:velocyverse/pages/user_app/book_ride/screen.live_tracking.dart';
-import 'package:velocyverse/pages/user_app/book_ride/screen.payment.dart';
-import 'package:velocyverse/pages/user_app/book_ride/screen.select_vehicle.dart';
-import 'package:velocyverse/pages/user_app/book_ride/screen.waiting_for_driver.dart';
-import 'package:velocyverse/pages/user_app/drawer_screens/screen.add_fav_location.dart';
-import 'package:velocyverse/pages/user_app/drawer_screens/screen.profile.dart';
-import 'package:velocyverse/pages/user_app/drawer_screens/screen.rider_update_profile.dart';
-import 'package:velocyverse/pages/user_app/home/user_main_screen.dart';
-import 'package:velocyverse/pages/user_app/book_ride/page.select_location.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-=======
 import 'package:VelocyTaxzz/models/model.driverDetails.dart';
 import 'package:VelocyTaxzz/pages/common/driver_tnc_screen.dart';
 import 'package:VelocyTaxzz/pages/common/helpNsupport.dart';
@@ -73,7 +37,6 @@ import 'package:VelocyTaxzz/pages/user_app/drawer_screens/screen.profile.dart';
 import 'package:VelocyTaxzz/pages/user_app/drawer_screens/screen.rider_update_profile.dart';
 import 'package:VelocyTaxzz/pages/user_app/home/user_main_screen.dart';
 import 'package:VelocyTaxzz/pages/user_app/book_ride/page.select_location.dart';
->>>>>>> Stashed changes
 
 class MyRouter {
   static GoRouter routerConfig = GoRouter(
@@ -278,20 +241,13 @@ class MyRouter {
           String otp = extra?['otp'] as String;
           String password = extra?['password'] as String;
           String confirmPassword = extra?['confirmPassword'] as String;
-<<<<<<< Updated upstream
-
-=======
           String? verificationId = extra?['verificationId'] as String?;
->>>>>>> Stashed changes
           return RegistrationOTP(
             phoneNumber: phoneNumber,
             otp: otp,
             password: password,
             confirmPassword: confirmPassword,
-<<<<<<< Updated upstream
-=======
             verificationId: verificationId,
->>>>>>> Stashed changes
           );
         },
       ),

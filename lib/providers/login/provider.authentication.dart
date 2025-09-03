@@ -6,18 +6,10 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-<<<<<<< Updated upstream
-import 'package:velocyverse/app.dart';
-import 'package:velocyverse/networking/apiservices.dart';
-import 'package:velocyverse/networking/notification_services.dart';
-import 'package:velocyverse/services/secure_storage_service.dart';
-import 'package:velocyverse/utils/util.get_file_extension.dart';
-=======
 import 'package:VelocyTaxzz/networking/apiservices.dart';
 import 'package:VelocyTaxzz/networking/notification_services.dart';
 import 'package:VelocyTaxzz/services/secure_storage_service.dart';
 import 'package:VelocyTaxzz/utils/util.get_file_extension.dart';
->>>>>>> Stashed changes
 
 class AuthenticationProvider extends ChangeNotifier {
   AuthenticationProvider({required ApiService apiService})
@@ -26,9 +18,10 @@ class AuthenticationProvider extends ChangeNotifier {
   final ApiService _apiService;
   String _phoneNumber = '';
   String get phoneNumber => _phoneNumber;
+
+  int? _registeredUser;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  int? _registeredUser;
 
   set registeredUser(int value) {
     _registeredUser = value;
@@ -89,11 +82,9 @@ class AuthenticationProvider extends ChangeNotifier {
     required String password,
   }) async {
     try {
-      print('ph no =>> $phoneNumber');
-      print(password);
       final response = await _apiService.postRequest(
         '/auth_api/password-login/',
-        data: {'phone_number': '+91' + phoneNumber, 'password': password},
+        data: {'phone_number': phoneNumber, 'password': password},
         doesNotRequireAuthHeader: true,
       );
 

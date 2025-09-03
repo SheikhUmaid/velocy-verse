@@ -8,96 +8,72 @@ class Onboarding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Center(
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: Image.asset(
+              AppImage.onBoarding.value,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // Bottom content
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(AppImage.onBoarding.value, fit: BoxFit.cover),
-                SizedBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Welcome to VelocyTax",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "You've successfully registered!",
-                        style: TextStyle(color: const Color(0xff6F6F6F)),
-                      ),
-                      SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                        child: Container(
-                          height: 1,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.white,
-                                Colors.black,
-                                Colors.white,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('To offer rides as a driver,'),
-                          GestureDetector(
-                            onTap: () {
-                              context.pushNamed('/driverRegisteration');
-                            },
-                            child: Text(
-                              '\tClick here.',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: 26),
-                      PrimaryButton(
-                        onPressed: () {
-                          context.pushNamed('/login');
-                        },
-                        text: "Get Started",
-                        height: 42,
-                        width: 132,
-                      ),
-                      SizedBox(height: 26),
-                    ],
+                const Text(
+                  "Welcome to VelocyTax",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "You've successfully registered!",
+                  style: TextStyle(color: Color(0xff6F6F6F)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  height: 1,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.white, Colors.black, Colors.white],
+                    ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('To offer rides as a driver,'),
+                    GestureDetector(
+                      onTap: () {
+                        context.pushNamed('/driverRegisteration');
+                      },
+                      child: const Text(
+                        '\tClick here.',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 26),
+                PrimaryButton(
+                  onPressed: () {
+                    context.pushNamed('/login');
+                  },
+                  text: "Get Started",
+                  height: 42,
                 ),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
-
-
-// ElevatedButton(
-//               onPressed: () {
-//                 context.pushNamed('/driverRegisteration');
-//               },
-//               child: Text("Driver"),
-//             ),
-//             ElevatedButton(
-//               onPressed: () {
-//                 context.pushNamed('/login');
-//               },
-//               child: Text("GetStarted"),
-//             ),

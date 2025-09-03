@@ -187,55 +187,6 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
     );
   }
 
-  void openImageCaurosel(List<String> images, int initialIndex) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) {
-          final pageController = PageController(initialPage: initialIndex);
-          int currentIndex = initialIndex;
-
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return Scaffold(
-                backgroundColor: Colors.black,
-                appBar: AppBar(
-                  centerTitle: false,
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  title: Text(
-                    '${currentIndex + 1} / ${images.length}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-                body: PageView.builder(
-                  controller: pageController,
-                  onPageChanged: (index) => setState(() {
-                    currentIndex = index;
-                  }),
-                  itemCount: images.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Center(
-                        child: InteractiveViewer(
-                          child: Image.network(
-                            images[index],
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
   Future<void> _pickImages() async {
     var mediaStatus = await Permission.photos.request();
     // For Android below 13, use Permission.storage instead
@@ -313,13 +264,7 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
     );
 
     if (provider.editSuccess) {
-<<<<<<< Updated upstream
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Vehicle updated successfully!")),
-      );
-=======
       showFancySuccessToast(context, "Vehicle updated successfully!");
->>>>>>> Stashed changes
 
       Navigator.pop(context);
       await Provider.of<RentalProvider>(context, listen: false).fetchVehicles();
@@ -366,153 +311,6 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
       appBar: AppBar(title: const Text("Edit Your Vehicle")),
       body: vehicle == null
           ? const Center(child: CircularProgressIndicator())
-<<<<<<< Updated upstream
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Upload Vehicle Photos
-                  Text("Upload Vehicle Photos"),
-                  const SizedBox(height: 8),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _existingImages.length + _newImages.length + 1,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                          childAspectRatio: 1,
-                        ),
-                    itemBuilder: (context, index) {
-                      if (index < _existingImages.length) {
-                        final imgUrl = _existingImages[index];
-                        return Stack(
-                          children: [
-                            InkWell(
-                              onTap: () => openImageCaurosel(
-                                vehicle.images
-                                    .map((img) => "$ip$imgUrl")
-                                    .toList(),
-                                index,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  "$ip$imgUrl",
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                ),
-                              ),
-                            ),
-                            // Positioned(
-                            //   right: 0,
-                            //   top: 0,
-                            //   child: IconButton(
-                            //     icon: const Icon(
-                            //       Icons.close,
-                            //       color: Colors.red,
-                            //     ),
-                            //     onPressed: () => _removeExistingImage(index),
-                            //   ),
-                            // ),
-                          ],
-                        );
-                      }
-                      //   } else if (index <
-                      //       _existingImages.length + _newImages.length) {
-                      //     final img = _newImages[index - _existingImages.length];
-                      //     return Stack(
-                      //       children: [
-                      //         ClipRRect(
-                      //           borderRadius: BorderRadius.circular(8),
-                      //           child: Image.file(
-                      //             File(img.path),
-                      //             fit: BoxFit.cover,
-                      //             width: double.infinity,
-                      //             height: double.infinity,
-                      //           ),
-                      //         ),
-                      //         Positioned(
-                      //           right: 0,
-                      //           top: 0,
-                      //           child: IconButton(
-                      //             icon: const Icon(
-                      //               Icons.close,
-                      //               color: Colors.red,
-                      //             ),
-                      //             onPressed: () => setState(
-                      //               () => _newImages.removeAt(
-                      //                 index - _existingImages.length,
-                      //               ),
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     );
-                      //   } else {
-                      //     return InkWell(
-                      //       onTap: _pickImages,
-                      //       child: Container(
-                      //         decoration: BoxDecoration(
-                      //           borderRadius: BorderRadius.circular(8),
-                      //           border: Border.all(color: Colors.grey),
-                      //         ),
-                      //         child: const Icon(Icons.add),
-                      //       ),
-                      //     );
-                      //   }
-                    },
-                  ),
-
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Vehicle Document"),
-                      InkWell(
-                        onTap: _pickVehicleDocument,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.image, size: 18),
-                              Text(
-                                "Change Image",
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  InkWell(
-                    onTap: () =>
-                        openImage("$ip${vehicle.vehiclePapersDocument!}"),
-                    child: Container(
-                      height: 150,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: _vehicleDocument != null
-                          ? Stack(
-                              children: [
-                                ClipRRect(
-=======
           : ResponsiveWraper(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -546,7 +344,6 @@ class _EditYourVehicleScreenState extends State<EditYourVehicleScreen> {
                                   index,
                                 ),
                                 child: ClipRRect(
->>>>>>> Stashed changes
                                   borderRadius: BorderRadius.circular(8),
                                   child: Image.network(
                                     "$ip$imgUrl",
@@ -1131,8 +928,6 @@ Widget buildTitleText(String title) {
     ],
   );
 }
-<<<<<<< Updated upstream
-=======
 
 Widget buildTextField(
   String labelText,
@@ -1173,4 +968,3 @@ Widget buildTextField(
     ],
   );
 }
->>>>>>> Stashed changes

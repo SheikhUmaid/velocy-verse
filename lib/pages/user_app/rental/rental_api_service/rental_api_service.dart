@@ -1,19 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-<<<<<<< Updated upstream
-import 'package:velocyverse/networking/apiservices.dart';
-import 'package:velocyverse/pages/user_app/rental/data/handover_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/my_vehicle_rental_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/received_rental_request_rider_profiel_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/received_rental_requests_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rental_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_detail.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_owner_info_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rider_handover_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/vehicles_for_rent_model.dart';
-=======
 import 'package:VelocyTaxzz/networking/apiservices.dart';
 import 'package:VelocyTaxzz/pages/user_app/rental/data/handover_model.dart';
 import 'package:VelocyTaxzz/pages/user_app/rental/data/my_vehicle_rental_model.dart';
@@ -25,7 +12,6 @@ import 'package:VelocyTaxzz/pages/user_app/rental/data/rental_vehicle_owner_info
 import 'package:VelocyTaxzz/pages/user_app/rental/data/rider_handover_model.dart';
 import 'package:VelocyTaxzz/pages/user_app/rental/data/sent_rental_request_model.dart';
 import 'package:VelocyTaxzz/pages/user_app/rental/data/vehicles_for_rent_model.dart';
->>>>>>> Stashed changes
 
 class RentalApiService {
   final ApiService _apiService;

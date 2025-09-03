@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-<<<<<<< Updated upstream
-import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
-import 'package:velocyverse/pages/user_app/rental/presentation/rider_pickup_handover_screen.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
-=======
 import 'package:VelocyTaxzz/pages/user_app/rental/data/sent_rental_request_model.dart';
 import 'package:VelocyTaxzz/pages/user_app/rental/presentation/rider_pickup_handover_screen.dart';
 import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
 import 'package:VelocyTaxzz/utils/responsive_wraper.dart';
 import 'package:VelocyTaxzz/utils/util.error_toast.dart';
 import 'package:VelocyTaxzz/utils/util.success_toast.dart';
->>>>>>> Stashed changes
 
 class SentRentalRequestsScreen extends StatefulWidget {
   const SentRentalRequestsScreen({super.key});
@@ -109,114 +103,6 @@ class _SentRentalRequestsScreenState extends State<SentRentalRequestsScreen> {
                           ),
                           const SizedBox(height: 12),
 
-<<<<<<< Updated upstream
-                      // Vehicle Details
-                      const Text(
-                        "Vehicle Details",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      _buildKeyValueRow(
-                        "Vehicle Number",
-                        request.registrationNumber ?? '',
-                      ),
-                      _buildKeyValueRow("Model", request.vehicleName ?? ''),
-                      const SizedBox(height: 16),
-
-                      // Rental Period
-                      const Text(
-                        "Rental Period",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      _buildKeyValueRow("Start Date", request.pickup ?? ''),
-                      _buildKeyValueRow("End Date", request.dropoff ?? ''),
-                      _buildKeyValueRow(
-                        "Duration",
-                        _getDurationString(request.durationHours),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Action Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed:
-                                  request.status?.toLowerCase() == "cancelled"
-                                  ? null // disables button
-                                  : () async {
-                                      final provider =
-                                          Provider.of<RentalProvider>(
-                                            context,
-                                            listen: false,
-                                          );
-                                      await provider.cancelRequest(request.id!);
-                                      await provider.fetchSentRentalRequests();
-                                      if (provider.sendError != null) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(provider.sendError!),
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Renatl request cancelled successfully',
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    request.status?.toLowerCase() == "cancelled"
-                                    ? Colors.grey
-                                    : Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Text(
-                                request.status?.toLowerCase() == "cancelled"
-                                    ? "Cancelled"
-                                    : "Cancel Request",
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                          if (request.status?.toLowerCase() != "pending" &&
-                              request.status?.toLowerCase() != "cancelled") ...[
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          RiderPickupHandoverScreen(
-                                            requestId: request.id!,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-=======
                           // User Info
                           Row(
                             children: [
@@ -354,7 +240,6 @@ class _SentRentalRequestsScreenState extends State<SentRentalRequestsScreen> {
                                         ? "Cancelled"
                                         : "Cancel Request",
                                     style: const TextStyle(color: Colors.white),
->>>>>>> Stashed changes
                                   ),
                                 ),
                               ),

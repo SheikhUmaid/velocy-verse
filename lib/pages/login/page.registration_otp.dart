@@ -1,17 +1,3 @@
-<<<<<<< Updated upstream
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:velocyverse/components/base/component.custom_app_bar.dart';
-import 'package:velocyverse/components/base/component.custom_text_field.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/providers/login/provider.authentication.dart';
-import 'package:velocyverse/providers/provider.loader.dart';
-import 'package:velocyverse/utils/util.error_toast.dart';
-import 'package:velocyverse/utils/util.is_driver.dart';
-
-class RegistrationOTP extends StatelessWidget {
-=======
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,24 +11,18 @@ import 'package:VelocyTaxzz/utils/util.error_toast.dart';
 import 'package:VelocyTaxzz/utils/util.is_driver.dart';
 
 class RegistrationOTP extends StatefulWidget {
->>>>>>> Stashed changes
   RegistrationOTP({
     super.key,
     required this.phoneNumber,
     required this.otp,
     required this.password,
     required this.confirmPassword,
-<<<<<<< Updated upstream
-=======
     required this.verificationId,
->>>>>>> Stashed changes
   });
   final String phoneNumber;
   final String otp;
   final String password;
   final String confirmPassword;
-<<<<<<< Updated upstream
-=======
   final String? verificationId;
 
   @override
@@ -50,7 +30,6 @@ class RegistrationOTP extends StatefulWidget {
 }
 
 class _RegistrationOTPState extends State<RegistrationOTP> {
->>>>>>> Stashed changes
   final otpController = TextEditingController();
 
   @override
@@ -85,11 +64,7 @@ class _RegistrationOTPState extends State<RegistrationOTP> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-<<<<<<< Updated upstream
-                  "The OTP has been sent to you +91$phoneNumber",
-=======
                   "The OTP has been sent to you +91${widget.phoneNumber}",
->>>>>>> Stashed changes
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
@@ -99,40 +74,11 @@ class _RegistrationOTPState extends State<RegistrationOTP> {
                 placeholder: 'Enter OTP',
                 isPassword: true,
               ),
-<<<<<<< Updated upstream
-
-=======
               Text("Verification ID: ${widget.verificationId}"),
->>>>>>> Stashed changes
               const SizedBox(height: 32),
               PrimaryButton(
                 text: 'Continue',
                 onPressed: () async {
-<<<<<<< Updated upstream
-                  var verifyOTP = await authenticationProvider.fb_verifyOTP(
-                    otpController.text.trim(),
-                    false,
-                  );
-                  if (verifyOTP == true) {
-                    final response = await authenticationProvider
-                        .registerRequest(
-                          phoneNumber: phoneNumber,
-                          otp: otp,
-                          password: password,
-                          confirmPassword: confirmPassword,
-                        );
-                    if (response) {
-                      if (context.mounted) {
-                        context.pushNamed("/completeProfile");
-                      }
-                    } else {
-                      debugPrint("Something Went Wrong");
-                    }
-                  } else {
-                    showFancyErrorToast(context, "Invalid OTP");
-                  }
-                  ;
-=======
                   // if (verifyOTP == true) {
                   _verifyOTP();
 
@@ -140,7 +86,6 @@ class _RegistrationOTPState extends State<RegistrationOTP> {
                   //   showFancyErrorToast(context, "Invalid OTP");
                   // }
                   // ;
->>>>>>> Stashed changes
                   // context.read<LoaderProvider>().showLoader();
                   // final response = await authenticationProvider.loginWithOTP(
                   //   phoneNumber: "+91$phoneNumber",
@@ -170,8 +115,6 @@ class _RegistrationOTPState extends State<RegistrationOTP> {
       ),
     );
   }
-<<<<<<< Updated upstream
-=======
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _loading = false;
@@ -230,5 +173,4 @@ class _RegistrationOTPState extends State<RegistrationOTP> {
       }
     }
   }
->>>>>>> Stashed changes
 }

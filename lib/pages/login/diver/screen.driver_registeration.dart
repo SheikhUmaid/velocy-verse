@@ -1,6 +1,9 @@
 // screens/host_rides_screen.dart
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:VelocyTaxzz/components/base/component.custom_app_bar.dart';
 import 'package:VelocyTaxzz/components/base/component.custom_text_field.dart';
@@ -29,6 +32,19 @@ class DriverRegisterationScreenState extends State<DriverRegisterationScreen> {
   final TextEditingController yearController = TextEditingController();
 
   String selectedVehicle = 'Two Wheeler';
+  File? _pickedImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        _pickedImage = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,52 +93,64 @@ class DriverRegisterationScreenState extends State<DriverRegisterationScreen> {
                       const SizedBox(height: 32),
                       // Profile photo section
                       Center(
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3F4F6),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: const Color(0xFFE5E7EB),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.person_outline,
-                                size: 48,
-                                color: Color(0xFF9CA3AF),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 8,
-                              right: 8,
-                              child: Container(
-                                width: 32,
-                                height: 32,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 120,
+                                height: 120,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0xFFF3F4F6),
+                                  borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: const Color(0xFFE5E7EB),
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
                                 ),
-                                child: const Icon(
-                                  Icons.upload_outlined,
-                                  size: 16,
-                                  color: Color(0xFF6B7280),
+                                child: _pickedImage != null
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                        child: Image.file(
+                                          _pickedImage!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.person_outline,
+                                        size: 48,
+                                        color: Color(0xFF9CA3AF),
+                                      ),
+                              ),
+                              Positioned(
+                                bottom: 8,
+                                right: 8,
+                                child: Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: const Color(0xFFE5E7EB),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.upload_outlined,
+                                    size: 16,
+                                    color: Color(0xFF6B7280),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -199,19 +227,23 @@ class DriverRegisterationScreenState extends State<DriverRegisterationScreen> {
                         text: 'Next',
                         onPressed: () async {
                           context.read<LoaderProvider>().showLoader();
-                          final rideProvder =
+                          final authProvider =
                               Provider.of<AuthenticationProvider>(
                                 context,
                                 listen: false,
                               );
-                          final response = await rideProvder
-                              .driverRegisteration(
-                                vehicleNumber: vehicleNumberController.text,
-                                vehicleType: vehicleTypeController.text,
-                                vehicleCompany: vehicleCompanyController.text,
-                                vehicleModel: vehicleModelController.text,
-                                passingYear: yearController.text,
-                              );
+
+                          await authProvider.becomeADriver();
+
+                          final response =
+                              await authProvider.driverRegisteration(
+                            vehicleNumber: vehicleNumberController.text,
+                            vehicleType: vehicleTypeController.text,
+                            vehicleCompany: vehicleCompanyController.text,
+                            vehicleModel: vehicleModelController.text,
+                            passingYear: yearController.text,
+                            profileImage: _pickedImage,
+                          );
 
                           context.read<LoaderProvider>().hideLoader();
                           if (context.mounted) {

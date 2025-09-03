@@ -249,21 +249,27 @@ class AuthenticationProvider extends ChangeNotifier {
     required String vehicleCompany,
     required String vehicleModel,
     required String passingYear,
+    File? profileImage,
   }) async {
     try {
-      await becomeADriver();
+      FormData formData = FormData.fromMap({
+        'vehicle_number': vehicleNumber,
+        'vehicle_type': vehicleType,
+        'year': int.parse(passingYear),
+        'car_company': vehicleCompany,
+        'car_model': vehicleModel,
+        'user_id': _registeredUser,
+        if (profileImage != null)
+          'profile_pic': await MultipartFile.fromFile(
+            profileImage.path,
+            filename: 'profile_pic.jpg',
+          ),
+      });
+
       final response = await _apiService.postRequest(
         'auth_api/driver-registration/',
-        data: {
-          'vehicle_number': vehicleNumber,
-          'vehicle_type': vehicleType,
-          'year': int.parse(passingYear), // Match form-data string format
-          'car_company': vehicleCompany,
-          'car_model': vehicleModel,
-          'user_id':
-              _registeredUser, // Assuming _registeredUser is set elsewhere
-        },
-        doesNotRequireAuthHeader: true, // Skips token
+        data: formData,
+        doesNotRequireAuthHeader: true,
       );
 
       return response.statusCode == 200;

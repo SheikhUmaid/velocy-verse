@@ -4,10 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 
-import 'package:velocyverse/models/model.driverDetails.dart';
-import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
+import 'package:VelocyTaxzz/models/model.driverDetails.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.driver_profile.dart';
+import 'package:VelocyTaxzz/utils/util.logout.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final DriverDetailsModel userProfile;
@@ -746,13 +748,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: () async {
               Navigator.pop(context); // Close dialog
               // Handle account deletion
-              _showErrorSnackBar('Account deletion not implemented in demo');
+              logout();
+              _launchWebsite('https://backend.velocytax.in/delete-account/');
+              // _showErrorSnackBar('Account deletion not implemented in demo');
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
+  }
+
+  void _launchWebsite(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   // Utility Methods

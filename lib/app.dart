@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/networking/apiservices.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
-import 'package:velocyverse/pages/user_app/rental/rental_api_service/rental_api_service.dart';
-import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
-import 'package:velocyverse/providers/driver/provider.earningNreport.dart';
-import 'package:velocyverse/providers/driver/provider.rideHistory.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/rental_api_service/rental_api_service.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.driver_profile.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.earningNreport.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.rideHistory.dart';
 
-import 'package:velocyverse/providers/driver/provider.driver.dart';
-import 'package:velocyverse/providers/login/provider.authentication.dart';
-import 'package:velocyverse/providers/payment/provider.payment.dart';
-import 'package:velocyverse/providers/provider.loader.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
-import 'package:velocyverse/utils/util.global_loader.dart';
-import 'package:velocyverse/utils/util.router.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.driver.dart';
+import 'package:VelocyTaxzz/providers/login/provider.authentication.dart';
+import 'package:VelocyTaxzz/providers/payment/provider.payment.dart';
+import 'package:VelocyTaxzz/providers/provider.loader.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/utils/util.global_loader.dart';
+import 'package:VelocyTaxzz/utils/util.router.dart';
 
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();

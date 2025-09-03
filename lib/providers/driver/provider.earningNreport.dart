@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:velocyverse/models/model.earningsNreport.dart';
-import 'package:velocyverse/models/model.recentRideModel.dart';
-import 'package:velocyverse/models/model.recentRides.dart';
-import 'package:velocyverse/networking/apiservices.dart';
+import 'package:VelocyTaxzz/models/model.earningsNreport.dart';
+import 'package:VelocyTaxzz/models/model.recentRideModel.dart';
+import 'package:VelocyTaxzz/models/model.recentRides.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
 
 class EaningsNreportsProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
-import 'package:velocyverse/credentials.dart';
+import 'package:VelocyTaxzz/credentials.dart';
 
 class LocationSearch extends StatefulWidget {
   const LocationSearch({super.key});

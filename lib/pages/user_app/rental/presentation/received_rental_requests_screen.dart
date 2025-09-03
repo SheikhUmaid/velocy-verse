@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:velocyverse/components/base/component.primary_button.dart';
-import 'package:velocyverse/pages/user_app/rental/data/received_rental_requests_model.dart';
-import 'package:velocyverse/pages/user_app/rental/presentation/rental_request_rider_profile_screen.dart';
-import 'package:velocyverse/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/received_rental_requests_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/presentation/rental_request_rider_profile_screen.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/provider/rental_provider.dart';
+import 'package:VelocyTaxzz/utils/responsive_wraper.dart';
 
 class ReceivedRentalRequestsScreen extends StatefulWidget {
   const ReceivedRentalRequestsScreen({super.key});
@@ -44,18 +45,20 @@ class _ReceivedRentalRequestsScreenState
             return const Center(child: Text("No requests found"));
           }
 
-          return RefreshIndicator(
-            onRefresh: () => Provider.of<RentalProvider>(
-              context,
-              listen: false,
-            ).fetchReceivedVehilces(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: requests.length,
-              itemBuilder: (context, index) {
-                final request = requests[index];
-                return _buildRequestCard(context, request);
-              },
+          return ResponsiveWraper(
+            child: RefreshIndicator(
+              onRefresh: () => Provider.of<RentalProvider>(
+                context,
+                listen: false,
+              ).fetchReceivedVehilces(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final request = requests[index];
+                  return _buildRequestCard(context, request);
+                },
+              ),
             ),
           );
         },
@@ -118,6 +121,8 @@ class _ReceivedRentalRequestsScreenState
                     children: [
                       Text(
                         request.username ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -234,24 +239,21 @@ class _ReceivedRentalRequestsScreenState
                 ],
               ),
             ] else if (request.status == "rejected") ...[
-              PrimaryButton(
-                text: "❌ Rejected",
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                onPressed: () {},
-              ),
-            ] else if (request.status == "confirmed") ...[
               Row(
                 children: [
                   Expanded(
                     child: PrimaryButton(
-                      text: "✅Accepted",
-                      backgroundColor: Colors.black,
+                      text: "Rejected",
+                      backgroundColor: Colors.grey,
                       textColor: Colors.white,
                       onPressed: () {},
                     ),
                   ),
-                  const SizedBox(width: 8),
+                ],
+              ),
+            ] else if (request.status == "confirmed") ...[
+              Row(
+                children: [
                   Expanded(
                     child: PrimaryButton(
                       text: "Handover",

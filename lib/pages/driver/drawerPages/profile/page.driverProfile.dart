@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/models/model.driverDetails.dart';
-import 'package:velocyverse/providers/driver/provider.driver_profile.dart';
+import 'package:VelocyTaxzz/models/model.driverDetails.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.driver_profile.dart';
 
 class DriverProfile extends StatefulWidget {
   const DriverProfile({super.key});

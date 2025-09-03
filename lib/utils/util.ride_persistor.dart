@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velocyverse/models/model.loaction.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/models/model.loaction.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
 
 class RidePersistor {
   static const String _rideKey = "activeRide";

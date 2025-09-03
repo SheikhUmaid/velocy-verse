@@ -3,8 +3,9 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:velocyverse/models/model.loaction.dart';
-import 'package:velocyverse/networking/apiservices.dart';
+import 'package:VelocyTaxzz/models/model.loaction.dart';
+import 'package:VelocyTaxzz/models/model.ride.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RideProvider extends ChangeNotifier {
@@ -294,5 +295,39 @@ class RideProvider extends ChangeNotifier {
   void disconnectWs() {
     _channel?.sink.close();
     _channel = null;
+  }
+
+  RideHistory? _rideHistory;
+  bool _historyLoading = false;
+
+  RideHistory? get rideHistory => _rideHistory;
+  bool get historyLoading => _historyLoading;
+
+  Future<bool> fetchRideHistory() async {
+    _historyLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.getRequest(
+        "/rider/rider-ride-history/",
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        _rideHistory = RideHistory.fromJson(data);
+        _historyLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _historyLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching ride history: $e");
+      _historyLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 }

@@ -1,18 +1,17 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:velocyverse/pages/user_app/rental/data/handover_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/my_vehicle_rental_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/received_rental_request_rider_profiel_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/received_rental_requests_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rental_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_detail.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rental_vehicle_owner_info_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/rider_handover_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/sent_rental_request_model.dart';
-import 'package:velocyverse/pages/user_app/rental/data/vehicles_for_rent_model.dart';
-import 'package:velocyverse/pages/user_app/rental/rental_api_service/rental_api_service.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/handover_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/my_vehicle_rental_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/received_rental_request_rider_profiel_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/received_rental_requests_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/rental_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/rental_vehicle_detail.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/rental_vehicle_owner_info_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/rider_handover_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/sent_rental_request_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/data/vehicles_for_rent_model.dart';
+import 'package:VelocyTaxzz/pages/user_app/rental/rental_api_service/rental_api_service.dart';
 
 class RentalProvider extends ChangeNotifier {
   final RentalApiService _rentalApiService;

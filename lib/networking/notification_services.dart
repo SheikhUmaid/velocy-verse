@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:velocyverse/networking/apiservices.dart';
+import 'package:VelocyTaxzz/networking/apiservices.dart';
 
 class NotificationService {
   static NotificationService? _instance;
@@ -32,7 +32,6 @@ class NotificationService {
     description: 'This channel is used for important notifications.',
     importance: Importance.high,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound('noti_sound'),
   );
 
   /// Initialize notification settings

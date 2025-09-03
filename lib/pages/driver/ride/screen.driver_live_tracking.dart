@@ -4,8 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-import 'package:velocyverse/credentials.dart';
-import 'package:velocyverse/providers/driver/provider.driver.dart';
+import 'package:VelocyTaxzz/credentials.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.driver.dart';
 
 class DriverLiveTracking extends StatefulWidget {
   const DriverLiveTracking({Key? key}) : super(key: key);

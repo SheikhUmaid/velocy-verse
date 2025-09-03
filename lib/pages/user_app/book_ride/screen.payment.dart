@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/pages/driver/drawerPages/profile/page.driverProfile.dart';
-import 'package:velocyverse/providers/payment/provider.payment.dart';
-import 'package:velocyverse/providers/user/provider.ride.dart';
-import 'package:velocyverse/providers/user/provider.rider_profile.dart';
+import 'package:VelocyTaxzz/pages/driver/drawerPages/profile/page.driverProfile.dart';
+import 'package:VelocyTaxzz/providers/payment/provider.payment.dart';
+import 'package:VelocyTaxzz/providers/user/provider.ride.dart';
+import 'package:VelocyTaxzz/providers/user/provider.rider_profile.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({Key? key}) : super(key: key);

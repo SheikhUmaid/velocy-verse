@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:velocyverse/pages/login/data.auth_form.dart';
+import 'package:VelocyTaxzz/pages/login/data.auth_form.dart';
+import 'package:VelocyTaxzz/utils/responsive_wrapper.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -8,7 +9,9 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Velocy")),
-      body: Column(children: [Expanded(child: AuthForm())]),
+      body: ResponsiveWraper(
+        child: Column(children: [Expanded(child: AuthForm())]),
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:velocyverse/utils/util.get_current_position.dart';
+import 'package:VelocyTaxzz/utils/util.get_current_position.dart';
 
 class ComponentMapView extends StatefulWidget {
   const ComponentMapView({super.key, required this.lat, required this.ln});

@@ -1,8 +1,8 @@
 // import 'package:flutter/material.dart';
-// import 'package:velocyverse/components/base/component.custom_app_bar.dart';
-// import 'package:velocyverse/components/base/component.primary_button.dart';
-// import 'package:velocyverse/components/user/component.location_input.dart';
-// import 'package:velocyverse/components/user/component.location_suggestion.dart';
+// import 'package:VelocyTaxzz/components/base/component.custom_app_bar.dart';
+// import 'package:VelocyTaxzz/components/base/component.primary_button.dart';
+// import 'package:VelocyTaxzz/components/user/component.location_input.dart';
+// import 'package:VelocyTaxzz/components/user/component.location_suggestion.dart';
 
 // class BookRide extends StatefulWidget {
 //   const BookRide({super.key});

@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:provider/provider.dart';
-import 'package:velocyverse/credentials.dart';
-import 'package:velocyverse/models/model.ride_detail.dart';
-import 'package:velocyverse/providers/driver/provider.driver.dart';
-import 'package:velocyverse/utils/util.error_toast.dart';
+import 'package:VelocyTaxzz/credentials.dart';
+import 'package:VelocyTaxzz/models/model.ride_detail.dart';
+import 'package:VelocyTaxzz/providers/driver/provider.driver.dart';
+import 'package:VelocyTaxzz/utils/util.error_toast.dart';
 
 class RideDetailsScreen extends StatefulWidget {
   const RideDetailsScreen({super.key});
